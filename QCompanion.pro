@@ -14,8 +14,12 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         qcompanion.cpp \
-    UnitTests.cpp
+    UnitTests.cpp \
+    component.cpp
 
-HEADERS  += qcompanion.h
+HEADERS  += qcompanion.h \
+    component.h
 
 FORMS    += qcompanion.ui
+
+QMAKE_CXXFLAGS += -std=c++11
