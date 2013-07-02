@@ -1,0 +1,12 @@
+#ifndef HOURREADER_GLOBAL_H
+#define HOURREADER_GLOBAL_H
+
+#include <QtCore/qglobal.h>
+
+#if defined(HOURREADER_LIBRARY)
+#  define HOURREADERSHARED_EXPORT Q_DECL_EXPORT
+#else
+#  define HOURREADERSHARED_EXPORT Q_DECL_IMPORT
+#endif
+
+#endif // HOURREADER_GLOBAL_H
