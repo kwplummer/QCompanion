@@ -1,6 +1,5 @@
-#include "component.h"
 #include <dlfcn.h>
-#include <functional>
+#include "component.h"
 Component::Component()
 {
 }

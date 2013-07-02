@@ -15,10 +15,12 @@ TEMPLATE = app
 SOURCES += main.cpp\
         qcompanion.cpp \
     UnitTests.cpp \
-    component.cpp
+    component.cpp \
+    speaker.cpp
 
 HEADERS  += qcompanion.h \
-    component.h
+    component.h \
+    speaker.h
 
 FORMS    += qcompanion.ui
 
