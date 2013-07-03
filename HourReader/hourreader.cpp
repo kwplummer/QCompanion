@@ -12,9 +12,9 @@ time_t HourReader::nextCheckTime()
     return mktime(currentTime);
 }
 
-void HourReader::speak(Speaker &s)
+std::string HourReader::getText()
 {
-    s.speak(("The time is now " + QTime::currentTime().toString("HH") + " hundred hours").toUtf8());
+    return ("The time is now " + QTime::currentTime().toString("HH") + " hundred hours").toStdString();
 }
 
 

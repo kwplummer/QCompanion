@@ -7,7 +7,7 @@ class MockComponent : public Component
 public:
     virtual ~MockComponent(){}
     virtual time_t nextCheckTime() override;
-    virtual void speak(Speaker &s) override;
+    virtual std::string getText() override;
 };
 
 #endif // MOCK_H

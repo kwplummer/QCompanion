@@ -11,6 +11,9 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = QCompanion
 TEMPLATE = app
 
+LIBS += -ltbb -lnotify
+
+INCLUDEPATH += "/usr/include/glib-2.0/"
 
 SOURCES += main.cpp\
         qcompanion.cpp \
@@ -25,3 +28,6 @@ HEADERS  += qcompanion.h \
 FORMS    += qcompanion.ui
 
 QMAKE_CXXFLAGS += -std=c++11
+
+RESOURCES += \
+    icons.qrc

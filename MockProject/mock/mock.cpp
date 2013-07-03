@@ -5,9 +5,9 @@ time_t MockComponent::nextCheckTime()
     return 5;
 }
 
-void MockComponent::speak(Speaker &s)
+std::string MockComponent::getText()
 {
-    s.speak("this is a test.");
+    return "this is a test.";
 }
 
 extern "C"
