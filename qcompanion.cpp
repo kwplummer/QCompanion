@@ -1,5 +1,6 @@
 #include <QDir>
 #include <QTimer>
+#include <QClipboard>
 #include <libnotify/notify.h>
 #include "qcompanion.h"
 #include "ui_qcompanion.h"
@@ -12,19 +13,24 @@ QCompanion::QCompanion(QWidget *parent) :
     ui->setupUi(this);
     whenToSpeak = new QTimer(this);
     updateNextFire = new QTimer(this);
-    tray = new QSystemTrayIcon(QIcon(":icons/murasaki.png"),this);
+    iconPath = QCoreApplication::applicationDirPath()+"/murasaki.png";
+    tray = new QSystemTrayIcon(QIcon(iconPath),this);
     setWindowIcon(tray->icon());
     tray->show();
     QMenu *mainMenu = new QMenu(this);
 
     QMenu *pluginsMenu = loadPlugins();
     mainMenu->addMenu(pluginsMenu);
+
+    QAction *speakClipboardAction = new QAction("Speak Clipboard",this);
+    mainMenu->addAction(speakClipboardAction);
     if(!plugins.empty())
     {
         nextFire = new QAction(this);
         updateNextFireText();
         mainMenu->addAction(nextFire);
-        NotifyNotification *hello = notify_notification_new ("Hello There!", nextFire->text().toUtf8(), "dialog-information");
+        NotifyNotification *hello = notify_notification_new("Hello There!", nextFire->text().toUtf8(), iconPath.toUtf8());
+
         notify_notification_show(hello,NULL);
     }
 
@@ -40,6 +46,7 @@ QCompanion::QCompanion(QWidget *parent) :
     connect(mainMenu,SIGNAL(aboutToShow()),this,SLOT(showingMenu()));
     connect(mainMenu,SIGNAL(aboutToHide()),this,SLOT(hidingMenu()));
     connect(updateNextFire,SIGNAL(timeout()),this,SLOT(updateNextFireText()));
+    connect(speakClipboardAction,SIGNAL(triggered()),this,SLOT(speakClipboard()));
 #else
 #endif
 }
@@ -67,7 +74,7 @@ void QCompanion::speak()
             {
                 std::string text = p.first->getText();
                 speaker.speak(text.c_str());
-                NotifyNotification *notification = notify_notification_new("QCompanion",text.c_str(),"dialog-information");
+                NotifyNotification *notification = notify_notification_new("QCompanion",text.c_str(),iconPath.toUtf8());
                 notify_notification_show(notification,NULL);
             }
             time_t cTime = p.second = p.first->nextCheckTime();
@@ -110,13 +117,13 @@ QMenu *QCompanion::loadPlugins()
         {
             NotifyNotification *warn = notify_notification_new ("QCompanion Error",
                                                                 ("Unable to load plugin " + list.at(i).fileName() + '\n'
-                                                                 + QString(e.what())).toUtf8(), "dialog-error");
+                                                                 + QString(e.what())).toUtf8(), iconPath.toUtf8());
             notify_notification_show(warn,NULL);
         }
     }
     if(pluginMenu->isEmpty())
     {
-        NotifyNotification *warn = notify_notification_new ("QCompanion Error", "Unable to load any plugins.","dialog-error");
+        NotifyNotification *warn = notify_notification_new ("QCompanion Error", "Unable to load any plugins.",iconPath.toUtf8());
         notify_notification_show(warn,NULL);
     }
     else
@@ -147,4 +154,13 @@ void QCompanion::updateNextFireText()
 {
     if(nextFire)
         nextFire->setText("The next speech is in: " + QString::number(nextSpeakTime - time(NULL)) + " seconds");
+}
+
+void QCompanion::speakClipboard()
+{
+    QClipboard *board = QApplication::clipboard();
+    QString text = board->text();
+    speaker.speak(text.toUtf8());
+    NotifyNotification *notification = notify_notification_new("QCompanion",text.toUtf8(),iconPath.toUtf8());
+    notify_notification_show(notification,NULL);
 }

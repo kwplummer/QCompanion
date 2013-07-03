@@ -23,7 +23,9 @@ public slots:
     void showingMenu();
     void hidingMenu();
     void updateNextFireText();
+    void speakClipboard();
 private:
+    QString iconPath;
     QSystemTrayIcon *tray;
     QMenu *loadPlugins();
     QAction *nextFire;
