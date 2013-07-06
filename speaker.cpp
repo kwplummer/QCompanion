@@ -67,18 +67,21 @@ void Speaker::readLoop()
     {
         //Pops from queue, or waits until it can.
         queue.pop(readMe);
-        //flite is often buggy for long strings
-        //It's much more stable to read from a file.
-        std::ofstream out("/tmp/QCompanion");
-        out << readMe;
-        out.close();
         if(canSendNotifications)
         {
             NotifyNotification *message = notify_notification_new("QCompanion", readMe.c_str(), iconLocation.toUtf8());
             notify_notification_show(message,NULL);
         }
-        int exitCode = QProcess::execute("flite -f /tmp/QCompanion");
-        if(exitCode < 0)
-            errorOccurred = true;
+        if(canSpeak)
+        {
+            //flite is often buggy for long strings
+            //It's much more stable to read from a file.
+            std::ofstream out("/tmp/QCompanion");
+            out << readMe;
+            out.close();
+            int exitCode = QProcess::execute("flite -f /tmp/QCompanion");
+            if(exitCode < 0)
+                errorOccurred = true;
+        }
     }
 }

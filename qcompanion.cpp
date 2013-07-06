@@ -34,8 +34,8 @@ QCompanion::QCompanion(QWidget *parent) :
     toggleNotificationsAction = new QAction("Disable Notifications",this);
     mainMenu->addAction(toggleNotificationsAction);
 
-    toggleMuteAction = new QAction("Disable Text To Speech",this);
-    mainMenu->addAction(toggleMuteAction);
+    toggleTTSAction = new QAction("Disable Text To Speech",this);
+    mainMenu->addAction(toggleTTSAction);
 
     QAction *quitAction = new QAction("Quit",this);
     mainMenu->addAction(quitAction);
@@ -44,7 +44,7 @@ QCompanion::QCompanion(QWidget *parent) :
 
 #if QT_VERSION < 0x050000
     connect(quitAction,SIGNAL(triggered()),this,SLOT(quit()));
-    connect(toggleMuteAction,SIGNAL(triggered()),this,SLOT(toggleTTS()));
+    connect(toggleTTSAction,SIGNAL(triggered()),this,SLOT(toggleTTS()));
     connect(toggleNotificationsAction,SIGNAL(triggered()),this,SLOT(toggleNotifications()));
     connect(speakClipboardAction,SIGNAL(triggered()),this,SLOT(speakClipboard()));
     connect(whenToSpeak,SIGNAL(timeout()),this,SLOT(speak()));
@@ -179,11 +179,11 @@ void QCompanion::toggleTTS()
     if(speaker.isTTSEnabled())
     {
         speaker.setTTSEnabled(false);
-        toggleMuteAction->setText("Disable Text To Speech");
+        toggleTTSAction->setText("Disable Text To Speech");
     }
     else
     {
         speaker.setTTSEnabled(true);
-        toggleMuteAction->setText("Enable Text To Speech");
+        toggleTTSAction->setText("Enable Text To Speech");
     }
 }

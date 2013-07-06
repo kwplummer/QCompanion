@@ -38,7 +38,7 @@ private:
     Ui::QCompanion *ui;
     time_t nextSpeakTime;
     QAction *toggleNotificationsAction;
-    QAction *toggleMuteAction;
+    QAction *toggleTTSAction;
 };
 
 #endif // QCOMPANION_H
