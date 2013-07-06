@@ -24,6 +24,8 @@ public slots:
     void hidingMenu();
     void updateNextFireText();
     void speakClipboard();
+    void toggleNotifications();
+    void toggleTTS();
 private:
     QString iconPath;
     QSystemTrayIcon *tray;
@@ -35,6 +37,8 @@ private:
     Speaker speaker;
     Ui::QCompanion *ui;
     time_t nextSpeakTime;
+    QAction *toggleNotificationsAction;
+    QAction *toggleMuteAction;
 };
 
 #endif // QCOMPANION_H

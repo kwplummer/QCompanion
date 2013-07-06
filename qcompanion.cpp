@@ -1,15 +1,14 @@
 #include <QDir>
 #include <QTimer>
 #include <QClipboard>
-#include <libnotify/notify.h>
 #include "qcompanion.h"
 #include "ui_qcompanion.h"
 QCompanion::QCompanion(QWidget *parent) :
     QDialog(parent),
     nextFire(nullptr),
+    speaker(QCoreApplication::applicationDirPath()+"/murasaki.png"),
     ui(new Ui::QCompanion)
 {
-    notify_init("QCompanion");
     ui->setupUi(this);
     whenToSpeak = new QTimer(this);
     updateNextFire = new QTimer(this);
@@ -29,24 +28,29 @@ QCompanion::QCompanion(QWidget *parent) :
         nextFire = new QAction(this);
         updateNextFireText();
         mainMenu->addAction(nextFire);
-        NotifyNotification *hello = notify_notification_new("Hello There!", nextFire->text().toUtf8(), iconPath.toUtf8());
-
-        notify_notification_show(hello,NULL);
+        speaker.speak(("Hello There, " + nextFire->text()).toUtf8());
     }
+
+    toggleNotificationsAction = new QAction("Disable Notifications",this);
+    mainMenu->addAction(toggleNotificationsAction);
+
+    toggleMuteAction = new QAction("Disable Text To Speech",this);
+    mainMenu->addAction(toggleMuteAction);
 
     QAction *quitAction = new QAction("Quit",this);
     mainMenu->addAction(quitAction);
 
     tray->setContextMenu(mainMenu);
 
-
 #if QT_VERSION < 0x050000
     connect(quitAction,SIGNAL(triggered()),this,SLOT(quit()));
+    connect(toggleMuteAction,SIGNAL(triggered()),this,SLOT(toggleTTS()));
+    connect(toggleNotificationsAction,SIGNAL(triggered()),this,SLOT(toggleNotifications()));
+    connect(speakClipboardAction,SIGNAL(triggered()),this,SLOT(speakClipboard()));
     connect(whenToSpeak,SIGNAL(timeout()),this,SLOT(speak()));
+    connect(updateNextFire,SIGNAL(timeout()),this,SLOT(updateNextFireText()));
     connect(mainMenu,SIGNAL(aboutToShow()),this,SLOT(showingMenu()));
     connect(mainMenu,SIGNAL(aboutToHide()),this,SLOT(hidingMenu()));
-    connect(updateNextFire,SIGNAL(timeout()),this,SLOT(updateNextFireText()));
-    connect(speakClipboardAction,SIGNAL(triggered()),this,SLOT(speakClipboard()));
 #else
 #endif
 }
@@ -74,8 +78,6 @@ void QCompanion::speak()
             {
                 std::string text = p.first->getText();
                 speaker.speak(text.c_str());
-                NotifyNotification *notification = notify_notification_new("QCompanion",text.c_str(),iconPath.toUtf8());
-                notify_notification_show(notification,NULL);
             }
             time_t cTime = p.second = p.first->nextCheckTime();
             if(!nextSpeakTime || (cTime < nextSpeakTime && cTime > time(NULL)))
@@ -84,8 +86,7 @@ void QCompanion::speak()
     }
     catch(std::exception e)
     {
-        NotifyNotification *warn = notify_notification_new ("QCompanion Error", e.what(), "dialog-error");
-        notify_notification_show(warn,NULL);
+        speaker.speak(e.what());
     }
     if(nextSpeakTime == 0)
     {
@@ -115,16 +116,12 @@ QMenu *QCompanion::loadPlugins()
         }
         catch(ComponentException e)
         {
-            NotifyNotification *warn = notify_notification_new ("QCompanion Error",
-                                                                ("Unable to load plugin " + list.at(i).fileName() + '\n'
-                                                                 + QString(e.what())).toUtf8(), iconPath.toUtf8());
-            notify_notification_show(warn,NULL);
+            speaker.speak(("Unable to load plugin " + list.at(i).fileName() + '\n' + e.what()).toUtf8());
         }
     }
     if(pluginMenu->isEmpty())
     {
-        NotifyNotification *warn = notify_notification_new ("QCompanion Error", "Unable to load any plugins.",iconPath.toUtf8());
-        notify_notification_show(warn,NULL);
+        speaker.speak("Unable to load any plugins.");
     }
     else
     {
@@ -161,6 +158,32 @@ void QCompanion::speakClipboard()
     QClipboard *board = QApplication::clipboard();
     QString text = board->text();
     speaker.speak(text.toUtf8());
-    NotifyNotification *notification = notify_notification_new("QCompanion",text.toUtf8(),iconPath.toUtf8());
-    notify_notification_show(notification,NULL);
+}
+
+void QCompanion::toggleNotifications()
+{
+    if(speaker.isNotificationsEnabled())
+    {
+        speaker.setNotificationsEnabled(false);
+        toggleNotificationsAction->setText("Enable Notifications");
+    }
+    else
+    {
+        speaker.setNotificationsEnabled(true);
+        toggleNotificationsAction->setText("Disable Notifications");
+    }
+}
+
+void QCompanion::toggleTTS()
+{
+    if(speaker.isTTSEnabled())
+    {
+        speaker.setTTSEnabled(false);
+        toggleMuteAction->setText("Disable Text To Speech");
+    }
+    else
+    {
+        speaker.setTTSEnabled(true);
+        toggleMuteAction->setText("Enable Text To Speech");
+    }
 }
