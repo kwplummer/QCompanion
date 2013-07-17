@@ -2,7 +2,6 @@
 #define SPEAKER_H
 #include <tbb/concurrent_queue.h>
 #include <thread>
-#include <QString>
 //An interface to flite,
 //or if someday this is built in Windows, sapi
 class Speaker

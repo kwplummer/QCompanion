@@ -1,32 +1,29 @@
-#include <dlfcn.h>
+#include <QAction>
+#include <QSettings>
 #include "component.h"
-Component::Component()
+
+Component::Component(QWidget *parent)  : QWidget(parent), muted(false)
 {
+    muteAction = new QAction("Mute",this);
+    muteAction->setCheckable(true);
+    connect(muteAction,SIGNAL(triggered(bool)),this,SLOT(setMute(bool)));
 }
 
-ComponentException::ComponentException(const char *_what)
-    :_what(_what)
+void Component::setMute(bool mute)
 {
+    muted = mute;
 }
 
-const char *ComponentException::what()
+QList<QAction *> Component::getMenuContents()
 {
-    return _what;
+    QList<QAction *> actions;
+    actions.append(muteAction);
+    return actions;
+}
+
+bool Component::isMuted()
+{
+    return muted;
 }
 
 
-Component *loadComponent(const char *path)
-{
-    const auto handle = dlopen(path,RTLD_NOW);
-    if(!handle)
-    {
-        throw ComponentException(dlerror());
-    }
-    typedef Component *(*fptr)();
-    const auto makeFunction = reinterpret_cast<fptr>(dlsym(handle,"makeComponent"));
-    if(!makeFunction)
-    {
-        throw ComponentException(dlerror());
-    }
-    return makeFunction();
-}

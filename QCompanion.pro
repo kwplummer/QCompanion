@@ -13,17 +13,23 @@ TEMPLATE = app
 
 LIBS += -ltbb -lnotify
 
-INCLUDEPATH += "/usr/include/glib-2.0/"
+INCLUDEPATH += /usr/include/glib-2.0/glib
+INCLUDEPATH += /usr/include/glib-2.0/
+INCLUDEPATH += /usr/include/glib-2.0/gobject
 
 SOURCES += main.cpp\
         qcompanion.cpp \
     UnitTests.cpp \
     component.cpp \
-    speaker.cpp
+    speaker.cpp \
+    hourreader.cpp \
+    qsnapper.cpp
 
 HEADERS  += qcompanion.h \
     component.h \
-    speaker.h
+    speaker.h \
+    hourreader.h \
+    qsnapper.h
 
 FORMS    += qcompanion.ui
 

@@ -1,8 +1,10 @@
 #include <QDir>
 #include <QTimer>
 #include <QClipboard>
+#include <QMenu>
 #include "qcompanion.h"
 #include "ui_qcompanion.h"
+
 QCompanion::QCompanion(QWidget *parent) :
     QDialog(parent),
     nextFire(nullptr),
@@ -58,8 +60,6 @@ QCompanion::QCompanion(QWidget *parent) :
 QCompanion::~QCompanion()
 {
     delete ui;
-    for(std::pair<Component*,time_t> &p: plugins)
-        delete p.first;
 }
 
 void QCompanion::quit()
@@ -69,18 +69,17 @@ void QCompanion::quit()
 
 void QCompanion::speak()
 {
-    nextSpeakTime = 0;
+    const QDateTime zero = QDateTime::fromTime_t(0);
+    const QDateTime now = QDateTime::currentDateTime();
+    nextSpeakTime = zero;
     try
     {
-        for(std::pair<Component*,time_t> &p: plugins)
+        for(std::pair<Component*,QDateTime> &p: plugins)
         {
-            if(p.second <= time(NULL))
-            {
-                std::string text = p.first->getText();
-                speaker.speak(text.c_str());
-            }
-            time_t cTime = p.second = p.first->nextCheckTime();
-            if(!nextSpeakTime || (cTime < nextSpeakTime && cTime > time(NULL)))
+            if(p.second <= now && !p.first->isMuted())
+                speaker.speak(p.first->getText().toUtf8());
+            QDateTime cTime = p.second = p.first->nextCheckTime();
+            if(!p.first->isMuted() && (nextSpeakTime == zero || (cTime < nextSpeakTime && cTime > now)))
                 nextSpeakTime = cTime;
         }
     }
@@ -88,53 +87,52 @@ void QCompanion::speak()
     {
         speaker.speak(e.what());
     }
-    if(nextSpeakTime == 0)
+    if(nextSpeakTime == zero)
     {
-        nextSpeakTime = time(NULL) + 60;
+        nextSpeakTime.setTime_t(time(NULL)+60);
     }
-    whenToSpeak->setInterval((nextSpeakTime - time(NULL))*1000);
+    whenToSpeak->setInterval(now.msecsTo(nextSpeakTime));
     whenToSpeak->start();
     updateNextFireText();
 }
 
 QMenu *QCompanion::loadPlugins()
 {
-    QDir d("plugins/");
-    QFileInfoList list = d.entryInfoList(QStringList("*.so"),QDir::Files);
     QMenu *pluginMenu = new QMenu("Plugins",this);
-    nextSpeakTime = 0;
-    for(int i=0;i<list.size();++i)
+
+    snapper = new QSnapper(this);
+    QMenu *snapperMenu = new QMenu("QSnapper",this);
+    snapperMenu->addActions(snapper->getMenuContents());
+    plugins.push_back(std::make_pair(snapper,snapper->nextCheckTime()));
+    pluginMenu->addMenu(snapperMenu);
+
+    QTimer *snapTimer = new QTimer(this);
+    connect(snapTimer,SIGNAL(timeout()),snapper,SLOT(snap()));
+    snapTimer->setInterval(1000*60);
+    snapTimer->setSingleShot(false);
+    snapTimer->start();
+
+    HourReader *hr = new HourReader(this);
+    QMenu *hourMenu = new QMenu("HourReader",this);
+    hourMenu->addActions(hr->getMenuContents());
+    plugins.push_back(std::make_pair(hr,hr->nextCheckTime()));
+    pluginMenu->addMenu(hourMenu);
+
+
+    const QDateTime zero = QDateTime::fromTime_t(0);
+    const QDateTime now = QDateTime::currentDateTime();
+    nextSpeakTime = zero;
+    for(std::pair<Component*,QDateTime> plugin: plugins)
     {
-        try
-        {
-            Component *c = loadComponent(("plugins/" + list.at(i).fileName()).toUtf8());
-            time_t cTime = c->nextCheckTime();
-            if(!nextSpeakTime || (cTime < nextSpeakTime && cTime > time(NULL)))
-                nextSpeakTime = cTime;
-            plugins.push_back(std::make_pair(c,c->nextCheckTime()));
-            pluginMenu->addAction(list.at(i).fileName());
-        }
-        catch(ComponentException e)
-        {
-            speaker.speak(("Unable to load plugin " + list.at(i).fileName() + '\n' + e.what()).toUtf8());
-        }
+        if(!plugin.first->isMuted() && (nextSpeakTime == zero || (plugin.second < nextSpeakTime && plugin.second > now)))
+            nextSpeakTime = plugin.second;
     }
-    if(pluginMenu->isEmpty())
-    {
-        speaker.speak("Unable to load any plugins.");
-    }
-    else
-    {
-        if(nextSpeakTime == 0)
-        {
-            nextSpeakTime = time(NULL) + 60;
-        }
-        whenToSpeak->setInterval((nextSpeakTime - time(NULL))*1000);
-        whenToSpeak->start();
-    }
+    if(nextSpeakTime == zero)
+        nextSpeakTime.setTime_t(time(NULL)+60);
+    whenToSpeak->setInterval(now.msecsTo(nextSpeakTime));
+    whenToSpeak->start();
     return pluginMenu;
 }
-
 
 void QCompanion::showingMenu()
 {
@@ -150,7 +148,7 @@ void QCompanion::hidingMenu()
 void QCompanion::updateNextFireText()
 {
     if(nextFire)
-        nextFire->setText("The next speech is in: " + QString::number(nextSpeakTime - time(NULL)) + " seconds");
+        nextFire->setText("The next speech is in: " + QString::number(QDateTime::currentDateTime().secsTo(nextSpeakTime)) + " seconds");
 }
 
 void QCompanion::speakClipboard()
