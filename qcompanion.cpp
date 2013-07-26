@@ -5,6 +5,11 @@
 #include "qcompanion.h"
 #include "ui_qcompanion.h"
 
+/*!
+ * \brief Constructs the UI and sets up timers
+ * \details Creates the tray, the icons, loads Components, and sets up all the connections.
+ * \param parent Used for Qt's memory management.
+ */
 QCompanion::QCompanion(QWidget *parent) :
     QDialog(parent),
     nextFire(nullptr),
@@ -57,16 +62,27 @@ QCompanion::QCompanion(QWidget *parent) :
 #endif
 }
 
+/*!
+ * \brief Destroys the QCompanion and all its members.
+ */
 QCompanion::~QCompanion()
 {
     delete ui;
 }
 
+/*!
+ * \brief Exits the application, Must be implemented as hiding the application could cause it to quit.
+ */
 void QCompanion::quit()
 {
-    exit(0);
+    QApplication::exit(0);
 }
 
+/*!
+ * \brief Reads components
+ * \details Looks at each component, and if it wants to be read, it sends it to the Speaker.
+ * It also looks for the component that wants to be read earliest, and schedules the next call to speak().
+ */
 void QCompanion::speak()
 {
     const QDateTime zero = QDateTime::fromTime_t(0);
@@ -96,6 +112,12 @@ void QCompanion::speak()
     updateNextFireText();
 }
 
+/*!
+ * \brief Loads all the components.
+ * \details Loads all the plugins and adds them to the main menu.
+ * Additionally it creates the timers for the screenshot logger and components.
+ * \return The main menu to be added to the tray.
+ */
 QMenu *QCompanion::loadPlugins()
 {
     QMenu *pluginMenu = new QMenu("Plugins",this);
@@ -134,23 +156,35 @@ QMenu *QCompanion::loadPlugins()
     return pluginMenu;
 }
 
+/*!
+ * \brief A trigger that starts updating the "Next Speech in X" dialog, as it would waste CPU to constantly update it.
+ */
 void QCompanion::showingMenu()
 {
     updateNextFire->setInterval(1000);
     updateNextFire->start();
 }
 
+/*!
+ * \brief A trigger that stops updating the "Next Speech in X" dialog, as it would waste CPU to constantly update it.
+ */
 void QCompanion::hidingMenu()
 {
     updateNextFire->stop();
 }
 
+/*!
+ * \brief Sets the menu item to indicate when the next speech will occur.
+ */
 void QCompanion::updateNextFireText()
 {
     if(nextFire)
         nextFire->setText("The next speech is in: " + QString::number(QDateTime::currentDateTime().secsTo(nextSpeakTime)) + " seconds");
 }
 
+/*!
+ * \brief Feeds the clipboard text into the Speaker.
+ */
 void QCompanion::speakClipboard()
 {
     QClipboard *board = QApplication::clipboard();
@@ -158,6 +192,9 @@ void QCompanion::speakClipboard()
     speaker.speak(text.toUtf8());
 }
 
+/*!
+ * \brief Toggles if the speaker should show notifications.
+ */
 void QCompanion::toggleNotifications()
 {
     if(speaker.isNotificationsEnabled())
@@ -172,6 +209,9 @@ void QCompanion::toggleNotifications()
     }
 }
 
+/*!
+ * \brief Toggles if the speaker should show read strings aloud.
+ */
 void QCompanion::toggleTTS()
 {
     if(speaker.isTTSEnabled())

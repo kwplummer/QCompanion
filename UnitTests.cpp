@@ -52,10 +52,10 @@ TEST(QSnapperTests, QSnapperStartsMuted)
     ASSERT_TRUE(Snapper.isMuted());
 }
 
-TEST(QSnapperTests, QSnapperHasTwoMenuItems)
+TEST(QSnapperTests, QSnapperHasThreeMenuItems)
 {
     QSnapper Snapper(nullptr);
-    ASSERT_EQ(2, Snapper.getMenuContents().size());
+    ASSERT_EQ(3, Snapper.getMenuContents().size());
 }
 
 TEST(QSnapperTests, QSnapperHasMuteActionChecked)
@@ -64,11 +64,23 @@ TEST(QSnapperTests, QSnapperHasMuteActionChecked)
     ASSERT_TRUE(Snapper.getMenuContents().at(1)->isChecked());
 }
 
-TEST(QSnapperTests, QSnapperNextSnapIsSixtySecondsLater)
+TEST(QSnapperTests, QSnapperHasNoNextTimeWhenDisabled)
 {
-    QDateTime nextTime = QDateTime::currentDateTime().addSecs(60);
     QSnapper Snapper(nullptr);
-    ASSERT_EQ(nextTime, Snapper.nextCheckTime());
+    bool wasEnabled = Snapper.isEnabled();
+    Snapper.enableSnapping(false);
+    ASSERT_EQ(QDateTime::fromTime_t(0),Snapper.nextCheckTime());
+    Snapper.setEnabled(wasEnabled);
+}
+
+TEST(QSnapperTests, QSnapperNextSnapIsSixtySecondsLaterWhenEnabled)
+{
+    QSnapper Snapper(nullptr);
+    bool wasEnabled = Snapper.isEnabled();
+    Snapper.enableSnapping(true);
+    QDateTime nextTime = QDateTime::currentDateTime().addSecs(60);
+    ASSERT_EQ(nextTime.toTime_t(), Snapper.nextCheckTime().toTime_t());
+    Snapper.setEnabled(wasEnabled);
 }
 
 TEST(QSnapperTests, QSnapperSaysSnap)

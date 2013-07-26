@@ -1,12 +1,16 @@
 #ifndef HOURREADER_H
 #define HOURREADER_H
 #include "component.h"
+
+/*!
+ * \brief Reads the time every hour
+ */
 class HourReader : public Component
 {
     Q_OBJECT
 public:
-    HourReader(QWidget *parent) : Component(parent) {}
-    virtual ~HourReader(){}
+    HourReader(QWidget *parent);
+    virtual ~HourReader();
     virtual QDateTime nextCheckTime() override;
     virtual QString getText() override;
 };
