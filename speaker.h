@@ -4,6 +4,7 @@
 #include <thread>
 //An interface to flite,
 //or if someday this is built in Windows, sapi
+//Consider libflite?
 class Speaker
 {
     tbb::concurrent_bounded_queue<std::string> queue;

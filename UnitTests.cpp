@@ -1,92 +1,125 @@
 #ifdef TEST
-#define BOOST_TEST_DYN_LINK
-#define BOOST_TEST_MAIN
-#include <boost/test/unit_test.hpp>
-#include <time.h>
-#include "component.h"
+#include <QApplication>
+#include <QAction>
+#include <QFile>
+#include <gtest/gtest.h>
 #include "speaker.h"
+#include "hourreader.h"
+#include "qsnapper.h"
 
-BOOST_AUTO_TEST_SUITE(SpeakerSuite)
-
-BOOST_AUTO_TEST_CASE(CanInvokeFlite)
+TEST(ComponentTests, HourReaderStartsUnmuted)
 {
-    Speaker s;
-    s.speak("");
-    BOOST_CHECK(s.finishSpeaking());
+    HourReader hr(nullptr);
+    ASSERT_FALSE(hr.isMuted());
 }
 
-BOOST_AUTO_TEST_SUITE_END()
-
-
-BOOST_AUTO_TEST_SUITE(Libs)
-
-BOOST_AUTO_TEST_CASE(LoadingBadComponentFails)
+TEST(ComponentTests, SetMuteWorks)
 {
-    BOOST_CHECK_THROW(loadComponent("null"),ComponentException)
+    HourReader hr(nullptr);
+    hr.getMenuContents().at(0)->trigger();
+    ASSERT_TRUE(hr.isMuted());
+    hr.getMenuContents().at(0)->trigger();
+    ASSERT_FALSE(hr.isMuted());
 }
 
-BOOST_AUTO_TEST_CASE(LoadingMockComponentWorks)
+TEST(HourReaderTests, HourReaderNextCheckTimeWorks)
 {
-    Component *mock = loadComponent("./libmock.so");
-    delete mock;
-}
+    HourReader hr(nullptr);
 
-BOOST_AUTO_TEST_CASE(CanCheckMockNextTime)
-{
-    Component *mock = loadComponent("./libmock.so");
-    BOOST_CHECK(mock->nextCheckTime() == 5);
-    delete mock;
-}
-
-BOOST_AUTO_TEST_CASE(MockHasRightText)
-{
-    Component *mock = loadComponent("./libmock.so");
-    BOOST_CHECK(mock->getText() == "this is a test.");
-}
-
-BOOST_AUTO_TEST_CASE(MockCanSpeak)
-{
-    Speaker s;
-    Component *mock = loadComponent("./libmock.so");
-    s.speak(mock->getText().c_str());
-    BOOST_CHECK(s.finishSpeaking());
-}
-
-BOOST_AUTO_TEST_SUITE_END()
-
-
-BOOST_AUTO_TEST_SUITE(HourReader)
-
-BOOST_AUTO_TEST_CASE(CanLoadHourReader)
-{
-    Component *hourReader = loadComponent("./libhourreader.so");
-    delete hourReader;
-}
-
-BOOST_AUTO_TEST_CASE(HourReaderCorrectlyReportsNextHour)
-{
-    Component *hourReader = loadComponent("./libhourreader.so");
     auto currentTime_t = time(NULL);
     tm *currentTime = localtime(&currentTime_t);
     ++currentTime->tm_hour;
     currentTime->tm_min=0;
     currentTime->tm_sec=0;
     currentTime->tm_min=0;
-    BOOST_CHECK(mktime(currentTime) == hourReader->nextCheckTime());
-    delete hourReader;
+
+    ASSERT_EQ(mktime(currentTime), hr.nextCheckTime().toTime_t());
 }
 
-BOOST_AUTO_TEST_CASE(HourReaderHasRightText)
+TEST(HourReaderTests, HourReaderGetTextWorks)
 {
-    Component *hourReader = loadComponent("./libhourreader.so");
+    HourReader hr(nullptr);
+
     auto currentTime_t = time(NULL);
     tm *currentTime = localtime(&currentTime_t);
-    auto ComparisonString =     "The time is now " +
-                                (currentTime->tm_hour > 10 ? std::to_string(currentTime->tm_hour) : '0' + std::to_string(currentTime->tm_hour))
-                                + " hundred hours";
-    BOOST_CHECK(ComparisonString == hourReader->getText());
+
+    ASSERT_EQ("The time is now " + QString::number(currentTime->tm_hour) + " hundred hours", hr.getText());
 }
 
-BOOST_AUTO_TEST_SUITE_END()
+TEST(QSnapperTests, QSnapperStartsMuted)
+{
+    QSnapper Snapper(nullptr);
+    ASSERT_TRUE(Snapper.isMuted());
+}
+
+TEST(QSnapperTests, QSnapperHasTwoMenuItems)
+{
+    QSnapper Snapper(nullptr);
+    ASSERT_EQ(2, Snapper.getMenuContents().size());
+}
+
+TEST(QSnapperTests, QSnapperHasMuteActionChecked)
+{
+    QSnapper Snapper(nullptr);
+    ASSERT_TRUE(Snapper.getMenuContents().at(1)->isChecked());
+}
+
+TEST(QSnapperTests, QSnapperNextSnapIsSixtySecondsLater)
+{
+    QDateTime nextTime = QDateTime::currentDateTime().addSecs(60);
+    QSnapper Snapper(nullptr);
+    ASSERT_EQ(nextTime, Snapper.nextCheckTime());
+}
+
+TEST(QSnapperTests, QSnapperSaysSnap)
+{
+    QSnapper Snapper(nullptr);
+    ASSERT_EQ("Snap", Snapper.getText());
+}
+
+TEST(QSnapperTests, QSnapperHasChangeSaveLocationMenuAction)
+{
+    QSnapper Snapper(nullptr);
+    ASSERT_EQ("Change Save Location", Snapper.getMenuContents().at(0)->text());
+}
+
+TEST(SpeakerTests, SpeakerStartsUnmuted)
+{
+    Speaker s("");
+    ASSERT_TRUE(s.isTTSEnabled());
+}
+
+TEST(SpeakerTests, SpeakerStartsWithNotificationsOn)
+{
+    Speaker s("");
+    ASSERT_TRUE(s.isNotificationsEnabled());
+}
+
+TEST(SpeakerTests, SpeakerCanBeMuted)
+{
+    Speaker s("");
+    s.setTTSEnabled(false);
+    ASSERT_FALSE(s.isTTSEnabled());
+}
+
+TEST(SpeakerTests, SpeakerCanDisableNotifications)
+{
+    Speaker s("");
+    s.setNotificationsEnabled(false);
+    ASSERT_FALSE(s.isNotificationsEnabled());
+}
+
+TEST(SpeakerTests, SpeakerCanSpeak)
+{
+    Speaker s("");
+    s.speak("");
+}
+
+int main(int argc, char **argv)
+{
+    QApplication a(argc, argv);
+    testing::InitGoogleTest(&argc,argv);
+    return RUN_ALL_TESTS();
+}
 
 #endif
