@@ -21,13 +21,6 @@ int main(int argc, char *argv[])
     QCompanion w;
     w.show();
     w.hide();
-    try
-    {
-        return a.exec();
-    }
-    catch(const char *c)
-    {
-        return 0;
-    }
+    return a.exec();
 }
 #endif
