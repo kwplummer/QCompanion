@@ -1,0 +1,4 @@
+<map id="QCompanion::speak" name="QCompanion::speak">
+<area shape="rect" id="node3" href="$classSpeaker.html#aaada8ae4a809d83e4da3f53a4c2c2929" title="Enqueues a const char * to be spoken on the next run of Speaker::readLoop. If there are any errors in..." alt="" coords="249,5,361,35"/>
+<area shape="rect" id="node5" href="$classQCompanion.html#ac2160546da97bd26667ec26eeb5f433f" title="Sets the menu item to indicate when the next speech will occur. " alt="" coords="195,59,416,88"/>
+</map>

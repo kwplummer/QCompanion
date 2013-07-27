@@ -1,0 +1,5 @@
+<map id="QSnapper::getMenuContents" name="QSnapper::getMenuContents">
+<area shape="rect" id="node3" href="$classComponent.html#a395fd44892060bfdb53c5701af009d44" title="Gets a list of menu items used for interacting with the component&#39;s features from the main menu..." alt="" coords="245,5,445,35"/>
+<area shape="rect" id="node5" href="$classQSnapper.html#a58f144e5343902ef50d9294206f1685b" title="Prompts the user to pick which folder the screenshots should be logged to. This is saved to settings..." alt="" coords="248,59,443,88"/>
+<area shape="rect" id="node7" href="$classQSnapper.html#adf7e955de015858d03dbc3114f1c5bdd" title="Sets if pictures should be taken. " alt="" coords="256,112,435,141"/>
+</map>

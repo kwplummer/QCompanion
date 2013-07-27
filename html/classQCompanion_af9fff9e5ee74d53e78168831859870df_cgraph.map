@@ -1,0 +1,8 @@
+<map id="QCompanion::loadPlugins" name="QCompanion::loadPlugins">
+<area shape="rect" id="node3" href="$classQSnapper.html#a5d9d22a163b3e78e44d414868b19cbcf" title="Gets the items the user will use to interact with the component. In addition to the default mute..." alt="" coords="228,57,417,87"/>
+<area shape="rect" id="node5" href="$classComponent.html#a395fd44892060bfdb53c5701af009d44" title="Gets a list of menu items used for interacting with the component&#39;s features from the main menu..." alt="" coords="467,5,667,35"/>
+<area shape="rect" id="node11" href="$classQSnapper.html#ae9c19c2bdf887eb4d78682cb8f16e2a5" title="Gets when the next picture will be taken. " alt="" coords="233,111,412,140"/>
+<area shape="rect" id="node14" href="$classHourReader.html#afcef647df91977a34afb0b9c4b4713a4" title="Gets when the component&#39;s text should be shown. " alt="" coords="227,164,419,193"/>
+<area shape="rect" id="node7" href="$classQSnapper.html#a58f144e5343902ef50d9294206f1685b" title="Prompts the user to pick which folder the screenshots should be logged to. This is saved to settings..." alt="" coords="469,59,664,88"/>
+<area shape="rect" id="node9" href="$classQSnapper.html#adf7e955de015858d03dbc3114f1c5bdd" title="Sets if pictures should be taken. " alt="" coords="477,112,656,141"/>
+</map>

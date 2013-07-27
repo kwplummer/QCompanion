@@ -1,0 +1,4 @@
+<map id="Component" name="Component">
+<area shape="rect" id="node5" href="$classHourReader.html" title="Reads the time every hour. " alt="" coords="5,160,96,189"/>
+<area shape="rect" id="node7" href="$classQSnapper.html" title="Provides screenshot logging. " alt="" coords="120,160,200,189"/>
+</map>
