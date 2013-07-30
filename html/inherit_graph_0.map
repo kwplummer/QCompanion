@@ -1,5 +1,7 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node3" href="$classComponent.html" title="Everything that has something to say derives from this. " alt="" coords="129,32,217,61"/>
-<area shape="rect" id="node5" href="$classHourReader.html" title="Reads the time every hour. " alt="" coords="268,5,359,35"/>
-<area shape="rect" id="node7" href="$classQSnapper.html" title="Provides screenshot logging. " alt="" coords="273,59,353,88"/>
+<area shape="rect" id="node3" href="$classComponent.html" title="Everything that has something to say derives from this. " alt="" coords="135,59,223,88"/>
+<area shape="rect" id="node11" href="$classWaiterWidget.html" title="A class representing an event that is being waited for. It notifies and shows UI elements related to ..." alt="" coords="128,112,229,141"/>
+<area shape="rect" id="node5" href="$classHourReader.html" title="Reads the time every hour. " alt="" coords="296,5,387,35"/>
+<area shape="rect" id="node7" href="$classQSnapper.html" title="Provides screenshot logging. " alt="" coords="301,59,381,88"/>
+<area shape="rect" id="node9" href="$classWaiterComponent.html" title="A componet that provides reminders for scheduled events. " alt="" coords="279,112,404,141"/>
 </map>

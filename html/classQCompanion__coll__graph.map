@@ -1,6 +1,6 @@
 <map id="QCompanion" name="QCompanion">
-<area shape="rect" id="node4" href="$classSpeaker.html" title="Offers a queue and an interface to flite and libnotify. " alt="" coords="99,191,168,220"/>
-<area shape="rect" id="node6" title="STL class. " alt="" coords="87,85,169,115"/>
-<area shape="rect" id="node8" href="$classQSnapper.html" title="Provides screenshot logging. " alt="" coords="192,191,272,220"/>
-<area shape="rect" id="node10" href="$classComponent.html" title="Everything that has something to say derives from this. " alt="" coords="193,85,281,115"/>
+<area shape="rect" id="node4" href="$classSpeaker.html" title="Offers a queue and an interface to flite and libnotify. " alt="" coords="99,181,168,211"/>
+<area shape="rect" id="node6" title="STL class. " alt="" coords="92,85,175,115"/>
+<area shape="rect" id="node8" href="$classQSnapper.html" title="Provides screenshot logging. " alt="" coords="192,181,272,211"/>
+<area shape="rect" id="node10" href="$classComponent.html" title="Everything that has something to say derives from this. " alt="" coords="272,85,360,115"/>
 </map>

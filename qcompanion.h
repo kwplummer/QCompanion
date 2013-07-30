@@ -2,9 +2,9 @@
 #define QCOMPANION_H
 #include <QDialog>
 #include <QSystemTrayIcon>
-#include "hourreader.h"
-#include "qsnapper.h"
 #include "speaker.h"
+#include "qsnapper.h"
+
 namespace Ui {
 class QCompanion;
 }
@@ -21,13 +21,14 @@ public:
     virtual ~QCompanion();
 public slots:
     void quit();
-    void speak();
     void showingMenu();
     void hidingMenu();
     void updateNextFireText();
     void speakClipboard();
     void toggleNotifications();
     void toggleTTS();
+    void sendToSpeaker(QString sayMe);
+    void calcuateNextSpeakTime();
 private:
     ///\brief The path to where the icon is stored.
     QString iconPath;
@@ -37,9 +38,9 @@ private:
     ///\brief A menu item stating when the next component wants to be read.
     QAction *nextFire;
     ///\brief A list of plugins, consisting of the component and when it wants to be read.
-    std::vector<std::pair<Component*,QDateTime>> plugins;
+    std::vector<Component*> plugins;
     ///\brief A timer for when all the components should be queried and, if it's time, should be shown.
-    QTimer *whenToSpeak;
+    QTimer *whenNextSpeakingOccurs;
     ///\brief A timer for when the "Next Speech is in X seconds" dialog should be updated
     QTimer *updateNextFire;
     ///\brief The class that manages interfacing with the text to speech and notification systems.

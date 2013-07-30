@@ -4,6 +4,8 @@
 #include <QMenu>
 #include "qcompanion.h"
 #include "ui_qcompanion.h"
+#include "waitercomponent.h"
+#include "hourreader.h"
 
 /*!
  * \brief Constructs the UI and sets up timers
@@ -17,7 +19,7 @@ QCompanion::QCompanion(QWidget *parent) :
     ui(new Ui::QCompanion)
 {
     ui->setupUi(this);
-    whenToSpeak = new QTimer(this);
+    whenNextSpeakingOccurs = new QTimer(this);
     updateNextFire = new QTimer(this);
     iconPath = QCoreApplication::applicationDirPath()+"/murasaki.png";
     tray = new QSystemTrayIcon(QIcon(iconPath),this);
@@ -54,7 +56,7 @@ QCompanion::QCompanion(QWidget *parent) :
     connect(toggleTTSAction,SIGNAL(triggered()),this,SLOT(toggleTTS()));
     connect(toggleNotificationsAction,SIGNAL(triggered()),this,SLOT(toggleNotifications()));
     connect(speakClipboardAction,SIGNAL(triggered()),this,SLOT(speakClipboard()));
-    connect(whenToSpeak,SIGNAL(timeout()),this,SLOT(speak()));
+    connect(whenNextSpeakingOccurs,SIGNAL(timeout()),this,SLOT(calcuateNextSpeakTime()));
     connect(updateNextFire,SIGNAL(timeout()),this,SLOT(updateNextFireText()));
     connect(mainMenu,SIGNAL(aboutToShow()),this,SLOT(showingMenu()));
     connect(mainMenu,SIGNAL(aboutToHide()),this,SLOT(hidingMenu()));
@@ -79,40 +81,6 @@ void QCompanion::quit()
 }
 
 /*!
- * \brief Reads components
- * \details Looks at each component, and if it wants to be read, it sends it to the Speaker.
- * It also looks for the component that wants to be read earliest, and schedules the next call to speak().
- */
-void QCompanion::speak()
-{
-    const QDateTime zero = QDateTime::fromTime_t(0);
-    const QDateTime now = QDateTime::currentDateTime();
-    nextSpeakTime = zero;
-    try
-    {
-        for(std::pair<Component*,QDateTime> &p: plugins)
-        {
-            if(p.second <= now && !p.first->isMuted())
-                speaker.speak(p.first->getText().toUtf8());
-            QDateTime cTime = p.second = p.first->nextCheckTime();
-            if(!p.first->isMuted() && (nextSpeakTime == zero || (cTime < nextSpeakTime && cTime > now)))
-                nextSpeakTime = cTime;
-        }
-    }
-    catch(std::exception e)
-    {
-        speaker.speak(e.what());
-    }
-    if(nextSpeakTime == zero)
-    {
-        nextSpeakTime.setTime_t(time(NULL)+60);
-    }
-    whenToSpeak->setInterval(now.msecsTo(nextSpeakTime));
-    whenToSpeak->start();
-    updateNextFireText();
-}
-
-/*!
  * \brief Loads all the components.
  * \details Loads all the plugins and adds them to the main menu.
  * Additionally it creates the timers for the screenshot logger and components.
@@ -125,35 +93,50 @@ QMenu *QCompanion::loadPlugins()
     snapper = new QSnapper(this);
     QMenu *snapperMenu = new QMenu("QSnapper",this);
     snapperMenu->addActions(snapper->getMenuContents());
-    plugins.push_back(std::make_pair(snapper,snapper->nextCheckTime()));
+    plugins.push_back(snapper);
     pluginMenu->addMenu(snapperMenu);
-
-    QTimer *snapTimer = new QTimer(this);
-    connect(snapTimer,SIGNAL(timeout()),snapper,SLOT(snap()));
-    snapTimer->setInterval(1000*60);
-    snapTimer->setSingleShot(false);
-    snapTimer->start();
+    connect(snapper,SIGNAL(wantsToSpeak(QString)),this,SLOT(sendToSpeaker(QString)));
 
     HourReader *hr = new HourReader(this);
     QMenu *hourMenu = new QMenu("HourReader",this);
     hourMenu->addActions(hr->getMenuContents());
-    plugins.push_back(std::make_pair(hr,hr->nextCheckTime()));
+    plugins.push_back(hr);
     pluginMenu->addMenu(hourMenu);
+    connect(hr,SIGNAL(wantsToSpeak(QString)),this,SLOT(sendToSpeaker(QString)));
 
+    WaiterComponent *waiter = new WaiterComponent(this);
+    QMenu *waiterMenu = new QMenu("QWaiter",this);
+    waiterMenu->addActions(waiter->getMenuContents());
+    plugins.push_back(waiter);
+    pluginMenu->addMenu(waiterMenu);
+    connect(waiter,SIGNAL(changeTimers()),this,SLOT(calcuateNextSpeakTime()));
+    connect(waiter,SIGNAL(wantsToSpeak(QString)),this,SLOT(sendToSpeaker(QString)));
 
+    calcuateNextSpeakTime();
+    return pluginMenu;
+}
+
+/*!
+ * \brief Checks each component for when it will want to speak next, and then updates the menu timer to signify when that is.
+ */
+void QCompanion::calcuateNextSpeakTime()
+{
     const QDateTime zero = QDateTime::fromTime_t(0);
     const QDateTime now = QDateTime::currentDateTime();
     nextSpeakTime = zero;
-    for(std::pair<Component*,QDateTime> plugin: plugins)
+    for(Component *plugin: plugins)
     {
-        if(!plugin.first->isMuted() && (nextSpeakTime == zero || (plugin.second < nextSpeakTime && plugin.second > now)))
-            nextSpeakTime = plugin.second;
+        const QDateTime pluginTime = plugin->nextCheckTime();
+        if(!plugin->isMuted() && (nextSpeakTime == zero || (pluginTime < nextSpeakTime && pluginTime > now)))
+        {
+            nextSpeakTime = pluginTime;
+        }
     }
     if(nextSpeakTime == zero)
         nextSpeakTime.setTime_t(time(NULL)+60);
-    whenToSpeak->setInterval(now.msecsTo(nextSpeakTime));
-    whenToSpeak->start();
-    return pluginMenu;
+    whenNextSpeakingOccurs->setInterval(now.msecsTo(nextSpeakTime));
+    whenNextSpeakingOccurs->start();
+    updateNextFireText();
 }
 
 /*!
@@ -224,4 +207,13 @@ void QCompanion::toggleTTS()
         speaker.setTTSEnabled(true);
         toggleTTSAction->setText("Enable Text To Speech");
     }
+}
+
+/*!
+ * \brief Sends text to the speaker
+ * \param[in] sayMe What the speaker should say/notify.
+ */
+void QCompanion::sendToSpeaker(QString sayMe)
+{
+    speaker.speak(sayMe.toUtf8());
 }

@@ -23,15 +23,22 @@ SOURCES += main.cpp\
     component.cpp \
     speaker.cpp \
     hourreader.cpp \
-    qsnapper.cpp
+    qsnapper.cpp \
+    waiterdialog.cpp \
+    waiterwidget.cpp \
+    waitercomponent.cpp
 
 HEADERS  += qcompanion.h \
     component.h \
     speaker.h \
     hourreader.h \
-    qsnapper.h
+    qsnapper.h \
+    waiterdialog.h \
+    waiterwidget.h \
+    waitercomponent.h
 
-FORMS    += qcompanion.ui
+FORMS    += qcompanion.ui \
+    waiterdialog.ui
 
 QMAKE_CXXFLAGS += -std=c++11
 

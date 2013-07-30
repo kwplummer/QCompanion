@@ -84,6 +84,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!-- top -->
 <div class="header">
   <div class="summary">
+<a href="#signals">Signals</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pro-attribs">Protected Attributes</a> &#124;
 <a href="#pri-slots">Private Slots</a> &#124;
@@ -102,7 +103,7 @@ Inheritance diagram for Component:</div>
 <div class="dyncontent">
 <div class="center"><img src="classComponent__inherit__graph.png" border="0" usemap="#Component_inherit__map" alt="Inheritance graph"/></div>
 <map name="Component_inherit__map" id="Component_inherit__map">
-<area shape="rect" id="node5" href="classHourReader.html" title="Reads the time every hour. " alt="" coords="5,160,96,189"/><area shape="rect" id="node7" href="classQSnapper.html" title="Provides screenshot logging. " alt="" coords="120,160,200,189"/></map>
+<area shape="rect" id="node5" href="classHourReader.html" title="Reads the time every hour. " alt="" coords="5,160,96,189"/><area shape="rect" id="node7" href="classQSnapper.html" title="Provides screenshot logging. " alt="" coords="120,160,200,189"/><area shape="rect" id="node9" href="classWaiterComponent.html" title="A componet that provides reminders for scheduled events. " alt="" coords="224,160,349,189"/></map>
 <center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <div class="dynheader">
 Collaboration diagram for Component:</div>
@@ -110,6 +111,13 @@ Collaboration diagram for Component:</div>
 <div class="center"><img src="classComponent__coll__graph.png" border="0" usemap="#Component_coll__map" alt="Collaboration graph"/></div>
 <center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="signals"></a>
+Signals</h2></td></tr>
+<tr class="memitem:a6cce92e0adf647a5b61408b93ab3e53f"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a6cce92e0adf647a5b61408b93ab3e53f"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classComponent.html#a6cce92e0adf647a5b61408b93ab3e53f">wantsToSpeak</a> (QString)</td></tr>
+<tr class="memdesc:a6cce92e0adf647a5b61408b93ab3e53f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Emitted when the component wants to send text to the <a class="el" href="classSpeaker.html" title="Offers a queue and an interface to flite and libnotify. ">Speaker</a>. <br/></td></tr>
+<tr class="separator:a6cce92e0adf647a5b61408b93ab3e53f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a94f0867c31676a7a10a91a49854395ca"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classComponent.html#a94f0867c31676a7a10a91a49854395ca">Component</a> (QWidget *parent)</td></tr>
@@ -117,10 +125,6 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a94f0867c31676a7a10a91a49854395ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7dff0e46bd511c37e390254329a3a5ce"><td class="memItemLeft" align="right" valign="top">virtual QDateTime&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classComponent.html#a7dff0e46bd511c37e390254329a3a5ce">nextCheckTime</a> ()=0</td></tr>
 <tr class="separator:a7dff0e46bd511c37e390254329a3a5ce"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0e9d5eed6e8e6ebdb21dd229816a9dd7"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a0e9d5eed6e8e6ebdb21dd229816a9dd7"></a>
-virtual QString&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classComponent.html#a0e9d5eed6e8e6ebdb21dd229816a9dd7">getText</a> ()=0</td></tr>
-<tr class="memdesc:a0e9d5eed6e8e6ebdb21dd229816a9dd7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the text to be spoken. <br/></td></tr>
-<tr class="separator:a0e9d5eed6e8e6ebdb21dd229816a9dd7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a395fd44892060bfdb53c5701af009d44"><td class="memItemLeft" align="right" valign="top">virtual QList&lt; QAction * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classComponent.html#a395fd44892060bfdb53c5701af009d44">getMenuContents</a> ()</td></tr>
 <tr class="memdesc:a395fd44892060bfdb53c5701af009d44"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets a list of menu items used for interacting with the component's features from the main menu.  <a href="#a395fd44892060bfdb53c5701af009d44">More...</a><br/></td></tr>
 <tr class="separator:a395fd44892060bfdb53c5701af009d44"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -130,6 +134,10 @@ virtual QString&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>
+<tr class="memitem:aebcb38c15b7dc55757cdc84df88d429b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aebcb38c15b7dc55757cdc84df88d429b"></a>
+QTimer&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classComponent.html#aebcb38c15b7dc55757cdc84df88d429b">whenToSpeak</a></td></tr>
+<tr class="memdesc:aebcb38c15b7dc55757cdc84df88d429b"><td class="mdescLeft">&#160;</td><td class="mdescRight">A timer used by deriving classes for scheduled events. <br/></td></tr>
+<tr class="separator:aebcb38c15b7dc55757cdc84df88d429b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afe19638193daf7294ab65cd3368b8249"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="afe19638193daf7294ab65cd3368b8249"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classComponent.html#afe19638193daf7294ab65cd3368b8249">muted</a></td></tr>
 <tr class="memdesc:afe19638193daf7294ab65cd3368b8249"><td class="mdescLeft">&#160;</td><td class="mdescRight">Indicates if this component will be checked for getText, or if it will be skipped over. <br/></td></tr>
@@ -147,8 +155,10 @@ Private Slots</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Everything that has something to say derives from this. </p>
-<p>This abstract class provides an interface for all parts of the program that speak or notify. Also it allows for it to be muted so that they will be excluded from speaking. It provides a list of menu options, that can be overridden as well as <a class="el" href="classComponent.html#a7dff0e46bd511c37e390254329a3a5ce">nextCheckTime()</a> which indicates when the component wants to speak next, as well as <a class="el" href="classComponent.html#a0e9d5eed6e8e6ebdb21dd229816a9dd7" title="Gets the text to be spoken. ">getText()</a>, which returns the message to speak/show. </p>
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000001">Todo:</a></b></dt><dd>Todo: Add QWaiter component, Qlipper component. </dd></dl>
+<p>This abstract class provides an interface for all parts of the program that speak or notify. Also it allows for it to be muted so that they will be excluded from speaking. It provides a list of menu options, that can be overridden as well as <a class="el" href="classComponent.html#a7dff0e46bd511c37e390254329a3a5ce">nextCheckTime()</a> which indicates when the component wants to speak next, as well as getText(), which returns the message to speak/show. </p>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000001">Todo:</a></b></dt><dd><p class="startdd">Add QWaiter component, Qlipper component. </p>
+<p class="enddd">Add QWikiReader to read random wiki "Did you know"s. </p>
+</dd></dl>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a class="anchor" id="a94f0867c31676a7a10a91a49854395ca"></a>
 <div class="memitem">
@@ -208,7 +218,7 @@ Here is the call graph for this function:</div>
 <p>Gets a list of menu items used for interacting with the component's features from the main menu. </p>
 <dl class="section return"><dt>Returns</dt><dd>The list to be added to the main menu. </dd></dl>
 
-<p>Reimplemented in <a class="el" href="classQSnapper.html#a5d9d22a163b3e78e44d414868b19cbcf">QSnapper</a>.</p>
+<p>Reimplemented in <a class="el" href="classQSnapper.html#a5d9d22a163b3e78e44d414868b19cbcf">QSnapper</a>, and <a class="el" href="classWaiterComponent.html#a72eb9a1ffa92e689247b64b861ba8e52">WaiterComponent</a>.</p>
 
 </div>
 </div>
@@ -252,7 +262,7 @@ Here is the call graph for this function:</div>
 </div><div class="memdoc">
 <dl class="section note"><dt>Note</dt><dd>While <a class="el" href="classComponent.html#a7dff0e46bd511c37e390254329a3a5ce">nextCheckTime()</a> is not const (you can change state), it may be called many times before <a class="el" href="classSpeaker.html#aaada8ae4a809d83e4da3f53a4c2c2929">Speaker::speak</a> is called. You should not do something like increment and return a time by 60 seconds, as you'll never get called. However, the last value returned is always checked before each call of <a class="el" href="classComponent.html#a7dff0e46bd511c37e390254329a3a5ce">nextCheckTime()</a>. </dd></dl>
 
-<p>Implemented in <a class="el" href="classQSnapper.html#ae9c19c2bdf887eb4d78682cb8f16e2a5">QSnapper</a>, and <a class="el" href="classHourReader.html#afcef647df91977a34afb0b9c4b4713a4">HourReader</a>.</p>
+<p>Implemented in <a class="el" href="classQSnapper.html#ae9c19c2bdf887eb4d78682cb8f16e2a5">QSnapper</a>, <a class="el" href="classWaiterComponent.html#a278e6cdcaf2a4d34e7edb4ad18e90a0c">WaiterComponent</a>, and <a class="el" href="classHourReader.html#afcef647df91977a34afb0b9c4b4713a4">HourReader</a>.</p>
 
 </div>
 </div>
@@ -295,7 +305,7 @@ Here is the call graph for this function:</div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Jul 25 2013 21:57:57 for QCompanion by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Jul 30 2013 15:56:29 for QCompanion by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.4
 </small></address>

@@ -9,6 +9,7 @@
  * \details Takes a picture every minute. If the picture is different from the last one, it saves it with the time taken.
  * This has two enable functions. One which toggles taking pictures, the other toggles speaking.
  * Additionally it defaults to muted, as the user likely doesn't want to hear "snap" every minute.
+ * \todo Add signal for "Time changed" which will refresh timer, used for when component wants to speak earlier than normal.
  */
 class QSnapper : public Component
 {
@@ -28,6 +29,7 @@ class QSnapper : public Component
     ///\brief Indicated whether this component is on and taking pictures.
     bool canSnap;
 private slots:
+    void emitSpeak();
     void changeSaveFolder();
 public slots:
     void snap();
@@ -36,7 +38,7 @@ public:
     QSnapper(QWidget *parent);
     virtual ~QSnapper();
     virtual QDateTime nextCheckTime() override;
-    virtual QString getText() override;
+    QString getText();
     virtual QList<QAction*> getMenuContents() override;
     bool isEnabled();
 };

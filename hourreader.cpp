@@ -1,6 +1,7 @@
 #include "hourreader.h"
 #include <QDateTime>
 #include <QString>
+#include <QTimer>
 
 /*!
  * \brief Constructs the HourReader and its superclass. Does nothing interesting.
@@ -8,6 +9,10 @@
  */
 HourReader::HourReader(QWidget *parent): Component(parent)
 {
+    whenToSpeak.setSingleShot(false);
+    whenToSpeak.setInterval(QDateTime::currentDateTime().msecsTo(nextCheckTime()));
+    connect(&whenToSpeak,SIGNAL(timeout()),this,SLOT(emitSpeak()));
+    whenToSpeak.start();
 }
 
 /*!
@@ -37,7 +42,18 @@ QDateTime HourReader::nextCheckTime()
  */
 QString HourReader::getText()
 {
+    QString debug = "The time is now " + QTime::currentTime().toString("HH") + " hundred hours";
     return("The time is now " + QTime::currentTime().toString("HH") + " hundred hours");
 }
 
+/*!
+ * \brief Sends the hour to the Speaker, also resets the timer for the next hour
+ */
+void HourReader::emitSpeak()
+{
+    whenToSpeak.setInterval(QDateTime::currentDateTime().msecsTo(nextCheckTime()));
+    whenToSpeak.start();
+    if(!muted)
+        emit wantsToSpeak(getText());
+}
 

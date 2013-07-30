@@ -13,6 +13,10 @@ Component::Component(QWidget *parent)  : QWidget(parent), muted(false)
     connect(muteAction,SIGNAL(triggered(bool)),this,SLOT(setMute(bool)));
 }
 
+Component::~Component()
+{
+}
+
 /*!
  * \brief Sets if the component should be in the list of components to speak and wait for.
  * \param[in] mute If the component should be muted.

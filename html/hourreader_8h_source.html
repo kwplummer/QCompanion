@@ -91,18 +91,20 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="line"><a name="l00008"></a><span class="lineno"><a class="code" href="classHourReader.html">    8</a></span>&#160;<span class="keyword">class </span><a class="code" href="classHourReader.html" title="Reads the time every hour. ">HourReader</a> : <span class="keyword">public</span> <a class="code" href="classComponent.html" title="Everything that has something to say derives from this. ">Component</a></div>
 <div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;{</div>
 <div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;    Q_OBJECT</div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;    <a class="code" href="classHourReader.html#a0e889ec6f1ad9912bb7e8388c5be5883" title="Constructs the HourReader and its superclass. Does nothing interesting. ">HourReader</a>(QWidget *parent);</div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;    <span class="keyword">virtual</span> <a class="code" href="classHourReader.html#a631320dd72065d91c0c7c756e8bf54ca" title="Destroys the HourReader, does nothing interesting. ">~HourReader</a>();</div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;    <span class="keyword">virtual</span> QDateTime <a class="code" href="classHourReader.html#afcef647df91977a34afb0b9c4b4713a4" title="Gets when the component&#39;s text should be shown. ">nextCheckTime</a>() <span class="keyword">override</span>;</div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;    <span class="keyword">virtual</span> QString <a class="code" href="classHourReader.html#a05c23d4b1a492c0eb5f156a28a5f161c" title="The current hour. ">getText</a>() <span class="keyword">override</span>;</div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;};</div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;</div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="preprocessor">#endif // HOURREADER_H</span></div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="keyword">private</span> slots:</div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classHourReader.html#aa37d286d3eca534d6a5241a75426dc5f" title="Sends the hour to the Speaker, also resets the timer for the next hour. ">emitSpeak</a>();</div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;    <a class="code" href="classHourReader.html#a0e889ec6f1ad9912bb7e8388c5be5883" title="Constructs the HourReader and its superclass. Does nothing interesting. ">HourReader</a>(QWidget *parent);</div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;    <span class="keyword">virtual</span> <a class="code" href="classHourReader.html#a631320dd72065d91c0c7c756e8bf54ca" title="Destroys the HourReader, does nothing interesting. ">~HourReader</a>();</div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;    <span class="keyword">virtual</span> QDateTime <a class="code" href="classHourReader.html#afcef647df91977a34afb0b9c4b4713a4" title="Gets when the component&#39;s text should be shown. ">nextCheckTime</a>() <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;    QString <a class="code" href="classHourReader.html#afe5138a727bde3bbb9982faa951ad6ba" title="The current hour. ">getText</a>();</div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;};</div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="preprocessor">#endif // HOURREADER_H</span></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Jul 25 2013 21:57:57 for QCompanion by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Jul 30 2013 15:56:29 for QCompanion by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.4
 </small></address>

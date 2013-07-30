@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['plugins',['plugins',['../classQCompanion.html#aad8d0b2c345dbfeb6f424c3a5133fd56',1,'QCompanion']]]
+  ['plugins',['plugins',['../classQCompanion.html#a53a306679550fbe1e71d92d0b6a24497',1,'QCompanion']]],
+  ['progress',['progress',['../classWaiterWidget.html#a71b28e782241922c071679f2368150d2',1,'WaiterWidget']]]
 ];

@@ -135,9 +135,9 @@ virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="c
 <tr class="memitem:ae9c19c2bdf887eb4d78682cb8f16e2a5"><td class="memItemLeft" align="right" valign="top">virtual QDateTime&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classQSnapper.html#ae9c19c2bdf887eb4d78682cb8f16e2a5">nextCheckTime</a> () override</td></tr>
 <tr class="memdesc:ae9c19c2bdf887eb4d78682cb8f16e2a5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets when the next picture will be taken.  <a href="#ae9c19c2bdf887eb4d78682cb8f16e2a5">More...</a><br/></td></tr>
 <tr class="separator:ae9c19c2bdf887eb4d78682cb8f16e2a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:affe63f7aba99ec3781bc773f97aa4be5"><td class="memItemLeft" align="right" valign="top">virtual QString&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classQSnapper.html#affe63f7aba99ec3781bc773f97aa4be5">getText</a> () override</td></tr>
-<tr class="memdesc:affe63f7aba99ec3781bc773f97aa4be5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets what to say aloud and notify.  <a href="#affe63f7aba99ec3781bc773f97aa4be5">More...</a><br/></td></tr>
-<tr class="separator:affe63f7aba99ec3781bc773f97aa4be5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a22ca59b88ad07bc755b887d40e75bc2e"><td class="memItemLeft" align="right" valign="top">QString&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classQSnapper.html#a22ca59b88ad07bc755b887d40e75bc2e">getText</a> ()</td></tr>
+<tr class="memdesc:a22ca59b88ad07bc755b887d40e75bc2e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets what to say aloud and notify.  <a href="#a22ca59b88ad07bc755b887d40e75bc2e">More...</a><br/></td></tr>
+<tr class="separator:a22ca59b88ad07bc755b887d40e75bc2e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5d9d22a163b3e78e44d414868b19cbcf"><td class="memItemLeft" align="right" valign="top">virtual QList&lt; QAction * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classQSnapper.html#a5d9d22a163b3e78e44d414868b19cbcf">getMenuContents</a> () override</td></tr>
 <tr class="memdesc:a5d9d22a163b3e78e44d414868b19cbcf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the items the user will use to interact with the component. In addition to the default mute, <a class="el" href="classQSnapper.html" title="Provides screenshot logging. ">QSnapper</a> also provides the ability to change save locations, and toggle taking pictures.  <a href="#a5d9d22a163b3e78e44d414868b19cbcf">More...</a><br/></td></tr>
 <tr class="separator:a5d9d22a163b3e78e44d414868b19cbcf"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -154,6 +154,10 @@ virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="c
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-slots"></a>
 Private Slots</h2></td></tr>
+<tr class="memitem:a617ef84ddc98901f530efc2114a53dba"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a617ef84ddc98901f530efc2114a53dba"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classQSnapper.html#a617ef84ddc98901f530efc2114a53dba">emitSpeak</a> ()</td></tr>
+<tr class="memdesc:a617ef84ddc98901f530efc2114a53dba"><td class="mdescLeft">&#160;</td><td class="mdescRight">Takes a picture, and if unmuted says "Snap". <br/></td></tr>
+<tr class="separator:a617ef84ddc98901f530efc2114a53dba"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a58f144e5343902ef50d9294206f1685b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a58f144e5343902ef50d9294206f1685b"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classQSnapper.html#a58f144e5343902ef50d9294206f1685b">changeSaveFolder</a> ()</td></tr>
 <tr class="memdesc:a58f144e5343902ef50d9294206f1685b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prompts the user to pick which folder the screenshots should be logged to. This is saved to settings, and persists between runs. <br/></td></tr>
@@ -189,7 +193,16 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="inherited"></a>
 Additional Inherited Members</h2></td></tr>
+<tr class="inherit_header signals_classComponent"><td colspan="2" onclick="javascript:toggleInherit('signals_classComponent')"><img src="closed.png" alt="-"/>&#160;Signals inherited from <a class="el" href="classComponent.html">Component</a></td></tr>
+<tr class="memitem:a6cce92e0adf647a5b61408b93ab3e53f inherit signals_classComponent"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a6cce92e0adf647a5b61408b93ab3e53f"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classComponent.html#a6cce92e0adf647a5b61408b93ab3e53f">wantsToSpeak</a> (QString)</td></tr>
+<tr class="memdesc:a6cce92e0adf647a5b61408b93ab3e53f inherit signals_classComponent"><td class="mdescLeft">&#160;</td><td class="mdescRight">Emitted when the component wants to send text to the <a class="el" href="classSpeaker.html" title="Offers a queue and an interface to flite and libnotify. ">Speaker</a>. <br/></td></tr>
+<tr class="separator:a6cce92e0adf647a5b61408b93ab3e53f inherit signals_classComponent"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pro_attribs_classComponent"><td colspan="2" onclick="javascript:toggleInherit('pro_attribs_classComponent')"><img src="closed.png" alt="-"/>&#160;Protected Attributes inherited from <a class="el" href="classComponent.html">Component</a></td></tr>
+<tr class="memitem:aebcb38c15b7dc55757cdc84df88d429b inherit pro_attribs_classComponent"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aebcb38c15b7dc55757cdc84df88d429b"></a>
+QTimer&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classComponent.html#aebcb38c15b7dc55757cdc84df88d429b">whenToSpeak</a></td></tr>
+<tr class="memdesc:aebcb38c15b7dc55757cdc84df88d429b inherit pro_attribs_classComponent"><td class="mdescLeft">&#160;</td><td class="mdescRight">A timer used by deriving classes for scheduled events. <br/></td></tr>
+<tr class="separator:aebcb38c15b7dc55757cdc84df88d429b inherit pro_attribs_classComponent"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afe19638193daf7294ab65cd3368b8249 inherit pro_attribs_classComponent"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="afe19638193daf7294ab65cd3368b8249"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classComponent.html#afe19638193daf7294ab65cd3368b8249">muted</a></td></tr>
 <tr class="memdesc:afe19638193daf7294ab65cd3368b8249 inherit pro_attribs_classComponent"><td class="mdescLeft">&#160;</td><td class="mdescRight">Indicates if this component will be checked for getText, or if it will be skipped over. <br/></td></tr>
@@ -202,6 +215,7 @@ QAction *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href=
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Provides screenshot logging. </p>
 <p>Takes a picture every minute. If the picture is different from the last one, it saves it with the time taken. This has two enable functions. One which toggles taking pictures, the other toggles speaking. Additionally it defaults to muted, as the user likely doesn't want to hear "snap" every minute. </p>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000002">Todo:</a></b></dt><dd>Add signal for "Time changed" which will refresh timer, used for when component wants to speak earlier than normal. </dd></dl>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a class="anchor" id="a9f456eeb99238559274a73e547833dbd"></a>
 <div class="memitem">
@@ -225,6 +239,15 @@ QAction *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href=
   </table>
   </dd>
 </dl>
+
+<p><div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="classQSnapper_a9f456eeb99238559274a73e547833dbd_cgraph.png" border="0" usemap="#classQSnapper_a9f456eeb99238559274a73e547833dbd_cgraph" alt=""/></div>
+<map name="classQSnapper_a9f456eeb99238559274a73e547833dbd_cgraph" id="classQSnapper_a9f456eeb99238559274a73e547833dbd_cgraph">
+<area shape="rect" id="node3" href="classQSnapper.html#a617ef84ddc98901f530efc2114a53dba" title="Takes a picture, and if unmuted says &quot;Snap&quot;. " alt="" coords="201,32,351,61"/><area shape="rect" id="node5" href="classQSnapper.html#a6cd1e8035a60dd2ab86edb0fc27a6e5d" title="Takes a picture. " alt="" coords="409,5,524,35"/><area shape="rect" id="node9" href="classQSnapper.html#a22ca59b88ad07bc755b887d40e75bc2e" title="Gets what to say aloud and notify. " alt="" coords="401,59,532,88"/><area shape="rect" id="node7" href="classQSnapper.html#a6185cf6dd734554112aaa2f80ca8ca10" title="Gets where the image should be saved next. " alt="" coords="583,5,772,35"/></map>
+</div>
+</p>
 
 </div>
 </div>
@@ -325,12 +348,9 @@ Here is the call graph for this function:</div>
 
 </div>
 </div>
-<a class="anchor" id="affe63f7aba99ec3781bc773f97aa4be5"></a>
+<a class="anchor" id="a22ca59b88ad07bc755b887d40e75bc2e"></a>
 <div class="memitem">
 <div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">QString QSnapper::getText </td>
@@ -339,17 +359,10 @@ Here is the call graph for this function:</div>
           <td></td>
         </tr>
       </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
-  </tr>
-</table>
 </div><div class="memdoc">
 
 <p>Gets what to say aloud and notify. </p>
 <dl class="section return"><dt>Returns</dt><dd>The word "Snap" </dd></dl>
-
-<p>Implements <a class="el" href="classComponent.html#a0e9d5eed6e8e6ebdb21dd229816a9dd7">Component</a>.</p>
 
 </div>
 </div>
@@ -466,7 +479,7 @@ Here is the call graph for this function:</div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Jul 25 2013 21:57:57 for QCompanion by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Jul 30 2013 15:56:29 for QCompanion by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.4
 </small></address>

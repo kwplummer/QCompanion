@@ -6,6 +6,7 @@
 #include "speaker.h"
 #include "hourreader.h"
 #include "qsnapper.h"
+#include "waiterwidget.h"
 
 TEST(ComponentTests, HourReaderStartsUnmuted)
 {
@@ -43,7 +44,9 @@ TEST(HourReaderTests, HourReaderGetTextWorks)
     auto currentTime_t = time(NULL);
     tm *currentTime = localtime(&currentTime_t);
 
-    ASSERT_EQ("The time is now " + QString::number(currentTime->tm_hour) + " hundred hours", hr.getText());
+    QString hour = currentTime->tm_hour > 10 ? "" + QString::number(currentTime->tm_hour) : "0" + QString::number(currentTime->tm_hour);
+    QString test = "The time is now " + hour + " hundred hours";
+    ASSERT_EQ("The time is now " + hour + " hundred hours", hr.getText());
 }
 
 TEST(QSnapperTests, QSnapperStartsMuted)
@@ -125,6 +128,42 @@ TEST(SpeakerTests, SpeakerCanSpeak)
 {
     Speaker s("");
     s.speak("");
+}
+
+class WaiterWidgetTests : public ::testing::Test
+{
+protected:
+    QDateTime test;
+    double range;
+    virtual void SetUp() override
+    {
+        test = QDateTime::fromTime_t(256);
+        range = 1000;
+    }
+};
+
+TEST_F(WaiterWidgetTests, MSecsIsAccurate)
+{
+    WaiterWidget w(nullptr,test.date(),test.time(),"");
+    ASSERT_EQ(256000,w.getMsecs());
+}
+
+TEST_F(WaiterWidgetTests, ToStringWithNoTitleWorks)
+{
+    WaiterWidget w(nullptr,test.date(),test.time(),"");
+    ASSERT_EQ("NULL 256000",w.toLoggableString());
+}
+
+TEST_F(WaiterWidgetTests, ToStringWithTitleWorks)
+{
+    WaiterWidget w(nullptr,test.date(),test.time(),"Title");
+    ASSERT_EQ("Title 256000",w.toLoggableString());
+}
+
+TEST_F(WaiterWidgetTests, ToStringWithTitleWithSpacesWorks)
+{
+    WaiterWidget w(nullptr,test.date(),test.time(),"Title With Spaces");
+    ASSERT_EQ("Title_With_Spaces 256000",w.toLoggableString());
 }
 
 int main(int argc, char **argv)

@@ -18,6 +18,7 @@ int main(int argc, char *argv[])
     QCoreApplication::setOrganizationDomain("coderfrog.com");
     QCoreApplication::setOrganizationName("Coderfrog");
     QCoreApplication::setApplicationName("QCompanion");
+    a.setQuitOnLastWindowClosed(false);
     QCompanion w;
     w.show();
     w.hide();

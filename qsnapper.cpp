@@ -26,6 +26,11 @@ QSnapper::QSnapper(QWidget *parent) : Component(parent),
 
     muteAction->setChecked(true);
     muted = true;
+
+    whenToSpeak.setSingleShot(false);
+    whenToSpeak.setInterval(60000);
+    connect(&whenToSpeak,SIGNAL(timeout()),this,SLOT(emitSpeak()));
+    whenToSpeak.start();
 }
 
 /*!
@@ -142,4 +147,14 @@ void QSnapper::snap()
 QString QSnapper::getNextFileName()
 {
     return saveDir + '/' + QDateTime::currentDateTime().toString("yyyyMMddhhmmss") + ".jpg";
+}
+
+/*!
+ * \brief Takes a picture, and if unmuted says "Snap".
+ */
+void QSnapper::emitSpeak()
+{
+    snap();
+    if(!muted)
+        emit wantsToSpeak(getText());
 }

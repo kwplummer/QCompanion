@@ -98,7 +98,8 @@ void Speaker::readLoop()
     {
         //Pops from queue, or waits until it can.
         queue.pop(readMe);
-        if(canSendNotifications)
+#ifndef TEST
+        if(canSendNotifications && !readMe.empty())
         {
             NotifyNotification *message = notify_notification_new("QCompanion", readMe.c_str(), iconLocation.toUtf8());
             notify_notification_show(message,NULL);
@@ -114,5 +115,6 @@ void Speaker::readLoop()
             if(exitCode < 0)
                 errorOccurred = true;
         }
+#endif
     }
 }

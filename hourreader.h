@@ -8,11 +8,13 @@
 class HourReader : public Component
 {
     Q_OBJECT
+private slots:
+    void emitSpeak();
 public:
     HourReader(QWidget *parent);
     virtual ~HourReader();
     virtual QDateTime nextCheckTime() override;
-    virtual QString getText() override;
+    QString getText();
 };
 
 #endif // HOURREADER_H

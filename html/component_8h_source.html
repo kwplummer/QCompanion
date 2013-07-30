@@ -87,29 +87,32 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="preprocessor">#ifndef COMPONENT_H</span></div>
 <div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define COMPONENT_H</span></div>
 <div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#include &lt;Qt/qwidget.h&gt;</span></div>
-<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="preprocessor">#include &lt;QDateTime&gt;</span></div>
-<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;</div>
-<div class="line"><a name="l00013"></a><span class="lineno"><a class="code" href="classComponent.html">   13</a></span>&#160;<span class="keyword">class </span><a class="code" href="classComponent.html" title="Everything that has something to say derives from this. ">Component</a> : <span class="keyword">public</span> QWidget</div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;{</div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;    Q_OBJECT</div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="keyword">private</span> slots:</div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classComponent.html#ab04c76ad1f289371824e6705c998512a" title="Sets if the component should be in the list of components to speak and wait for. ">setMute</a>(<span class="keywordtype">bool</span> mute);</div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="keyword">protected</span>:</div>
-<div class="line"><a name="l00020"></a><span class="lineno"><a class="code" href="classComponent.html#afe19638193daf7294ab65cd3368b8249">   20</a></span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="classComponent.html#afe19638193daf7294ab65cd3368b8249" title="Indicates if this component will be checked for getText, or if it will be skipped over...">muted</a>;</div>
-<div class="line"><a name="l00022"></a><span class="lineno"><a class="code" href="classComponent.html#a9818517c60bc5a7a58f5d1851771d03b">   22</a></span>&#160;    QAction *<a class="code" href="classComponent.html#a9818517c60bc5a7a58f5d1851771d03b" title="The action used to toggle muted. ">muteAction</a>;</div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;    <a class="code" href="classComponent.html#a94f0867c31676a7a10a91a49854395ca" title="Creates and connects an action for muting. ">Component</a>(QWidget *parent);</div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;    <span class="keyword">virtual</span> ~<a class="code" href="classComponent.html" title="Everything that has something to say derives from this. ">Component</a>(){}</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;    <span class="keyword">virtual</span> QDateTime <a class="code" href="classComponent.html#a7dff0e46bd511c37e390254329a3a5ce">nextCheckTime</a>()=0;</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;    <span class="keyword">virtual</span> QString <a class="code" href="classComponent.html#a0e9d5eed6e8e6ebdb21dd229816a9dd7" title="Gets the text to be spoken. ">getText</a>()=0;</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;    <span class="keyword">virtual</span> QList&lt;QAction*&gt; <a class="code" href="classComponent.html#a395fd44892060bfdb53c5701af009d44" title="Gets a list of menu items used for interacting with the component&#39;s features from the main menu...">getMenuContents</a>();</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="classComponent.html#a68da901776ce60bffe78da5b336faee0" title="Indicated if the component should have its message sent in a notification/speech. ...">isMuted</a>();</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;};</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;<span class="preprocessor">#endif // COMPONENT_H</span></div>
+<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="preprocessor">#include &lt;QTimer&gt;</span></div>
+<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="preprocessor">#include &lt;QDateTime&gt;</span></div>
+<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;</div>
+<div class="line"><a name="l00015"></a><span class="lineno"><a class="code" href="classComponent.html">   15</a></span>&#160;<span class="keyword">class </span><a class="code" href="classComponent.html" title="Everything that has something to say derives from this. ">Component</a> : <span class="keyword">public</span> QWidget</div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;{</div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;    Q_OBJECT</div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="keyword">private</span> slots:</div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classComponent.html#ab04c76ad1f289371824e6705c998512a" title="Sets if the component should be in the list of components to speak and wait for. ">setMute</a>(<span class="keywordtype">bool</span> mute);</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="keyword">protected</span>:</div>
+<div class="line"><a name="l00022"></a><span class="lineno"><a class="code" href="classComponent.html#aebcb38c15b7dc55757cdc84df88d429b">   22</a></span>&#160;    QTimer <a class="code" href="classComponent.html#aebcb38c15b7dc55757cdc84df88d429b" title="A timer used by deriving classes for scheduled events. ">whenToSpeak</a>;</div>
+<div class="line"><a name="l00024"></a><span class="lineno"><a class="code" href="classComponent.html#afe19638193daf7294ab65cd3368b8249">   24</a></span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="classComponent.html#afe19638193daf7294ab65cd3368b8249" title="Indicates if this component will be checked for getText, or if it will be skipped over...">muted</a>;</div>
+<div class="line"><a name="l00026"></a><span class="lineno"><a class="code" href="classComponent.html#a9818517c60bc5a7a58f5d1851771d03b">   26</a></span>&#160;    QAction *<a class="code" href="classComponent.html#a9818517c60bc5a7a58f5d1851771d03b" title="The action used to toggle muted. ">muteAction</a>;</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;signals:</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classComponent.html#a6cce92e0adf647a5b61408b93ab3e53f" title="Emitted when the component wants to send text to the Speaker. ">wantsToSpeak</a>(QString);</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;    <a class="code" href="classComponent.html#a94f0867c31676a7a10a91a49854395ca" title="Creates and connects an action for muting. ">Component</a>(QWidget *parent);</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;    <span class="keyword">virtual</span> ~<a class="code" href="classComponent.html" title="Everything that has something to say derives from this. ">Component</a>();</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;    <span class="keyword">virtual</span> QDateTime <a class="code" href="classComponent.html#a7dff0e46bd511c37e390254329a3a5ce">nextCheckTime</a>()=0;</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;    <span class="keyword">virtual</span> QList&lt;QAction*&gt; <a class="code" href="classComponent.html#a395fd44892060bfdb53c5701af009d44" title="Gets a list of menu items used for interacting with the component&#39;s features from the main menu...">getMenuContents</a>();</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="classComponent.html#a68da901776ce60bffe78da5b336faee0" title="Indicated if the component should have its message sent in a notification/speech. ...">isMuted</a>();</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;};</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;<span class="preprocessor">#endif // COMPONENT_H</span></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Jul 25 2013 21:57:57 for QCompanion by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Jul 30 2013 15:56:29 for QCompanion by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.4
 </small></address>
