@@ -13,8 +13,13 @@ WaiterComponent::WaiterComponent(QWidget *parent) :
     dialog(parent,QCoreApplication::applicationDirPath()+"/murasaki.png")
 {
     dialog.setWindowFlags(Qt::Window);
+#if QT_VERSION < 0x050000
     connect(&dialog,SIGNAL(changeTimers()),this,SLOT(changeTimerSlot()));
     connect(&dialog,SIGNAL(emitText(QString)),this,SLOT(emitSpeak(QString)));
+#else
+    connect(&dialog,&WaiterDialog::changeTimers,this,&WaiterComponent::changeTimerSlot);
+    connect(&dialog,&WaiterDialog::emitText,this,&WaiterComponent::emitSpeak);
+#endif
 }
 
 /*!
@@ -42,11 +47,19 @@ QList<QAction *> WaiterComponent::getMenuContents()
 {
     QList<QAction*> returnMe;
     QAction *showAction = new QAction("Show",this);
+#if QT_VERSION < 0x050000
     connect(showAction,SIGNAL(triggered()),&dialog,SLOT(show()));
+#else
+    connect(showAction,&QAction::triggered,&dialog,&WaiterComponent::show);
+#endif
     returnMe.append(showAction);
 
     QAction *changeStatePath = new QAction("Change State Location",this);
+#if QT_VERSION < 0x050000
     connect(changeStatePath,SIGNAL(triggered()),this,SLOT(selectStatePath()));
+#else
+    connect(changeStatePath,&QAction::triggered,this,&WaiterComponent::selectStatePath);
+#endif
     returnMe.append(changeStatePath);
 
     returnMe += Component::getMenuContents();

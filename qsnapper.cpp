@@ -7,6 +7,9 @@
 #include <atomic>
 #include <mutex>
 #include <iostream>
+#if QT_VERSION >= 0x050000
+#include <QScreen>
+#endif
 
 /*!
  * \brief Constructs the snapper, sets image save location.
@@ -65,9 +68,15 @@ QSnapper::QSnapper(QWidget *parent) : Component(parent),
 
     whenToSpeak.setSingleShot(false);
     whenToSpeak.setInterval(60000);
+#if QT_VERSION < 0x050000
     connect(&whenToSpeak,SIGNAL(timeout()),this,SLOT(emitSpeak()));
     connect(muteAction,SIGNAL(triggered(bool)),this,SLOT(setMuteSettings(bool)));
     connect(toggleDiffAction,SIGNAL(triggered(bool)),this,SLOT(setDiff(bool)));
+#else
+    connect(&whenToSpeak,&QTimer::timeout,this,&QSnapper::emitSpeak);
+    connect(muteAction,&QAction::triggered,this,&QSnapper::setMuteSettings);
+    connect(toggleDiffAction,&QAction::triggered,this,&QSnapper::setDiff);
+#endif
     emitSpeak();
     whenToSpeak.start();
 }
@@ -119,9 +128,15 @@ QList<QAction *> QSnapper::getMenuContents()
     actions.append(lenientOption);
     actions.append(toggleDiffAction);
 
+#if QT_VERSION < 0x050000
     connect(changeFolderAction,SIGNAL(triggered()),this,SLOT(changeSaveFolder()));
     connect(enableLogging,SIGNAL(triggered(bool)),this,SLOT(enableSnapping(bool)));
     connect(lenientOption,SIGNAL(triggered(bool)),this,SLOT(setLenient(bool)));
+#else
+    connect(changeFolderAction,&QAction::triggered,this,&QSnapper::changeSaveFolder);
+    connect(enableLogging,&QAction::triggered,this,&QSnapper::enableSnapping);
+    connect(lenientOption,&QAction::triggered,this,&QSnapper::setLenient);
+#endif
     return actions;
 }
 
@@ -295,7 +310,11 @@ bool QSnapper::snap()
     if(canSnap && !saveDir.isNull() && QDir(saveDir).exists())
     {
         QString saveFileName = getNextFileName(false);
+#if QT_VERSION < 0x050000
         QPixmap desktop = QPixmap::grabWindow(QApplication::desktop()->winId());
+#else
+        QPixmap desktop = QGuiApplication::primaryScreen()->grabWindow(QApplication::desktop()->winId());
+#endif
         QImage newImage = desktop.toImage();
         nextWakeup = QDateTime::currentDateTime().addSecs(60);
         if( (!lenient && oldImage != newImage) ||

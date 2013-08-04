@@ -32,6 +32,8 @@ WaiterDialog::WaiterDialog(QWidget *parent, QString IconPath) :
     timer = new QTimer(this);
 #if QT_VERSION < 0x050000
     connect(timer,SIGNAL(timeout()),this,SLOT(notifyAll()));
+#else
+    connect(timer,&QTimer::timeout,this,&WaiterDialog::notifyAll);
 #endif
     timer->setInterval(1000);
     timer->start();
@@ -101,6 +103,10 @@ void WaiterDialog::onAddButtonClicked()
     connect(w,SIGNAL(removeAt(WaiterWidget*)),this,SLOT(removeWaiter(WaiterWidget*)));
     connect(w,SIGNAL(replaceAt(WaiterWidget*,QString,QDateTime)),this,SLOT(replaceWaiter(WaiterWidget*,QString,QDateTime)));
     connect(w,SIGNAL(speakThis(QString)),this,SLOT(emitTextSlot(QString)));
+#else
+    connect(w,&WaiterWidget::removeAt,this,&WaiterDialog::removeWaiter);
+    connect(w,&WaiterWidget::replaceAt,this,&WaiterDialog::replaceWaiter);
+    connect(w,&WaiterWidget::speakThis,this,&WaiterDialog::emitTextSlot);
 #endif
     ui->EventTitle->clear();
     commitChanges();
@@ -132,11 +138,6 @@ void WaiterDialog::onCurrentTimeClicked()
  */
 void WaiterDialog::removeWaiter(WaiterWidget *waiter)
 {
-#if QT_VERSION < 0x050000
-    disconnect(waiter,SIGNAL(removeAt(WaiterWidget*)),this,SLOT(removeWaiter(WaiterWidget*)));
-    disconnect(waiter,SIGNAL(replaceAt(WaiterWidget*,QString,QDateTime)),this,SLOT(replaceWaiter(WaiterWidget*,QString,QDateTime)));
-    disconnect(waiter,SIGNAL(speakThis(QString)),this,SLOT(emitTextSlot(QString)));
-#endif
     widgets.erase(std::remove(widgets.begin(),widgets.end(),waiter),widgets.end());
     waiter->deleteLater();
     commitChanges();
@@ -153,11 +154,6 @@ void WaiterDialog::replaceWaiter(WaiterWidget *waiter, QString name, QDateTime d
     ui->EventTitle->setText(name);
     ui->EntryDate->setSelectedDate(datetime.date());
     ui->EntryTime->setTime(datetime.time());
-#if QT_VERSION < 0x050000
-    disconnect(waiter,SIGNAL(removeAt(WaiterWidget*)),this,SLOT(removeWaiter(WaiterWidget*)));
-    disconnect(waiter,SIGNAL(replaceAt(WaiterWidget*,QString,QDateTime)),this,SLOT(replaceWaiter(WaiterWidget*,QString,QDateTime)));
-    disconnect(waiter,SIGNAL(speakThis(QString)),this,SLOT(emitTextSlot(QString)));
-#endif
     widgets.erase(std::remove(widgets.begin(),widgets.end(),waiter),widgets.end());
     waiter->deleteLater();
     commitChanges();
@@ -220,6 +216,10 @@ void WaiterDialog::loadState()
                     connect(w,SIGNAL(removeAt(WaiterWidget*)),this,SLOT(removeWaiter(WaiterWidget*)));
                     connect(w,SIGNAL(replaceAt(WaiterWidget*,QString,QDateTime)),this,SLOT(replaceWaiter(WaiterWidget*,QString,QDateTime)));
                     connect(w,SIGNAL(speakThis(QString)),this,SLOT(emitTextSlot(QString)));
+#else
+                    connect(w,&WaiterWidget::removeAt,this,&WaiterDialog::removeWaiter);
+                    connect(w,&WaiterWidget::replaceAt,this,&WaiterDialog::replaceWaiter);
+                    connect(w,&WaiterWidget::speakThis,this,&WaiterDialog::emitTextSlot);
 #endif
                 }
             }

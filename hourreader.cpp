@@ -11,7 +11,11 @@ HourReader::HourReader(QWidget *parent): Component(parent)
 {
     whenToSpeak.setSingleShot(false);
     whenToSpeak.setInterval(QDateTime::currentDateTime().msecsTo(nextCheckTime()));
+#if QT_VERSION < 0x050000
     connect(&whenToSpeak,SIGNAL(timeout()),this,SLOT(emitSpeak()));
+#else
+    connect(&whenToSpeak,&QTimer::timeout,this,&HourReader::emitSpeak);
+#endif
     whenToSpeak.start();
 }
 

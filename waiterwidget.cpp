@@ -74,7 +74,7 @@ void WaiterWidget::init()
 #if QT_VERSION < 0x050000
     connect(remove,SIGNAL(clicked()),this,SLOT(removeThis()));
 #else
-    connect(remove,&QPushButton::clicked,[this](){emit removeAt(this);});
+    connect(remove,&QPushButton::clicked,this,&WaiterWidget::removeThis);
 #endif
 }
 

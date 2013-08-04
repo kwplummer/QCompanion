@@ -59,6 +59,13 @@ QCompanion::QCompanion(QWidget *parent) :
     connect(mainMenu,SIGNAL(aboutToShow()),this,SLOT(showingMenu()));
     connect(mainMenu,SIGNAL(aboutToHide()),this,SLOT(hidingMenu()));
 #else
+    connect(quitAction,&QAction::triggered,this,&QCompanion::quit);
+    connect(toggleTTSAction,&QAction::triggered,this,&QCompanion::toggleTTS);
+    connect(toggleNotificationsAction,&QAction::triggered,this,&QCompanion::toggleNotifications);
+    connect(speakClipboardAction,&QAction::triggered,this,&QCompanion::speakClipboard);
+    connect(updateNextFire,&QTimer::timeout,this,&QCompanion::updateNextFireText);
+    connect(mainMenu,&QMenu::aboutToShow,this,&QCompanion::showingMenu);
+    connect(mainMenu,&QMenu::aboutToHide,this,&QCompanion::hidingMenu);
 #endif
 }
 
@@ -93,23 +100,33 @@ QMenu *QCompanion::loadPlugins()
     snapperMenu->addActions(snapper->getMenuContents());
     plugins.push_back(snapper);
     pluginMenu->addMenu(snapperMenu);
+#if QT_VERSION < 0x050000
     connect(snapper,SIGNAL(wantsToSpeak(QString)),this,SLOT(sendToSpeaker(QString)));
-
+#else
+    connect(snapper,&QSnapper::wantsToSpeak,this,&QCompanion::sendToSpeaker);
+#endif
     HourReader *hr = new HourReader(this);
     QMenu *hourMenu = new QMenu("HourReader",this);
     hourMenu->addActions(hr->getMenuContents());
     plugins.push_back(hr);
     pluginMenu->addMenu(hourMenu);
+#if QT_VERSION < 0x050000
     connect(hr,SIGNAL(wantsToSpeak(QString)),this,SLOT(sendToSpeaker(QString)));
-
+#else
+    connect(hr,&HourReader::wantsToSpeak,this,&QCompanion::sendToSpeaker);
+#endif
     WaiterComponent *waiter = new WaiterComponent(this);
     QMenu *waiterMenu = new QMenu("QWaiter",this);
     waiterMenu->addActions(waiter->getMenuContents());
     plugins.push_back(waiter);
     pluginMenu->addMenu(waiterMenu);
+#if QT_VERSION < 0x050000
     connect(waiter,SIGNAL(changeTimers()),this,SLOT(calcuateNextSpeakTime()));
     connect(waiter,SIGNAL(wantsToSpeak(QString)),this,SLOT(sendToSpeaker(QString)));
-
+#else
+    connect(waiter,&WaiterComponent::changeTimers,this,&QCompanion::calcuateNextSpeakTime);
+    connect(waiter,&WaiterComponent::wantsToSpeak,this,&QCompanion::sendToSpeaker);
+#endif
     calcuateNextSpeakTime();
     return pluginMenu;
 }

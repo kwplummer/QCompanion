@@ -1,6 +1,6 @@
 #ifndef COMPONENT_H
 #define COMPONENT_H
-#include <Qt/qwidget.h>
+#include <qwidget.h>
 #include <QTimer>
 #include <QDateTime>
 

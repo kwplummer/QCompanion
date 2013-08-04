@@ -10,7 +10,11 @@ Component::Component(QWidget *parent)  : QWidget(parent), muted(false)
 {
     muteAction = new QAction("Mute",this);
     muteAction->setCheckable(true);
+#if QT_VERSION < 0x050000
     connect(muteAction,SIGNAL(triggered(bool)),this,SLOT(setMute(bool)));
+#else
+    connect(muteAction,&QAction::triggered,this,&Component::setMute);
+#endif
 }
 
 Component::~Component()
