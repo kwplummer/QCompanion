@@ -19,7 +19,6 @@ QCompanion::QCompanion(QWidget *parent) :
     ui(new Ui::QCompanion)
 {
     ui->setupUi(this);
-    whenNextSpeakingOccurs = new QTimer(this);
     updateNextFire = new QTimer(this);
     iconPath = QCoreApplication::applicationDirPath()+"/murasaki.png";
     tray = new QSystemTrayIcon(QIcon(iconPath),this);
@@ -56,7 +55,6 @@ QCompanion::QCompanion(QWidget *parent) :
     connect(toggleTTSAction,SIGNAL(triggered()),this,SLOT(toggleTTS()));
     connect(toggleNotificationsAction,SIGNAL(triggered()),this,SLOT(toggleNotifications()));
     connect(speakClipboardAction,SIGNAL(triggered()),this,SLOT(speakClipboard()));
-    connect(whenNextSpeakingOccurs,SIGNAL(timeout()),this,SLOT(calcuateNextSpeakTime()));
     connect(updateNextFire,SIGNAL(timeout()),this,SLOT(updateNextFireText()));
     connect(mainMenu,SIGNAL(aboutToShow()),this,SLOT(showingMenu()));
     connect(mainMenu,SIGNAL(aboutToHide()),this,SLOT(hidingMenu()));
@@ -134,8 +132,6 @@ void QCompanion::calcuateNextSpeakTime()
     }
     if(nextSpeakTime == zero)
         nextSpeakTime.setTime_t(time(NULL)+60);
-    whenNextSpeakingOccurs->setInterval(now.msecsTo(nextSpeakTime));
-    whenNextSpeakingOccurs->start();
     updateNextFireText();
 }
 
@@ -215,5 +211,7 @@ void QCompanion::toggleTTS()
  */
 void QCompanion::sendToSpeaker(QString sayMe)
 {
-    speaker.speak(sayMe.toUtf8());
+    if(!sayMe.isEmpty())
+        speaker.speak(sayMe.toUtf8());
+    calcuateNextSpeakTime();
 }

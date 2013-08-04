@@ -1,9 +1,12 @@
 #include "qsnapper.h"
-#include <QAction>
 #include <QFileDialog>
 #include <QPixmap>
 #include <QApplication>
 #include <QDesktopWidget>
+#include <tbb/parallel_for.h>
+#include <atomic>
+#include <mutex>
+#include <iostream>
 
 /*!
  * \brief Constructs the snapper, sets image save location.
@@ -21,15 +24,51 @@ QSnapper::QSnapper(QWidget *parent) : Component(parent),
         canSnap = true;
 
     QVariant saveDirSetting = settings.value("QSnapper_Directory");
-    if(!saveDirSetting.isNull())
+    if(saveDirSetting.isValid())
         saveDir = saveDirSetting.toString();
 
-    muteAction->setChecked(true);
-    muted = true;
+    QVariant diffSetting = settings.value("QSnapper_Diff");
+    toggleDiffAction = new QAction("Save image of differences",this);
+    toggleDiffAction->setCheckable(true);
+    if(diffSetting.isValid() && diffSetting.toBool())
+    {
+        saveDifferenceImage = true;
+    }
+    else
+        saveDifferenceImage = false;
+    toggleDiffAction->setChecked(saveDifferenceImage);
+
+    QVariant lenientSetting = settings.value("QSnapper_Lenient");
+    lenientOption = new QAction("Allow minor differences",this);
+    lenientOption->setCheckable(true);
+    if(lenientSetting.isValid() && lenientSetting.toBool())
+    {
+        lenient = true;
+    }
+    else
+        lenient = false;
+    lenientOption->setChecked(lenient);
+    toggleDiffAction->setEnabled(lenient);
+
+
+    QVariant mutedSetting = settings.value("QSnapper_Muted");
+    if(mutedSetting.isValid() && !mutedSetting.toBool())
+    {
+        muteAction->setChecked(false);
+        muted = false;
+    }
+    else
+    {
+        muteAction->setChecked(true);
+        muted = true;
+    }
 
     whenToSpeak.setSingleShot(false);
     whenToSpeak.setInterval(60000);
     connect(&whenToSpeak,SIGNAL(timeout()),this,SLOT(emitSpeak()));
+    connect(muteAction,SIGNAL(triggered(bool)),this,SLOT(setMuteSettings(bool)));
+    connect(toggleDiffAction,SIGNAL(triggered(bool)),this,SLOT(setDiff(bool)));
+    emitSpeak();
     whenToSpeak.start();
 }
 
@@ -77,8 +116,12 @@ QList<QAction *> QSnapper::getMenuContents()
     enableLogging->setChecked(canSnap);
     actions.append(enableLogging);
 
+    actions.append(lenientOption);
+    actions.append(toggleDiffAction);
+
     connect(changeFolderAction,SIGNAL(triggered()),this,SLOT(changeSaveFolder()));
     connect(enableLogging,SIGNAL(triggered(bool)),this,SLOT(enableSnapping(bool)));
+    connect(lenientOption,SIGNAL(triggered(bool)),this,SLOT(setLenient(bool)));
     return actions;
 }
 
@@ -118,35 +161,164 @@ void QSnapper::enableSnapping(bool enable)
 }
 
 /*!
+ * \brief Sets lenient to true or false, based on the checkbox
+ * \param isLenient if it should be lenient or not
+ */
+void QSnapper::setLenient(bool isLenient)
+{
+    lenient = isLenient;
+    settings.setValue("QSnapper_Lenient",isLenient);
+    toggleDiffAction->setEnabled(lenient);
+}
+
+/*!
+ * \brief Stores the value of the muted checkbox to settings
+ * \param shouldMute if it should be muted.
+ */
+void QSnapper::setMuteSettings(bool shouldMute)
+{
+    settings.setValue("QSnapper_Muted",shouldMute);
+}
+
+void QSnapper::setDiff(bool enable)
+{
+    settings.setValue("QSnapper_Diff",enable);
+    saveDifferenceImage = enable;
+}
+
+/*!
+ * \brief Compares two images, and if they are different enough(1% of the screen), returns true
+ * \details Uses a loop through all the x pixels and the y pixels, and compares them. The "X loop" is done in parallel using TBB.
+ * \param oldImage the old image
+ * \param newImage the new image, if this returns true, it will be saved.
+ * \return True if the images differ.
+ */
+bool QSnapper::imagesDiffer(const QImage oldImage, const QImage newImage)
+{
+    bool exceedsDiffenceLimit = true;
+    if(oldImage.width() == newImage.width() && oldImage.height() == newImage.height())
+    {
+        exceedsDiffenceLimit = false;
+        std::atomic_int difference(0);
+        const int height = oldImage.height();
+        const int width = oldImage.width();
+        const int differenceLimit = (height*width)/100;
+        tbb::parallel_for(tbb::blocked_range<int>(0,width),[&](const tbb::blocked_range<int> &range)
+        {
+            for(int i=range.begin(); i != range.end(); ++i)
+            {
+                for(int j=0;j<height;++j)
+                {
+                    if(exceedsDiffenceLimit) return;
+                    if(oldImage.pixel(i,j) != newImage.pixel(i,j))
+                        ++difference;
+                    if(difference > differenceLimit)
+                    {
+                        exceedsDiffenceLimit = true;
+                    }
+                }
+            }
+        });
+        if(!muted)
+            std::cout << difference << std::endl;
+    }
+    else if(!muted)
+        std::cout << "Different sizes" << std::endl;
+    return exceedsDiffenceLimit;
+}
+
+/*!
+ * \brief Compares two images, and if they are different enough(1% of the screen), returns true. Also saves a new image of where they differ.
+ * \param oldImage the old image
+ * \param newImage the new image, if this returns true, it will be saved.
+ * \param filename the name of the generated difference file
+ * \return True if the images differ.
+ */
+bool QSnapper::imagesDiffer(const QImage oldImage, const QImage newImage, const QString filename)
+{
+    bool exceedsDiffenceLimit = true;
+    const int height = oldImage.height();
+    const int width = oldImage.width();
+    QImage diff(width,height,oldImage.format());
+    if(width == newImage.width() && height == newImage.height())
+    {
+        exceedsDiffenceLimit = false;
+        std::atomic_int difference(0);
+        const int differenceLimit = (height*width)/100;
+        std::mutex diffMutex;
+        diff.fill(QColor(00,0xF2,0xFF));
+        tbb::parallel_for(tbb::blocked_range<int>(0,width),[&](const tbb::blocked_range<int> &range)
+        {
+            for(int i=range.begin(); i != range.end(); ++i)
+            {
+                for(int j=0;j<height;++j)
+                {
+                    if(oldImage.pixel(i,j) != newImage.pixel(i,j))
+                    {
+                        ++difference;
+                        QRgb pixel = newImage.pixel(i,j);
+                        if(pixel != qRgb(0xFF,0xFF,0xFF))
+                        {
+                            std::lock_guard<std::mutex> l(diffMutex);
+                            diff.setPixel(i,j,pixel);
+                        }
+                    }
+                    if(difference > differenceLimit)
+                    {
+                        exceedsDiffenceLimit = true;
+                    }
+                }
+            }
+        });
+        if(!muted)
+            std::cout << difference << std::endl;
+    }
+    else
+    {
+        if(!muted)
+            std::cout << "Different sizes" << std::endl;
+        diff = newImage;
+    }
+    diff.save(filename);
+    return exceedsDiffenceLimit;
+}
+
+/*!
  * \brief Takes a picture
  * \details Checks if it is allowed to check pictures, and if the save directory exists, and if so takes a picture.
  * If the picture is different from the last one, it gets a name from getNextFileName() and saves it.
  * It then sets the next time another screen shot should occur.
+ * \return If a picture was taken.
  */
-void QSnapper::snap()
+bool QSnapper::snap()
 {
     if(canSnap && !saveDir.isNull() && QDir(saveDir).exists())
     {
-        QString saveFileName = getNextFileName();
+        QString saveFileName = getNextFileName(false);
         QPixmap desktop = QPixmap::grabWindow(QApplication::desktop()->winId());
         QImage newImage = desktop.toImage();
-        if(oldImage != newImage)
+        nextWakeup = QDateTime::currentDateTime().addSecs(60);
+        if( (!lenient && oldImage != newImage) ||
+            (lenient && !saveDifferenceImage && imagesDiffer(oldImage,newImage)) ||
+                (lenient && saveDifferenceImage && imagesDiffer(oldImage,newImage,getNextFileName(true))))
         {
             oldImage = newImage;
             oldImage.save(saveFileName);
-            saveFileName = getNextFileName();
+            saveFileName = getNextFileName(false);
+            return true;
         }
-        nextWakeup = QDateTime::currentDateTime().addSecs(60);
     }
+    return false;
 }
 
 /*!
  * \brief Gets where the image should be saved next.
+ * \param[in] isDiff determines if the "Diff" should be added to the path or not.
  * \return A QString comprosed of the path, the current time (yyyyMMddhhmmss) and the extension (.jpg, to save space)
  */
-QString QSnapper::getNextFileName()
+QString QSnapper::getNextFileName(bool isDiff)
 {
-    return saveDir + '/' + QDateTime::currentDateTime().toString("yyyyMMddhhmmss") + ".jpg";
+    return saveDir + (isDiff ? "/Diff/" : "/") + QDateTime::currentDateTime().toString("yyyyMMddhhmmss") + ".jpg";
 }
 
 /*!
@@ -154,7 +326,8 @@ QString QSnapper::getNextFileName()
  */
 void QSnapper::emitSpeak()
 {
-    snap();
-    if(!muted)
+    if(snap() && !muted)
         emit wantsToSpeak(getText());
+    else
+        emit wantsToSpeak("");
 }

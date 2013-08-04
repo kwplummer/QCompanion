@@ -44,3 +44,10 @@ QMAKE_CXXFLAGS += -std=c++11
 
 RESOURCES += \
     icons.qrc
+
+CONFIG(DEBUG)
+{
+    QMAKE_CXXFLAGS += -fprofile-arcs -ftest-coverage
+    LIBS += -lgcov
+    DEFINES += DBG
+}

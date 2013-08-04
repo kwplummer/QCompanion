@@ -39,8 +39,6 @@ private:
     QAction *nextFire;
     ///\brief A list of plugins, consisting of the component and when it wants to be read.
     std::vector<Component*> plugins;
-    ///\brief A timer for when all the components should be queried and, if it's time, should be shown.
-    QTimer *whenNextSpeakingOccurs;
     ///\brief A timer for when the "Next Speech is in X seconds" dialog should be updated
     QTimer *updateNextFire;
     ///\brief The class that manages interfacing with the text to speech and notification systems.

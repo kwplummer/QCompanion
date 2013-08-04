@@ -3,6 +3,7 @@
 #include "component.h"
 #include <QSettings>
 #include <QImage>
+#include <QAction>
 
 /*!
  * \brief Provides screenshot logging.
@@ -16,7 +17,9 @@ class QSnapper : public Component
     Q_OBJECT
     ///\brief The path where the images should be saved.
     QString saveDir;
-    QString getNextFileName();
+    QString getNextFileName(bool isDiff);
+    bool imagesDiffer(const QImage oldImage, const QImage newImage);
+    bool imagesDiffer(const QImage oldImage, const QImage newImage, const QString filename);
     ///\brief When the next screenshot will occur, if enabled.
     QDateTime nextWakeup;
     ///\brief Global settings, used to check where images should be saved to, and if they should be saved.
@@ -28,12 +31,23 @@ class QSnapper : public Component
     QImage oldImage;
     ///\brief Indicated whether this component is on and taking pictures.
     bool canSnap;
+    ///\brief If true, tolerates a difference of 1% of the screen size between images. This allows for a blinking cursors/clocks to not signify a "new" image.
+    bool lenient;
+    ///\brief If true, a seperate image of the difference between old and new will be saved.
+    bool saveDifferenceImage;
+    ///\brief The menu option corrisponding to lenient
+    QAction *lenientOption;
+    ///\brief A menu option that toggles if a seperate image of the difference should be saved.
+    QAction *toggleDiffAction;
 private slots:
     void emitSpeak();
     void changeSaveFolder();
 public slots:
-    void snap();
+    bool snap();
     void enableSnapping(bool enable);
+    void setLenient(bool isLenient);
+    void setMuteSettings(bool shouldMute);
+    void setDiff(bool enable);
 public:
     QSnapper(QWidget *parent);
     virtual ~QSnapper();
