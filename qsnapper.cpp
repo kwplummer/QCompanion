@@ -19,6 +19,9 @@
  */
 QSnapper::QSnapper(QWidget *parent) : Component(parent),
     nextWakeup(QDateTime::currentDateTime().addSecs(60))
+    #ifdef Q_OS_LINUX
+    ,screensaver("org.freedesktop.ScreenSaver","/ScreenSaver")
+    #endif
 {
     QVariant logSetting = settings.value("QSnapper_Enable");
     if(logSetting.isNull() || logSetting.toBool() == false)
@@ -299,6 +302,24 @@ bool QSnapper::imagesDiffer(const QImage oldImage, const QImage newImage, const 
 }
 
 /*!
+ * \brief Returns if the screensaver is running. This is OS-dependent.
+ * \return If the screensaver is running.
+ */
+bool QSnapper::screensaverIsActive()
+{
+#ifdef Q_OS_LINUX
+    QDBusReply<bool> reply =  screensaver.call("GetActive");
+    bool dbg1 = reply.isValid(), dbg2 = reply.value();
+    return reply.isValid() && reply.value();
+#elif Q_OS_WIN
+    //Untested!
+    bool isActive = false;
+    SystemParametersInfo(SPI_GETSCREENSAVERACTIVE, 0, &isActive, 0));
+    return isActive;
+#endif
+}
+
+/*!
  * \brief Takes a picture
  * \details Checks if it is allowed to check pictures, and if the save directory exists, and if so takes a picture.
  * If the picture is different from the last one, it gets a name from getNextFileName() and saves it.
@@ -307,7 +328,7 @@ bool QSnapper::imagesDiffer(const QImage oldImage, const QImage newImage, const 
  */
 bool QSnapper::snap()
 {
-    if(canSnap && !saveDir.isNull() && QDir(saveDir).exists())
+    if(canSnap && !saveDir.isNull() && QDir(saveDir).exists() && !screensaverIsActive())
     {
         QString saveFileName = getNextFileName(false);
 #if QT_VERSION < 0x050000
@@ -318,7 +339,7 @@ bool QSnapper::snap()
         QImage newImage = desktop.toImage();
         nextWakeup = QDateTime::currentDateTime().addSecs(60);
         if( (!lenient && oldImage != newImage) ||
-            (lenient && !saveDifferenceImage && imagesDiffer(oldImage,newImage)) ||
+                (lenient && !saveDifferenceImage && imagesDiffer(oldImage,newImage)) ||
                 (lenient && saveDifferenceImage && imagesDiffer(oldImage,newImage,getNextFileName(true))))
         {
             oldImage = newImage;

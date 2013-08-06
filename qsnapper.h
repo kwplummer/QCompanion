@@ -4,6 +4,10 @@
 #include <QSettings>
 #include <QImage>
 #include <QAction>
+#ifdef Q_OS_LINUX
+#include <QtDBus/QDBusInterface>
+#include <QtDBus/QDBusReply>
+#endif
 
 /*!
  * \brief Provides screenshot logging.
@@ -20,6 +24,7 @@ class QSnapper : public Component
     QString getNextFileName(bool isDiff);
     bool imagesDiffer(const QImage oldImage, const QImage newImage);
     bool imagesDiffer(const QImage oldImage, const QImage newImage, const QString filename);
+    bool screensaverIsActive();
     ///\brief When the next screenshot will occur, if enabled.
     QDateTime nextWakeup;
     ///\brief Global settings, used to check where images should be saved to, and if they should be saved.
@@ -39,6 +44,10 @@ class QSnapper : public Component
     QAction *lenientOption;
     ///\brief A menu option that toggles if a seperate image of the difference should be saved.
     QAction *toggleDiffAction;
+#ifdef Q_OS_LINUX
+    ///\brief The interface with the screensaver.
+    QDBusInterface screensaver;
+#endif
 private slots:
     void emitSpeak();
     void changeSaveFolder();
