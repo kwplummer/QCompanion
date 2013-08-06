@@ -198,6 +198,10 @@ void QSnapper::setMuteSettings(bool shouldMute)
     settings.setValue("QSnapper_Muted",shouldMute);
 }
 
+/*!
+ * \brief Sets if "Difference" images should be generated, and stores it into settings.
+ * \param enable If difference files should be made.
+ */
 void QSnapper::setDiff(bool enable)
 {
     settings.setValue("QSnapper_Diff",enable);
