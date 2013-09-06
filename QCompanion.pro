@@ -14,7 +14,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = QCompanion
 TEMPLATE = app
 
-LIBS += -ltbb -lnotify
+LIBS += -ltbb -lnotify -lflite_cmu_us_kal -lflite_usenglish -lflite_cmulex -lflite
 
 INCLUDEPATH += /usr/include/glib-2.0/glib
 INCLUDEPATH += /usr/include/glib-2.0/
@@ -29,7 +29,9 @@ SOURCES += main.cpp\
     qsnapper.cpp \
     waiterdialog.cpp \
     waiterwidget.cpp \
-    waitercomponent.cpp
+    waitercomponent.cpp \
+    qlipperwidget.cpp \
+    qlippercomponent.cpp
 
 HEADERS  += qcompanion.h \
     component.h \
@@ -38,10 +40,13 @@ HEADERS  += qcompanion.h \
     qsnapper.h \
     waiterdialog.h \
     waiterwidget.h \
-    waitercomponent.h
+    waitercomponent.h \
+    qlipperwidget.h \
+    qlippercomponent.h
 
 FORMS    += qcompanion.ui \
-    waiterdialog.ui
+    waiterdialog.ui \
+    qlipperwidget.ui
 
 QMAKE_CXXFLAGS += -std=c++11
 

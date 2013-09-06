@@ -5,16 +5,17 @@
 /*!
  * \brief Reads the time every hour
  */
-class HourReader : public Component
-{
-    Q_OBJECT
-private slots:
-    void emitSpeak();
+class HourReader : public Component {
+  Q_OBJECT
+private
+slots:
+  void emitSpeak();
+
 public:
-    HourReader(QWidget *parent);
-    virtual ~HourReader();
-    virtual QDateTime nextCheckTime() override;
-    QString getText();
+  HourReader(QWidget *parent);
+  virtual ~HourReader();
+  virtual QDateTime nextCheckTime() override;
+  QString getText();
 };
 
 #endif // HOURREADER_H
