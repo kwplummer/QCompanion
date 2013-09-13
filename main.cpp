@@ -11,8 +11,9 @@
 *clipboard, at the user's request.
 */
 // clang-format command:
-// clang-format -i *.cpp *.h -style="{BreakBeforeBraces: Allman, \
-// SpaceAfterControlStatementKeyword: false}"
+/* clang-format -i *.cpp *.h -style="{BreakBeforeBraces: Allman, \
+   SpaceAfterControlStatementKeyword: false}"
+ */
 #ifndef TEST
 #include "qcompanion.h"
 #include <QApplication>

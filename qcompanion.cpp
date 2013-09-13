@@ -257,7 +257,7 @@ void QCompanion::toggleTTS()
 
 /*!
  * \brief Sends text to the speaker
- * \param[in] sayMe What the speaker should say/notify.
+ * \param sayMe What the speaker should say/notify.
  */
 void QCompanion::sendToSpeaker(QString sayMe)
 {

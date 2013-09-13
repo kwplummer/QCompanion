@@ -33,6 +33,7 @@ class WaiterDialog : public QDialog
   QLabel *currentTimeLabel;
   ///\brief The settings of the program, used to check/save where StatePath is.
   QSettings settings;
+  ///\brief A struct holding the last repetition the user set.
   WaiterCronOccurance lastUsedRepeat;
 private
 slots:

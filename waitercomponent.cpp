@@ -96,7 +96,7 @@ void WaiterComponent::changeTimerSlot()
 
 /*!
  * \brief Checks if it's muted, and if not sends the text up to the QCompanion.
- * \param[in] what What to say
+ * \param what What to say
  */
 void WaiterComponent::emitSpeak(QString what)
 {

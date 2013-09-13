@@ -5,7 +5,7 @@
 /*!
  * \brief The constructor for Speaker. Starts flite's \link Speaker::readLoop
  * readLoop\endlink
- * \param[in] iconLocation Where the icon used for notifications is located.
+ * \param iconLocation Where the icon used for notifications is located.
  */
 Speaker::Speaker(QString iconLocation)
     : stopReading(false), canSendNotifications(true), canSpeak(true),
@@ -38,7 +38,7 @@ void Speaker::finishSpeaking()
 
 /*!
  * \brief Sets whether strings should be sent as a notification.
- * \param[in] enable If Notifications should be enabled.
+ * \param enable If Notifications should be enabled.
  */
 void Speaker::setNotificationsEnabled(bool enable)
 {
@@ -47,7 +47,7 @@ void Speaker::setNotificationsEnabled(bool enable)
 
 /*!
  * \brief Sets whether strings should be read aloud
- * \param[in] enable If TTS should be enabled.
+ * \param enable If TTS should be enabled.
  */
 void Speaker::setTTSEnabled(bool enable)
 {
@@ -82,7 +82,7 @@ bool Speaker::isTTSEnabled()
  * If there are any errors in the last loop then it throws an exception.
  * libflite "tires" when speaking for a long amount of time, so multi-sentence
  * notifications are split into individual sentences.
- * \param[in] speakMe The string to be read aloud, and/or notified.
+ * \param speakMe The string to be read aloud, and/or notified.
  */
 void Speaker::speak(QString speakMe)
 {

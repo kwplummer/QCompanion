@@ -88,7 +88,7 @@ void QlipperWidget::setStatePath(QString newPath)
 
 /*!
  * \brief Hides the UI, rather than actually closing it.
- * \param[in] event used to tell the program not to close the window.
+ * \param event used to tell the program not to close the window.
  */
 void QlipperWidget::closeEvent(QCloseEvent *event)
 {

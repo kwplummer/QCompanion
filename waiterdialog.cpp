@@ -58,7 +58,7 @@ WaiterDialog::~WaiterDialog()
 
 /*!
  * \brief Hides the UI, rather than actually closing it.
- * \param[in] event used to tell the program not to close the window.
+ * \param event used to tell the program not to close the window.
  */
 void WaiterDialog::closeEvent(QCloseEvent *event)
 {
@@ -68,7 +68,7 @@ void WaiterDialog::closeEvent(QCloseEvent *event)
 
 /*!
  * \brief Sets where the timers should be saved to
- * \param[in] path Where the timers should be saved to
+ * \param path Where the timers should be saved to
  */
 void WaiterDialog::setStatePath(QString path)
 {
@@ -82,7 +82,7 @@ void WaiterDialog::setStatePath(QString path)
 
 /*!
  * \brief Updates when to speak next, then sends the text to the component.
- * \param[in] what What to say.
+ * \param what What to say.
  */
 void WaiterDialog::emitTextSlot(QString what)
 {
@@ -91,13 +91,17 @@ void WaiterDialog::emitTextSlot(QString what)
 }
 
 /*!
- * \brief Adds and configures a "Waiter" that waits and notifies about an event.
+ * \brief Calls addWaiter with an empty WaiterCronOccurance
  */
 void WaiterDialog::onAddButtonClicked()
 {
   addWaiter(WaiterCronOccurance{});
 }
 
+/*!
+ * \brief Called when "Add Recurring" is clicked.
+ * \details Presents a WaiterCronDialog asking when repetitions should occur.
+ */
 void WaiterDialog::on_AddRecurringButton_clicked()
 {
   WaiterCronDialog dialog;
@@ -109,7 +113,10 @@ void WaiterDialog::on_AddRecurringButton_clicked()
     addWaiter(dialog.getResult());
   }
 }
-
+/*!
+ * \brief Adds and configures a "Waiter" that waits and notifies about an event.
+ * \param repeat When repetition occurs. Can be empty.
+ */
 void WaiterDialog::addWaiter(const WaiterCronOccurance &repeat)
 {
   WaiterWidget *w =
@@ -163,7 +170,7 @@ void WaiterDialog::onCurrentTimeClicked()
 
 /*!
  * \brief Removes a specified Waiter.
- * \param[in] waiter what to remove.
+ * \param waiter what to remove.
  */
 void WaiterDialog::removeWaiter(WaiterWidget *waiter)
 {
@@ -176,9 +183,10 @@ void WaiterDialog::removeWaiter(WaiterWidget *waiter)
 /*!
  * \brief Removes a waiter, and sets all the entry fields to what were used to
  * create it.
- * \param[in] waiter What to remove
- * \param[in] name What the old waiter was called
- * \param[in] datetime When the waiter was waiting until
+ * \param waiter What to remove
+ * \param name What the old waiter was called
+ * \param datetime When the waiter was waiting until
+ * \param repeat The time when the waiter will repeat. Can be empty.
  */
 void WaiterDialog::replaceWaiter(WaiterWidget *waiter, QString name,
                                  QDateTime datetime,
@@ -194,6 +202,13 @@ void WaiterDialog::replaceWaiter(WaiterWidget *waiter, QString name,
   commitChanges();
 }
 
+/*!
+ * \brief Readds a Waiter that is set to repeat.
+ * \param waiter The waiter to remove, as it has been copied.
+ * \param title The title of the waiter to readd
+ * \param datetime The time of the waiter to readd.
+ * \param repeat The time to repeat.
+ */
 void WaiterDialog::repeatWaiter(WaiterWidget *waiter, QString title,
                                 QDateTime datetime,
                                 const WaiterCronOccurance &repeat)

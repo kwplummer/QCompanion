@@ -25,7 +25,7 @@ Component::~Component()
 /*!
  * \brief Sets if the component should be in the list of components to speak and
  * wait for.
- * \param[in] mute If the component should be muted.
+ * \param mute If the component should be muted.
  */
 void Component::setMute(bool mute)
 {

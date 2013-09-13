@@ -10,6 +10,7 @@
  * \param endDate What date the waiter will wait for
  * \param endTime What time the waiter will wait for
  * \param title What the waiter is called
+ * \param repeat When the waiter will repeat.
  */
 WaiterWidget::WaiterWidget(QWidget *parent, QDate endDate, QTime endTime,
                            QString title, const WaiterCronOccurance &repeat)
@@ -26,6 +27,7 @@ WaiterWidget::WaiterWidget(QWidget *parent, QDate endDate, QTime endTime,
  * \param parent The widget's parent, used for Qt's memory management
  * \param msec The miliseconds from the UNIX epoch
  * \param title What the waiter is called
+ * \param repeat When the waiter will repeat.
  */
 WaiterWidget::WaiterWidget(QWidget *parent, qint64 msec, QString title,
                            const WaiterCronOccurance &repeat)

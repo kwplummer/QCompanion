@@ -1,12 +1,22 @@
 #include "waitercronoccurance.h"
-
+/*!
+ * \brief Copies the occurance from another WaiterCronOccurance
+ * \param in the occurance to copy from.
+ */
 WaiterCronOccurance::WaiterCronOccurance(const WaiterCronOccurance &in)
     : repeatMin(in.repeatMin), repeatHour(in.repeatHour),
       repeatDayOfMonth(in.repeatDayOfMonth), repeatMonth(in.repeatMonth),
       repeatDayOfWeek(in.repeatDayOfWeek)
 {
 }
-
+/*!
+ * \brief Constructs the WaiterCronOccurance from a list
+ * \param list the list used to fill the occurance
+ * \details Constructs the WaiterCronOccurance from the first five elements in
+ * an std::initializer_list of shorts. If there are less than 5 items the items
+ * are initialized to the same values a default WaiterCronDialog would contain.
+ * Any items after the first five are ignored.
+ */
 WaiterCronOccurance::WaiterCronOccurance(std::initializer_list<short> list)
 {
   if(list.size() >= 5)
@@ -24,13 +34,21 @@ WaiterCronOccurance::WaiterCronOccurance(std::initializer_list<short> list)
     repeatDayOfWeek = 0;
   }
 }
-
+/*!
+ * \brief Determines if the occurance has any values that would cause it to
+ * repeat.
+ * \return If the occurance will repeat.
+ */
 bool WaiterCronOccurance::repeats() const
 {
   return repeatMin != -1 || repeatHour != -1 || repeatDayOfMonth > 0 ||
          repeatMonth > 0 || repeatDayOfWeek != 0;
 }
-
+/*!
+ * \brief Returns when the next repetition should occur.
+ * \param now The time from which the "next" time is calculated.
+ * \return When the next repetition occurs.
+ */
 QDateTime WaiterCronOccurance::nextOccurance(const QDateTime &now) const
 {
   QDateTime next(now);
@@ -64,7 +82,7 @@ QDateTime WaiterCronOccurance::nextOccurance(const QDateTime &now) const
       next = next.addSecs((24 - nowHour + repeatHour) * 60 * 60);
     }
   }
-  else
+  else if(repeatMin == -1)
   {
     auto nextTime = next.time();
     nextTime.setHMS(0, nextTime.minute(), 0);
@@ -137,7 +155,11 @@ QDateTime WaiterCronOccurance::nextOccurance(const QDateTime &now) const
   }
   return next;
 }
-
+/*!
+ * \brief Makes a string writable to a state file.
+ * \return A string containing every value in the struct, interspersed with
+ * spaces.
+ */
 QString WaiterCronOccurance::toString() const
 {
   return QString::number(repeatMin) + ' ' + QString::number(repeatHour) + ' ' +

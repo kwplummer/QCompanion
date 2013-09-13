@@ -17,7 +17,7 @@
  * where they should be saved to.
  * If either of these are not in the global QSettings then pictures will not be
  * taken.
- * \param[in] parent The component's parent widget, used for Qt's Memory
+ * \param parent The component's parent widget, used for Qt's Memory
  * Management.
  */
 QSnapper::QSnapper(QWidget *parent)
@@ -159,7 +159,7 @@ void QSnapper::changeSaveFolder()
 /*!
  * \brief Sets if pictures should be taken.
  * \details Sets if pictures should be taken and logs it in the global QSettings
- * \param[in] enable If taking pictures should be enabled.
+ * \param enable If taking pictures should be enabled.
  */
 void QSnapper::enableSnapping(bool enable)
 {
@@ -357,7 +357,7 @@ bool QSnapper::snap()
 
 /*!
  * \brief Gets where the image should be saved next.
- * \param[in] isDiff determines if the "Diff" should be added to the path or
+ * \param isDiff determines if the "Diff" should be added to the path or
  * not.
  * \return A QString comprosed of the path, the current time (yyyyMMddhhmmss)
  * and the extension (.jpg, to save space)
