@@ -32,7 +32,8 @@ SOURCES += main.cpp\
     waitercomponent.cpp \
     qlipperwidget.cpp \
     qlippercomponent.cpp \
-    waitercrondialog.cpp
+    waitercrondialog.cpp \
+    waitercronoccurance.cpp
 
 HEADERS  += qcompanion.h \
     component.h \
@@ -44,7 +45,8 @@ HEADERS  += qcompanion.h \
     waitercomponent.h \
     qlipperwidget.h \
     qlippercomponent.h \
-    waitercrondialog.h
+    waitercrondialog.h \
+    waitercronoccurance.h
 
 FORMS    += qcompanion.ui \
     waiterdialog.ui \
