@@ -13,5 +13,8 @@ WaiterCronOccurance::WaiterCronOccurance(std::initializer_list<short> list) {
     repeatDayOfMonth = *itr++;
     repeatMonth = *itr++;
     repeatDayOfWeek = *itr;
+  } else {
+    repeatMin = repeatHour = repeatDayOfMonth = repeatMonth = -1;
+    repeatDayOfWeek = 0;
   }
 }

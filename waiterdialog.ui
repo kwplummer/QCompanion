@@ -69,11 +69,22 @@
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="AddButton">
-           <property name="text">
-            <string>Add Event</string>
-           </property>
-          </widget>
+          <layout class="QHBoxLayout" name="horizontalLayout">
+           <item>
+            <widget class="QPushButton" name="AddButton">
+             <property name="text">
+              <string>Add Event</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="AddRecurringButton">
+             <property name="text">
+              <string>Add Recurring</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
          </item>
         </layout>
        </item>
@@ -133,7 +144,6 @@
   <tabstop>EventTitle</tabstop>
   <tabstop>EntryTime</tabstop>
   <tabstop>EntryDate</tabstop>
-  <tabstop>AddButton</tabstop>
   <tabstop>TimerScroller</tabstop>
  </tabstops>
  <resources/>

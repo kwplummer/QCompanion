@@ -3,6 +3,7 @@
 #include <QDialog>
 #include <QSettings>
 #include "waiterwidget.h"
+#include "waitercrondialog.h"
 namespace Ui {
 class WaiterDialog;
 }
@@ -15,6 +16,7 @@ class WaiterDialog : public QDialog {
   void updateNextTime();
   void commitChanges();
   void loadState();
+  void addWaiter(const WaiterCronOccurance &repeat);
   ///\brief A pointer to the UI elements.
   Ui::WaiterDialog *ui;
   ///\brief A container of all the Waiters.
@@ -29,6 +31,7 @@ class WaiterDialog : public QDialog {
   QLabel *currentTimeLabel;
   ///\brief The settings of the program, used to check/save where StatePath is.
   QSettings settings;
+  WaiterCronOccurance lastUsedRepeat;
 private
 slots:
   void onAddButtonClicked();
@@ -37,6 +40,8 @@ slots:
   void removeWaiter(WaiterWidget *waiter);
   void replaceWaiter(WaiterWidget *waiter, QString name, QDateTime datetime);
   void emitTextSlot(QString what);
+
+  void on_AddRecurringButton_clicked();
 
 protected:
   void closeEvent(QCloseEvent *event) override;

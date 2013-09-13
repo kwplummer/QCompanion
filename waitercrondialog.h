@@ -14,9 +14,16 @@ public:
   explicit WaiterCronDialog(QWidget *parent = 0);
   ~WaiterCronDialog();
   WaiterCronOccurance getResult();
+  bool okWasPressed();
+  void setResult(const WaiterCronOccurance &when);
+
+private
+slots:
+  void on_addButton_clicked();
 
 private:
   Ui::WaiterCronDialog *ui;
+  bool ok;
 };
 
 #endif // WAITERCRONDIALOG_H
