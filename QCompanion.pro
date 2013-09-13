@@ -31,7 +31,8 @@ SOURCES += main.cpp\
     waiterwidget.cpp \
     waitercomponent.cpp \
     qlipperwidget.cpp \
-    qlippercomponent.cpp
+    qlippercomponent.cpp \
+    waitercrondialog.cpp
 
 HEADERS  += qcompanion.h \
     component.h \
@@ -42,11 +43,13 @@ HEADERS  += qcompanion.h \
     waiterwidget.h \
     waitercomponent.h \
     qlipperwidget.h \
-    qlippercomponent.h
+    qlippercomponent.h \
+    waitercrondialog.h
 
 FORMS    += qcompanion.ui \
     waiterdialog.ui \
-    qlipperwidget.ui
+    qlipperwidget.ui \
+    waitercrondialog.ui
 
 QMAKE_CXXFLAGS += -std=c++11
 
