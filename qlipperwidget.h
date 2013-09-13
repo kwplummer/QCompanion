@@ -7,14 +7,16 @@
 #include <QDateTime>
 #include <QAction>
 #include <QTimer>
-namespace Ui {
+namespace Ui
+{
 class QlipperWidget;
 }
 
 /*!
  * \brief The GUI used for showing and storing the clipboard history.
  */
-class QlipperWidget : public QDialog {
+class QlipperWidget : public QDialog
+{
   Q_OBJECT
 
 public:

@@ -11,7 +11,8 @@
  */
 WaiterComponent::WaiterComponent(QWidget *parent)
     : Component(parent),
-      dialog(parent, QCoreApplication::applicationDirPath() + "/murasaki.png") {
+      dialog(parent, QCoreApplication::applicationDirPath() + "/murasaki.png")
+{
   dialog.setWindowFlags(Qt::Window);
 #if QT_VERSION < 0x050000
   connect(&dialog, SIGNAL(changeTimers()), this, SLOT(changeTimerSlot()));
@@ -26,13 +27,18 @@ WaiterComponent::WaiterComponent(QWidget *parent)
 /*!
  * \brief Destroys the component and dialog.
  */
-WaiterComponent::~WaiterComponent() {}
+WaiterComponent::~WaiterComponent()
+{
+}
 
 /*!
  * \brief Asks the dialog when it will speak next.
  * \return The QDateTime when it will speak next.
  */
-QDateTime WaiterComponent::nextCheckTime() { return dialog.getNextTime(); }
+QDateTime WaiterComponent::nextCheckTime()
+{
+  return dialog.getNextTime();
+}
 
 /*!
  * \brief Creates a specialized menu for the component.
@@ -40,7 +46,8 @@ QDateTime WaiterComponent::nextCheckTime() { return dialog.getNextTime(); }
  * where to save your timers, and show the dialog to configure timers.
  * \return A QList of QActions that can be used to interface with the component.
  */
-QList<QAction *> WaiterComponent::getMenuContents() {
+QList<QAction *> WaiterComponent::getMenuContents()
+{
   QList<QAction *> returnMe;
   QAction *showAction = new QAction("Show", this);
 #if QT_VERSION < 0x050000
@@ -67,10 +74,12 @@ QList<QAction *> WaiterComponent::getMenuContents() {
  * \brief Asks the user where they want to store the state file used for the
  * timers.
  */
-void WaiterComponent::selectStatePath() {
+void WaiterComponent::selectStatePath()
+{
   QFileDialog dlg(this, "Select Folder");
   QString dir = dlg.getOpenFileName(this, "Open Directory", "~/");
-  if (!dir.isNull()) {
+  if(!dir.isNull())
+  {
     dialog.setStatePath(dir);
   }
 }
@@ -80,14 +89,18 @@ void WaiterComponent::selectStatePath() {
  * \details When the user changes a timer this is used to notify the rest of the
  * program that the timers have changed.
  */
-void WaiterComponent::changeTimerSlot() { emit changeTimers(); }
+void WaiterComponent::changeTimerSlot()
+{
+  emit changeTimers();
+}
 
 /*!
  * \brief Checks if it's muted, and if not sends the text up to the QCompanion.
  * \param[in] what What to say
  */
-void WaiterComponent::emitSpeak(QString what) {
-  if (!muted)
+void WaiterComponent::emitSpeak(QString what)
+{
+  if(!muted)
     emit wantsToSpeak(what);
   emit changeTimers();
 }

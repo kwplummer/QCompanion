@@ -11,7 +11,8 @@
  * 6 hours, one hour, 30 minutes, 15 minutes, 10 minutes, 5 minutes, and one
  * minute before the event. As well as when the event occurs.
  */
-class WaiterComponent : public Component {
+class WaiterComponent : public Component
+{
   Q_OBJECT
   ///\brief The GUI that handles creating, deleting, and updating timers.
   WaiterDialog dialog;

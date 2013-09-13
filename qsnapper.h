@@ -20,7 +20,8 @@
  * \todo Add signal for "Time changed" which will refresh timer, used for when
  * component wants to speak earlier than normal.
  */
-class QSnapper : public Component {
+class QSnapper : public Component
+{
   Q_OBJECT
   ///\brief The path where the images should be saved.
   QString saveDir;

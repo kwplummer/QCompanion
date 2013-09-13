@@ -15,14 +15,16 @@
  * \param IconPath Where the icon for the GUI is located.
  */
 WaiterDialog::WaiterDialog(QWidget *parent, QString IconPath)
-    : QDialog(parent), ui(new Ui::WaiterDialog), lastUsedRepeat{} {
+    : QDialog(parent), ui(new Ui::WaiterDialog), lastUsedRepeat{}
+{
   ui->setupUi(this);
   ui->EntryDate->setSelectedDate(QDate::currentDate());
   currentTimeLabel = new QLabel(this);
   currentTimeLabel->setAlignment(Qt::AlignHCenter);
   ui->TimerScrollerWidget->layout()->addWidget(currentTimeLabel);
   QVariant saveLocation = settings.value("QWaiter_Location");
-  if (!saveLocation.isNull()) {
+  if(!saveLocation.isNull())
+  {
     statePath = saveLocation.toString();
   }
   loadState();
@@ -41,18 +43,25 @@ WaiterDialog::WaiterDialog(QWidget *parent, QString IconPath)
  * \brief Gets the next time there should be text.
  * \return A QDateTime of when the next speech should occur.
  */
-QDateTime WaiterDialog::getNextTime() { return nextTime; }
+QDateTime WaiterDialog::getNextTime()
+{
+  return nextTime;
+}
 
 /*!
  * \brief Deletes the UI.
  */
-WaiterDialog::~WaiterDialog() { delete ui; }
+WaiterDialog::~WaiterDialog()
+{
+  delete ui;
+}
 
 /*!
  * \brief Hides the UI, rather than actually closing it.
  * \param[in] event used to tell the program not to close the window.
  */
-void WaiterDialog::closeEvent(QCloseEvent *event) {
+void WaiterDialog::closeEvent(QCloseEvent *event)
+{
   setVisible(false);
   event->ignore();
 }
@@ -61,10 +70,11 @@ void WaiterDialog::closeEvent(QCloseEvent *event) {
  * \brief Sets where the timers should be saved to
  * \param[in] path Where the timers should be saved to
  */
-void WaiterDialog::setStatePath(QString path) {
+void WaiterDialog::setStatePath(QString path)
+{
   statePath = path;
   settings.setValue("QWaiter_Location", path);
-  if (widgets.empty())
+  if(widgets.empty())
     loadState();
   else
     commitChanges();
@@ -74,7 +84,8 @@ void WaiterDialog::setStatePath(QString path) {
  * \brief Updates when to speak next, then sends the text to the component.
  * \param[in] what What to say.
  */
-void WaiterDialog::emitTextSlot(QString what) {
+void WaiterDialog::emitTextSlot(QString what)
+{
   emit emitText(what);
   updateNextTime();
 }
@@ -82,18 +93,61 @@ void WaiterDialog::emitTextSlot(QString what) {
 /*!
  * \brief Adds and configures a "Waiter" that waits and notifies about an event.
  */
-void WaiterDialog::onAddButtonClicked() {
+void WaiterDialog::onAddButtonClicked()
+{
   addWaiter(WaiterCronOccurance{});
+}
+
+void WaiterDialog::on_AddRecurringButton_clicked()
+{
+  WaiterCronDialog dialog;
+  dialog.setResult(lastUsedRepeat);
+  dialog.exec();
+  if(dialog.okWasPressed())
+  {
+    lastUsedRepeat = dialog.getResult();
+    addWaiter(dialog.getResult());
+  }
+}
+
+void WaiterDialog::addWaiter(const WaiterCronOccurance &repeat)
+{
+  WaiterWidget *w =
+      new WaiterWidget(this, ui->EntryDate->selectedDate(),
+                       ui->EntryTime->time(), ui->EventTitle->text(), repeat);
+  widgets.push_back(w);
+  ui->TimerScrollerWidget->layout()->addWidget(w);
+#if QT_VERSION < 0x050000
+  connect(w, SIGNAL(removeAt(WaiterWidget *)), this,
+          SLOT(removeWaiter(WaiterWidget *)));
+  connect(w, SIGNAL(replaceAt(WaiterWidget *, QString, QDateTime,
+                              WaiterCronOccurance)),
+          this, SLOT(replaceWaiter(WaiterWidget *, QString, QDateTime,
+                                   WaiterCronOccurance)));
+  connect(w, SIGNAL(speakThis(QString)), this, SLOT(emitTextSlot(QString)));
+  connect(w, SIGNAL(repeatAt(WaiterWidget *, QString, QDateTime,
+                             WaiterCronOccurance)),
+          this, SLOT(repeatWaiter(WaiterWidget *, QString, QDateTime,
+                                  WaiterCronOccurance)));
+#else
+  connect(w, &WaiterWidget::removeAt, this, &WaiterDialog::removeWaiter);
+  connect(w, &WaiterWidget::replaceAt, this, &WaiterDialog::replaceWaiter);
+  connect(w, &WaiterWidget::speakThis, this, &WaiterDialog::emitTextSlot);
+  connect(w, &WaiterWidget::repeatAt, this, &WaiterDialog::repeatWaiter);
+#endif
+  ui->EventTitle->clear();
+  commitChanges();
 }
 
 /*!
  * \brief Updates all the Waiters with the current time, additionally sets the
  * currentTimeLabel to the current time.
  */
-void WaiterDialog::notifyAll() {
+void WaiterDialog::notifyAll()
+{
   const QDateTime current = QDateTime::currentDateTime();
   currentTimeLabel->setText(current.toString("yy/MM/dd hh:mm:ss"));
-  for (WaiterWidget *w : widgets)
+  for(WaiterWidget *w : widgets)
     w->update(current);
 }
 
@@ -101,7 +155,8 @@ void WaiterDialog::notifyAll() {
  * \brief Sets the two fields used to set a timer's date and time to the current
  * date and time.
  */
-void WaiterDialog::onCurrentTimeClicked() {
+void WaiterDialog::onCurrentTimeClicked()
+{
   ui->EntryDate->setSelectedDate(QDate::currentDate());
   ui->EntryTime->setTime(QTime::currentTime());
 }
@@ -110,7 +165,8 @@ void WaiterDialog::onCurrentTimeClicked() {
  * \brief Removes a specified Waiter.
  * \param[in] waiter what to remove.
  */
-void WaiterDialog::removeWaiter(WaiterWidget *waiter) {
+void WaiterDialog::removeWaiter(WaiterWidget *waiter)
+{
   widgets.erase(std::remove(widgets.begin(), widgets.end(), waiter),
                 widgets.end());
   waiter->deleteLater();
@@ -125,14 +181,37 @@ void WaiterDialog::removeWaiter(WaiterWidget *waiter) {
  * \param[in] datetime When the waiter was waiting until
  */
 void WaiterDialog::replaceWaiter(WaiterWidget *waiter, QString name,
-                                 QDateTime datetime) {
+                                 QDateTime datetime,
+                                 const WaiterCronOccurance &repeat)
+{
   ui->EventTitle->setText(name);
   ui->EntryDate->setSelectedDate(datetime.date());
   ui->EntryTime->setTime(datetime.time());
+  lastUsedRepeat = repeat;
   widgets.erase(std::remove(widgets.begin(), widgets.end(), waiter),
                 widgets.end());
   waiter->deleteLater();
   commitChanges();
+}
+
+void WaiterDialog::repeatWaiter(WaiterWidget *waiter, QString title,
+                                QDateTime datetime,
+                                const WaiterCronOccurance &repeat)
+{
+  const auto oldDate = ui->EntryDate->selectedDate();
+  const auto oldTime = ui->EntryTime->time();
+  const auto oldText = ui->EventTitle->text();
+  ui->EntryDate->setSelectedDate(datetime.date());
+  ui->EntryTime->setTime(datetime.time());
+  ui->EventTitle->setText(title);
+
+  addWaiter(repeat);
+
+  ui->EntryDate->setSelectedDate(oldDate);
+  ui->EntryTime->setTime(oldTime);
+  ui->EventTitle->setText(oldText);
+
+  removeWaiter(waiter);
 }
 
 /*!
@@ -142,20 +221,23 @@ void WaiterDialog::replaceWaiter(WaiterWidget *waiter, QString name,
  * Additionally this updates the time the next speech should occur, and notifies
  * the component.
  */
-void WaiterDialog::commitChanges() {
-  if (!statePath.isNull()) {
+void WaiterDialog::commitChanges()
+{
+  if(!statePath.isNull())
+  {
     std::sort(widgets.begin(), widgets.end(),
               [](const WaiterWidget * w1, const WaiterWidget * w2) {
       return w1->getMsecs() < w2->getMsecs();
     });
-    for (auto w : widgets)
+    for(auto w : widgets)
       ui->TimerScrollerWidget->layout()->removeWidget(w);
-    for (auto w : widgets)
+    for(auto w : widgets)
       ui->TimerScrollerWidget->layout()->addWidget(w);
     QFile file(statePath);
     file.open(QIODevice::WriteOnly);
     QTextStream out(&file);
-    for (WaiterWidget *w : widgets) {
+    for(WaiterWidget *w : widgets)
+    {
       out << w->toLoggableString() << '\n';
     }
     updateNextTime();
@@ -170,29 +252,52 @@ void WaiterDialog::commitChanges() {
  * Additionally this updates the time the next speech should occur, and notifies
  * the component.
  */
-void WaiterDialog::loadState() {
-  if (!statePath.isNull()) {
+void WaiterDialog::loadState()
+{
+  if(!statePath.isNull())
+  {
     QFile file(statePath);
-    if (file.exists()) {
+    if(file.exists())
+    {
       file.open(QIODevice::ReadOnly);
       QTextStream in(&file);
-      while (!in.atEnd()) {
-        QString title;
-        qint64 time;
-        in >> title >> time;
-        if (!title.isEmpty()) {
+      // Use in.readLine() instead? This is kind of a dumb way to do it...
+      while(!in.atEnd())
+      {
+        QStringList line = in.readLine().split(' ');
+
+        if(line.size() < 2)
+          return;
+
+        QString title = line[0];
+        qint64 time = line[1].toLongLong();
+        WaiterCronOccurance repeat{};
+        if(line.size() >= 7)
+        {
+          repeat = WaiterCronOccurance{ line[2].toShort(), line[3].toShort(),
+                                        line[4].toShort(), line[5].toShort(),
+                                        line[6].toShort() };
+        }
+
+        if(!title.isEmpty())
+        {
           WaiterWidget *w = new WaiterWidget(
-              this, time, title.replace("_", " ", Qt::CaseInsensitive));
+              this, time, title.replace("_", " ", Qt::CaseInsensitive), repeat);
           widgets.push_back(w);
           ui->TimerScrollerWidget->layout()->addWidget(w);
 #if QT_VERSION < 0x050000
           connect(w, SIGNAL(removeAt(WaiterWidget *)), this,
                   SLOT(removeWaiter(WaiterWidget *)));
-          connect(w, SIGNAL(replaceAt(WaiterWidget *, QString, QDateTime)),
-                  this,
-                  SLOT(replaceWaiter(WaiterWidget *, QString, QDateTime)));
+          connect(w, SIGNAL(replaceAt(WaiterWidget *, QString, QDateTime,
+                                      WaiterCronOccurance)),
+                  this, SLOT(replaceWaiter(WaiterWidget *, QString, QDateTime,
+                                           WaiterCronOccurance)));
           connect(w, SIGNAL(speakThis(QString)), this,
                   SLOT(emitTextSlot(QString)));
+          connect(w, SIGNAL(repeatAt(WaiterWidget *, QString, QDateTime,
+                                     WaiterCronOccurance)),
+                  this, SLOT(repeatWaiter(WaiterWidget *, QString, QDateTime,
+                                          WaiterCronOccurance)));
 #else
           connect(w, &WaiterWidget::removeAt, this,
                   &WaiterDialog::removeWaiter);
@@ -200,6 +305,8 @@ void WaiterDialog::loadState() {
                   &WaiterDialog::replaceWaiter);
           connect(w, &WaiterWidget::speakThis, this,
                   &WaiterDialog::emitTextSlot);
+          connect(w, &WaiterWidget::repeatAt, this,
+                  &WaiterDialog::repeatWaiter);
 #endif
         }
       }
@@ -209,60 +316,34 @@ void WaiterDialog::loadState() {
   }
 }
 
-void WaiterDialog::addWaiter(const WaiterCronOccurance &repeat) {
-  WaiterWidget *w =
-      new WaiterWidget(this, ui->EntryDate->selectedDate(),
-                       ui->EntryTime->time(), ui->EventTitle->text());
-  widgets.push_back(w);
-  ui->TimerScrollerWidget->layout()->addWidget(w);
-#if QT_VERSION < 0x050000
-  connect(w, SIGNAL(removeAt(WaiterWidget *)), this,
-          SLOT(removeWaiter(WaiterWidget *)));
-  connect(w, SIGNAL(replaceAt(WaiterWidget *, QString, QDateTime)), this,
-          SLOT(replaceWaiter(WaiterWidget *, QString, QDateTime)));
-  connect(w, SIGNAL(speakThis(QString)), this, SLOT(emitTextSlot(QString)));
-#else
-  connect(w, &WaiterWidget::removeAt, this, &WaiterDialog::removeWaiter);
-  connect(w, &WaiterWidget::replaceAt, this, &WaiterDialog::replaceWaiter);
-  connect(w, &WaiterWidget::speakThis, this, &WaiterDialog::emitTextSlot);
-#endif
-  ui->EventTitle->clear();
-  commitChanges();
-}
-
 /*!
  * \brief Sets when the next speech will occur.
  * \details Takes the current time and every time
  */
-void WaiterDialog::updateNextTime() {
+void WaiterDialog::updateNextTime()
+{
   const time_t now = QDateTime::currentDateTime().toMSecsSinceEpoch();
   time_t earliest = 0;
   const std::vector<time_t> times{ 31536000000, 2592000000, 604800000, 86400000,
                                    43200000,    21600000,   21600000,  3600000,
                                    1800000,     900000,     600000,    300000,
                                    60000,       0 };
-  for (const WaiterWidget *w : widgets) {
+  for(const WaiterWidget *w : widgets)
+  {
     const time_t diff = w->getMsecs() - now;
-    for (time_t t : times) {
-      if (diff > t) {
-        if (!earliest || earliest > diff - t) {
+    for(time_t t : times)
+    {
+      if(diff > t)
+      {
+        if(!earliest || earliest > diff - t)
+        {
           earliest = diff - t;
         }
       }
     }
   }
-  if (earliest)
+  if(earliest)
     nextTime = QDateTime::currentDateTime().addMSecs(earliest);
   else
     nextTime = QDateTime::fromTime_t(0);
-}
-
-void WaiterDialog::on_AddRecurringButton_clicked() {
-  WaiterCronDialog dialog;
-  dialog.setResult(lastUsedRepeat);
-  dialog.exec();
-  if (dialog.okWasPressed()) {
-    lastUsedRepeat = dialog.getResult();
-    addWaiter(dialog.getResult());
-  }
 }

@@ -2,13 +2,18 @@
 #include "ui_waitercrondialog.h"
 
 WaiterCronDialog::WaiterCronDialog(QWidget *parent)
-    : QDialog(parent), ui(new Ui::WaiterCronDialog), ok(false) {
+    : QDialog(parent), ui(new Ui::WaiterCronDialog), ok(false)
+{
   ui->setupUi(this);
 }
 
-WaiterCronDialog::~WaiterCronDialog() { delete ui; }
+WaiterCronDialog::~WaiterCronDialog()
+{
+  delete ui;
+}
 
-WaiterCronOccurance WaiterCronDialog::getResult() {
+WaiterCronOccurance WaiterCronDialog::getResult()
+{
   return WaiterCronOccurance{
     static_cast<short>(ui->minBox->value()),
     static_cast<short>(ui->hourBox->value()),
@@ -18,9 +23,13 @@ WaiterCronOccurance WaiterCronDialog::getResult() {
   };
 }
 
-bool WaiterCronDialog::okWasPressed() { return ok; }
+bool WaiterCronDialog::okWasPressed()
+{
+  return ok;
+}
 
-void WaiterCronDialog::setResult(const WaiterCronOccurance &when) {
+void WaiterCronDialog::setResult(const WaiterCronOccurance &when)
+{
   ui->minBox->setValue(when.repeatMin);
   ui->hourBox->setValue(when.repeatHour);
   ui->dayMonthBox->setValue(when.repeatDayOfMonth);
@@ -28,7 +37,8 @@ void WaiterCronDialog::setResult(const WaiterCronOccurance &when) {
   ui->dayWeekBox->setCurrentIndex(when.repeatDayOfWeek);
 }
 
-void WaiterCronDialog::on_addButton_clicked() {
+void WaiterCronDialog::on_addButton_clicked()
+{
   ok = true;
   close();
 }

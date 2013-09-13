@@ -4,7 +4,8 @@
 #include "component.h"
 #include "qlipperwidget.h"
 ///\brief Logs the clipboard contents
-class QlipperComponent : public Component {
+class QlipperComponent : public Component
+{
   Q_OBJECT
   /*!
    *\brief The system settings, used for storing if logging should be enabled,

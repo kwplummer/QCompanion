@@ -5,7 +5,8 @@
 /*!
  * \brief Reads the time every hour
  */
-class HourReader : public Component {
+class HourReader : public Component
+{
   Q_OBJECT
 private
 slots:

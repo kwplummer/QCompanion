@@ -4,14 +4,16 @@
 #include <QSettings>
 #include "waiterwidget.h"
 #include "waitercrondialog.h"
-namespace Ui {
+namespace Ui
+{
 class WaiterDialog;
 }
 
 /*!
  * \brief The GUI used to configure waiters.
  */
-class WaiterDialog : public QDialog {
+class WaiterDialog : public QDialog
+{
   Q_OBJECT
   void updateNextTime();
   void commitChanges();
@@ -38,9 +40,11 @@ slots:
   void notifyAll();
   void onCurrentTimeClicked();
   void removeWaiter(WaiterWidget *waiter);
-  void replaceWaiter(WaiterWidget *waiter, QString name, QDateTime datetime);
+  void replaceWaiter(WaiterWidget *waiter, QString name, QDateTime datetime,
+                     const WaiterCronOccurance &repeat);
   void emitTextSlot(QString what);
-
+  void repeatWaiter(WaiterWidget *waiter, QString title, QDateTime datetime,
+                    const WaiterCronOccurance &repeat);
   void on_AddRecurringButton_clicked();
 
 protected:

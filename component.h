@@ -17,7 +17,8 @@
  * \todo Add QWikiReader to read random wiki "Did you know"s.
  * \todo Add signal for "Time changed" when muted/unmuted.
  */
-class Component : public QWidget {
+class Component : public QWidget
+{
   Q_OBJECT
 private
 slots:

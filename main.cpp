@@ -10,12 +10,15 @@
 *part), hour changes, as well as providing the ability to log your screen or
 *clipboard, at the user's request.
 */
-
+// clang-format command:
+// clang-format -i *.cpp *.h -style="{BreakBeforeBraces: Allman, \
+// SpaceAfterControlStatementKeyword: false}"
 #ifndef TEST
 #include "qcompanion.h"
 #include <QApplication>
 
-int main(int argc, char *argv[]) {
+int main(int argc, char *argv[])
+{
   QApplication a(argc, argv);
   QCoreApplication::setOrganizationDomain("coderfrog.com");
   QCoreApplication::setOrganizationName("Coderfrog");

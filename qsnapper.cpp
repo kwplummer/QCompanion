@@ -26,11 +26,11 @@ QSnapper::QSnapper(QWidget *parent)
       ,
       screensaver("org.freedesktop.ScreenSaver", "/ScreenSaver")
 #endif
-      {
+{
   QVariant logSetting = settings.value("QSnapper_Enable", false);
   canSnap = logSetting.toBool();
   QVariant saveDirSetting = settings.value("QSnapper_Directory");
-  if (saveDirSetting.isValid())
+  if(saveDirSetting.isValid())
     saveDir = saveDirSetting.toString();
 
   QVariant diffSetting = settings.value("QSnapper_Diff", false);
@@ -69,7 +69,9 @@ QSnapper::QSnapper(QWidget *parent)
 /*!
  * \brief Destroys the QSnapper, does nothing interesting.
  */
-QSnapper::~QSnapper() {}
+QSnapper::~QSnapper()
+{
+}
 
 /*!
  * \brief Gets when the next picture will be taken.
@@ -77,7 +79,8 @@ QSnapper::~QSnapper() {}
  * If taking pictures is disabled, time 0 is returned.
  * \return A QDateTime representing when the component should be read.
  */
-QDateTime QSnapper::nextCheckTime() {
+QDateTime QSnapper::nextCheckTime()
+{
   return canSnap ? nextWakeup : QDateTime::fromTime_t(0);
 }
 
@@ -85,7 +88,10 @@ QDateTime QSnapper::nextCheckTime() {
  * \brief Gets what to say aloud and notify
  * \return The word "Snap"
  */
-QString QSnapper::getText() { return "Snap"; }
+QString QSnapper::getText()
+{
+  return "Snap";
+}
 
 /*!
  * \brief Gets the items the user will use to interact with the component.
@@ -94,7 +100,8 @@ QString QSnapper::getText() { return "Snap"; }
  * \return A list of actions that will be inserted into the main application's
  *menu.
  */
-QList<QAction *> QSnapper::getMenuContents() {
+QList<QAction *> QSnapper::getMenuContents()
+{
   QList<QAction *> actions;
   QAction *changeFolderAction = new QAction("Change Save Location", this);
   actions.append(changeFolderAction);
@@ -127,18 +134,23 @@ QList<QAction *> QSnapper::getMenuContents() {
  * \brief Returns if the logger can take pictures or not
  * \return If the logger is allowed to take pictures.
  */
-bool QSnapper::isEnabled() { return canSnap; }
+bool QSnapper::isEnabled()
+{
+  return canSnap;
+}
 
 /*!
  * \brief Prompts the user to pick which folder the screenshots should be logged
  *to.
  *This is saved to settings, and persists between runs.
  */
-void QSnapper::changeSaveFolder() {
+void QSnapper::changeSaveFolder()
+{
   QFileDialog dialog(this, "Select Folder");
   QString dir = dialog.getExistingDirectory(
       this, "Open Directory", "~/Pictures", QFileDialog::ShowDirsOnly);
-  if (!dir.isNull()) {
+  if(!dir.isNull())
+  {
     saveDir = dir;
     settings.setValue("QSnapper_Directory", dir);
   }
@@ -149,7 +161,8 @@ void QSnapper::changeSaveFolder() {
  * \details Sets if pictures should be taken and logs it in the global QSettings
  * \param[in] enable If taking pictures should be enabled.
  */
-void QSnapper::enableSnapping(bool enable) {
+void QSnapper::enableSnapping(bool enable)
+{
   canSnap = enable;
   settings.setValue("QSnapper_Enable", enable);
 }
@@ -158,7 +171,8 @@ void QSnapper::enableSnapping(bool enable) {
  * \brief Sets lenient to true or false, based on the checkbox
  * \param isLenient if it should be lenient or not
  */
-void QSnapper::setLenient(bool isLenient) {
+void QSnapper::setLenient(bool isLenient)
+{
   lenient = isLenient;
   settings.setValue("QSnapper_Lenient", isLenient);
   toggleDiffAction->setEnabled(lenient);
@@ -168,7 +182,8 @@ void QSnapper::setLenient(bool isLenient) {
  * \brief Stores the value of the muted checkbox to settings
  * \param shouldMute if it should be muted.
  */
-void QSnapper::setMuteSettings(bool shouldMute) {
+void QSnapper::setMuteSettings(bool shouldMute)
+{
   settings.setValue("QSnapper_Muted", shouldMute);
 }
 
@@ -177,7 +192,8 @@ void QSnapper::setMuteSettings(bool shouldMute) {
  * settings.
  * \param enable If difference files should be made.
  */
-void QSnapper::setDiff(bool enable) {
+void QSnapper::setDiff(bool enable)
+{
   settings.setValue("QSnapper_Diff", enable);
   saveDifferenceImage = enable;
 }
@@ -191,10 +207,12 @@ void QSnapper::setDiff(bool enable) {
  * \param newImage the new image, if this returns true, it will be saved.
  * \return True if the images differ.
  */
-bool QSnapper::imagesDiffer(const QImage oldImage, const QImage newImage) {
+bool QSnapper::imagesDiffer(const QImage oldImage, const QImage newImage)
+{
   bool exceedsDiffenceLimit = true;
-  if (oldImage.width() == newImage.width() &&
-      oldImage.height() == newImage.height()) {
+  if(oldImage.width() == newImage.width() &&
+     oldImage.height() == newImage.height())
+  {
     exceedsDiffenceLimit = false;
     std::atomic_int difference(0);
     const int height = oldImage.height();
@@ -202,21 +220,25 @@ bool QSnapper::imagesDiffer(const QImage oldImage, const QImage newImage) {
     const int differenceLimit = (height * width) / 100;
     tbb::parallel_for(tbb::blocked_range<int>(0, width),
                       [&](const tbb::blocked_range<int> & range) {
-      for (int i = range.begin(); i != range.end(); ++i) {
-        for (int j = 0; j < height; ++j) {
-          if (exceedsDiffenceLimit)
+      for(int i = range.begin(); i != range.end(); ++i)
+      {
+        for(int j = 0; j < height; ++j)
+        {
+          if(exceedsDiffenceLimit)
             return;
-          if (oldImage.pixel(i, j) != newImage.pixel(i, j))
+          if(oldImage.pixel(i, j) != newImage.pixel(i, j))
             ++difference;
-          if (difference > differenceLimit) {
+          if(difference > differenceLimit)
+          {
             exceedsDiffenceLimit = true;
           }
         }
       }
     });
-    if (!muted)
+    if(!muted)
       std::cout << difference << std::endl;
-  } else if (!muted)
+  }
+  else if(!muted)
     std::cout << "Different sizes" << std::endl;
   return exceedsDiffenceLimit;
 }
@@ -230,12 +252,14 @@ bool QSnapper::imagesDiffer(const QImage oldImage, const QImage newImage) {
  * \return True if the images differ.
  */
 bool QSnapper::imagesDiffer(const QImage oldImage, const QImage newImage,
-                            const QString filename) {
+                            const QString filename)
+{
   bool exceedsDiffenceLimit = true;
   const int height = oldImage.height();
   const int width = oldImage.width();
   QImage diff(width, height, oldImage.format());
-  if (width == newImage.width() && height == newImage.height()) {
+  if(width == newImage.width() && height == newImage.height())
+  {
     exceedsDiffenceLimit = false;
     std::atomic_int difference(0);
     const int differenceLimit = (height * width) / 100;
@@ -243,26 +267,33 @@ bool QSnapper::imagesDiffer(const QImage oldImage, const QImage newImage,
     diff.fill(QColor(00, 0xF2, 0xFF));
     tbb::parallel_for(tbb::blocked_range<int>(0, width),
                       [&](const tbb::blocked_range<int> & range) {
-      for (int i = range.begin(); i != range.end(); ++i) {
-        for (int j = 0; j < height; ++j) {
-          if (oldImage.pixel(i, j) != newImage.pixel(i, j)) {
+      for(int i = range.begin(); i != range.end(); ++i)
+      {
+        for(int j = 0; j < height; ++j)
+        {
+          if(oldImage.pixel(i, j) != newImage.pixel(i, j))
+          {
             ++difference;
             QRgb pixel = newImage.pixel(i, j);
-            if (pixel != qRgb(0xFF, 0xFF, 0xFF)) {
+            if(pixel != qRgb(0xFF, 0xFF, 0xFF))
+            {
               std::lock_guard<std::mutex> l(diffMutex);
               diff.setPixel(i, j, pixel);
             }
           }
-          if (difference > differenceLimit) {
+          if(difference > differenceLimit)
+          {
             exceedsDiffenceLimit = true;
           }
         }
       }
     });
-    if (!muted)
+    if(!muted)
       std::cout << difference << std::endl;
-  } else {
-    if (!muted)
+  }
+  else
+  {
+    if(!muted)
       std::cout << "Different sizes" << std::endl;
     diff = newImage;
   }
@@ -274,7 +305,8 @@ bool QSnapper::imagesDiffer(const QImage oldImage, const QImage newImage,
  * \brief Returns if the screensaver is running. This is OS-dependent.
  * \return If the screensaver is running.
  */
-bool QSnapper::screensaverIsActive() {
+bool QSnapper::screensaverIsActive()
+{
 #ifdef Q_OS_LINUX
   QDBusReply<bool> reply = screensaver.call("GetActive");
   return reply.isValid() && reply.value();
@@ -295,9 +327,11 @@ bool QSnapper::screensaverIsActive() {
  * It then sets the next time another screen shot should occur.
  * \return If a picture was taken.
  */
-bool QSnapper::snap() {
-  if (canSnap && !saveDir.isNull() && QDir(saveDir).exists() &&
-      !screensaverIsActive()) {
+bool QSnapper::snap()
+{
+  if(canSnap && !saveDir.isNull() && QDir(saveDir).exists() &&
+     !screensaverIsActive())
+  {
     QString saveFileName = getNextFileName(false);
 #if QT_VERSION < 0x050000
     QPixmap desktop = QPixmap::grabWindow(QApplication::desktop()->winId());
@@ -307,10 +341,11 @@ bool QSnapper::snap() {
 #endif
     QImage newImage = desktop.toImage();
     nextWakeup = QDateTime::currentDateTime().addSecs(60);
-    if ((!lenient && oldImage != newImage) ||
-        (lenient && !saveDifferenceImage && imagesDiffer(oldImage, newImage)) ||
-        (lenient && saveDifferenceImage &&
-         imagesDiffer(oldImage, newImage, getNextFileName(true)))) {
+    if((!lenient && oldImage != newImage) ||
+       (lenient && !saveDifferenceImage && imagesDiffer(oldImage, newImage)) ||
+       (lenient && saveDifferenceImage &&
+        imagesDiffer(oldImage, newImage, getNextFileName(true))))
+    {
       oldImage = newImage;
       oldImage.save(saveFileName);
       saveFileName = getNextFileName(false);
@@ -327,7 +362,8 @@ bool QSnapper::snap() {
  * \return A QString comprosed of the path, the current time (yyyyMMddhhmmss)
  * and the extension (.jpg, to save space)
  */
-QString QSnapper::getNextFileName(bool isDiff) {
+QString QSnapper::getNextFileName(bool isDiff)
+{
   return saveDir + (isDiff ? "/Diff/" : "/") +
          QDateTime::currentDateTime().toString("yyyyMMddhhmmss") + ".jpg";
 }
@@ -335,8 +371,9 @@ QString QSnapper::getNextFileName(bool isDiff) {
 /*!
  * \brief Takes a picture, and if unmuted says "Snap".
  */
-void QSnapper::emitSpeak() {
-  if (snap() && !muted)
+void QSnapper::emitSpeak()
+{
+  if(snap() && !muted)
     emit wantsToSpeak(getText());
   else
     emit wantsToSpeak("");

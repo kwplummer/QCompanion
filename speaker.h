@@ -7,7 +7,8 @@
 
 extern "C" cst_voice *register_cmu_us_kal(const char *voxdir);
 ///\brief Offers a queue and an interface to flite and libnotify.
-class Speaker {
+class Speaker
+{
   /*!
    * \brief The concurrent queue that is used to store strings to be
    * read/notified.

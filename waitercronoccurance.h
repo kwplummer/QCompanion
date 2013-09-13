@@ -1,7 +1,9 @@
 #ifndef CRONOCCURANCE_H
 #define CRONOCCURANCE_H
 #include <initializer_list>
-struct WaiterCronOccurance {
+#include <QDateTime>
+struct WaiterCronOccurance
+{
   WaiterCronOccurance(const WaiterCronOccurance &in);
   WaiterCronOccurance(std::initializer_list<short> list);
   short repeatMin;
@@ -9,6 +11,9 @@ struct WaiterCronOccurance {
   short repeatDayOfMonth;
   short repeatMonth;
   short repeatDayOfWeek;
+  bool repeats() const;
+  QDateTime nextOccurance(const QDateTime &now) const;
+  QString toString() const;
 };
 
 #endif // CRONOCCURANCE_H

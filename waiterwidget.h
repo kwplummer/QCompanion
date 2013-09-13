@@ -4,11 +4,13 @@
 #include <QDateTime>
 #include <QLabel>
 #include <QProgressBar>
+#include "waitercronoccurance.h"
 /*!
  * \brief A class representing an event that is being waited for. It notifies
  * and shows UI elements related to that time.
  */
-class WaiterWidget : public QWidget {
+class WaiterWidget : public QWidget
+{
   Q_OBJECT
   void init();
   ///\brief A bit of text saying when the waiter is waiting for
@@ -23,6 +25,13 @@ class WaiterWidget : public QWidget {
   ///\brief What the waiter is called.
   QString title;
   /*!
+   * \brief Used to represent if the Widget should be updated, or if it has
+   * already reached its end time.
+   */
+  const double initMs;
+  bool quit;
+  WaiterCronOccurance repeat;
+  /*!
    * \brief The time the waiter is created
    * \details As the seconds since the UNIX epoch is reather large, both the end
    * date and current time have this subtracted by them
@@ -33,16 +42,12 @@ class WaiterWidget : public QWidget {
    * However the timer that's due in ten minutes will grow faster than that of
    * the day, so in the end it works out.
    */
-  const double initMs;
-  /*!
-   * \brief Used to represent if the Widget should be updated, or if it has
-   * already reached its end time.
-   */
-  bool quit;
 
 public:
-  explicit WaiterWidget(QWidget *parent, QDate date, QTime time, QString title);
-  explicit WaiterWidget(QWidget *parent, qint64 msec, QString title);
+  explicit WaiterWidget(QWidget *parent, QDate date, QTime time, QString title,
+                        const WaiterCronOccurance &repeat);
+  explicit WaiterWidget(QWidget *parent, qint64 msec, QString title,
+                        const WaiterCronOccurance &repeat);
   QString toLoggableString();
   qint64 getMsecs() const;
   static QString intToMonth(int month);
@@ -53,7 +58,7 @@ signals:
    *\brief Emitted to tell the dialog to remove this widget, and set its input
    *fields to what were used to create it.
    */
-  void replaceAt(WaiterWidget *, QString, QDateTime);
+  void replaceAt(WaiterWidget *, QString, QDateTime, const WaiterCronOccurance);
   ///\brief Emitted to tell the dialog to speak this string
   void speakThis(QString);
   /*!
@@ -61,6 +66,7 @@ signals:
    * changed.
    */
   void resetTimer();
+  void repeatAt(WaiterWidget *, QString, QDateTime, const WaiterCronOccurance);
 public
 slots:
   void update(QDateTime t);

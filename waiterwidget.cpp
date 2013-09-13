@@ -12,10 +12,12 @@
  * \param title What the waiter is called
  */
 WaiterWidget::WaiterWidget(QWidget *parent, QDate endDate, QTime endTime,
-                           QString title)
+                           QString title, const WaiterCronOccurance &repeat)
     : QWidget(parent), datetime(endDate, endTime),
       title(title.replace("_", " ")),
-      initMs(QDateTime::currentDateTime().toMSecsSinceEpoch()), quit(false) {
+      initMs(QDateTime::currentDateTime().toMSecsSinceEpoch()), quit(false),
+      repeat(repeat)
+{
   init();
 }
 
@@ -25,24 +27,27 @@ WaiterWidget::WaiterWidget(QWidget *parent, QDate endDate, QTime endTime,
  * \param msec The miliseconds from the UNIX epoch
  * \param title What the waiter is called
  */
-WaiterWidget::WaiterWidget(QWidget *parent, qint64 msec, QString title)
+WaiterWidget::WaiterWidget(QWidget *parent, qint64 msec, QString title,
+                           const WaiterCronOccurance &repeat)
     : QWidget(parent), datetime(QDateTime::fromMSecsSinceEpoch(msec)),
       title(title), initMs(QDateTime::currentDateTime().toMSecsSinceEpoch()),
-      quit(false) {
+      quit(false), repeat(repeat)
+{
   init();
 }
 
 /*!
  * \brief Creates all the UI elements and wires them up.
  */
-void WaiterWidget::init() {
+void WaiterWidget::init()
+{
   time = new QLabel(this);
   QString TimeText = "yy/MM/dd";
   const QTime TimerTime = datetime.time();
-  if (TimerTime.hour() != 0 || TimerTime.minute() != 0 ||
-      TimerTime.second() != 0)
+  if(TimerTime.hour() != 0 || TimerTime.minute() != 0 ||
+     TimerTime.second() != 0)
     TimeText += " hh:mm:ss";
-  if (!title.isEmpty() && title != "NULL")
+  if(!title.isEmpty() && title != "NULL")
     time->setText(title + ": " + datetime.toString(TimeText));
   else
     time->setText(datetime.toString(TimeText));
@@ -50,7 +55,7 @@ void WaiterWidget::init() {
   timeLeft = new QLabel(this);
   progress = new QProgressBar(this);
   progress->setAlignment(Qt::AlignHCenter);
-  if (initMs < datetime.toMSecsSinceEpoch())
+  if(initMs < datetime.toMSecsSinceEpoch())
     progress->setMaximum(datetime.toMSecsSinceEpoch() - initMs);
 #ifdef _WIN32
   progress->setStyleSheet("QProgressBar::chunk { background-color: #591067;}\
@@ -78,27 +83,34 @@ void WaiterWidget::init() {
  * \return A QString with the Waiter's title (or NULL) and the msecs since the
  * UNIX epoch it will wait for.
  */
-QString WaiterWidget::toLoggableString() {
+QString WaiterWidget::toLoggableString()
+{
   const QString test = (title.isEmpty() ? "NULL" : title.replace(" ", "_")) +
                        ' ' + QString::number(datetime.toMSecsSinceEpoch());
   return ((title.isEmpty() ? "NULL" : title.replace(" ", "_")) + ' ' +
-          QString::number(datetime.toMSecsSinceEpoch()));
+          QString::number(datetime.toMSecsSinceEpoch()) + ' ' +
+          repeat.toString());
 }
 
 /*!
  * \brief Gets the number of milliseconds since the UNIX epoch.
  * \return The number of milliseconds since the UNIX epoch.
  */
-qint64 WaiterWidget::getMsecs() const { return datetime.toMSecsSinceEpoch(); }
+qint64 WaiterWidget::getMsecs() const
+{
+  return datetime.toMSecsSinceEpoch();
+}
 
 /*!
  * \brief Converts from an integer to a string of the month
  * \param month An int from 1 to 12
  * \return A QString with the name of the month, surrounded by spaces.
  */
-QString WaiterWidget::intToMonth(int month) {
+QString WaiterWidget::intToMonth(int month)
+{
   QString returnMe;
-  switch (month) {
+  switch(month)
+  {
   case 1:
     returnMe = " January ";
     break;
@@ -147,24 +159,26 @@ QString WaiterWidget::intToMonth(int month) {
  * hour, 30 minutes, 15 minutes, 10 minutes, 5 minutes, 1 minute, 0 seconds)
  * \param t The time to set the Waiter to (typically the current time)
  */
-void WaiterWidget::update(QDateTime t) {
-  if (quit)
+void WaiterWidget::update(QDateTime t)
+{
+  if(quit)
     return;
-  if (datetime > t) {
+  if(datetime > t)
+  {
     static QTime Zero(0, 0, 0, 0);
     const auto seconds = t.secsTo(datetime);
-    if (seconds >= 86400) // 1 day in secs
+    if(seconds >= 86400) // 1 day in secs
       timeLeft->setText("<- " + QString::number(t.daysTo(datetime)) + " days");
     else
       timeLeft->setText("<- " + Zero.addSecs(seconds).toString("hh:mm:ss"));
     progress->setValue(t.toMSecsSinceEpoch() - initMs);
 
-    switch (seconds) {
-    case(31536000)
-        : // 365 * seconds in a day = 1 year
-          {
+    switch(seconds)
+    {
+    case(31536000) : // 365 * seconds in a day = 1 year
+    {
       QString sayMe;
-      if (title == "NULL" || title.isEmpty())
+      if(title == "NULL" || title.isEmpty())
         sayMe = "A timer will expire in one year";
       else
         sayMe =
@@ -172,9 +186,10 @@ void WaiterWidget::update(QDateTime t) {
       emit speakThis(sayMe);
       break;
     }
-    case(2592000) : {
+    case(2592000) :
+    {
       QString sayMe;
-      if (title == "NULL" || title.isEmpty())
+      if(title == "NULL" || title.isEmpty())
         sayMe = "A timer will expire in one month";
       else
         sayMe = "The timer " + title.replace("_", " ") +
@@ -182,9 +197,10 @@ void WaiterWidget::update(QDateTime t) {
       emit speakThis(sayMe);
       break;
     }
-    case(604800) : {
+    case(604800) :
+    {
       QString sayMe;
-      if (title == "NULL" || title.isEmpty())
+      if(title == "NULL" || title.isEmpty())
         sayMe = "A timer will expire in one week";
       else
         sayMe =
@@ -192,9 +208,10 @@ void WaiterWidget::update(QDateTime t) {
       emit speakThis(sayMe);
       break;
     }
-    case(86400) : {
+    case(86400) :
+    {
       QString sayMe;
-      if (title == "NULL" || title.isEmpty())
+      if(title == "NULL" || title.isEmpty())
         sayMe = "A timer will expire in one day";
       else
         sayMe =
@@ -202,11 +219,10 @@ void WaiterWidget::update(QDateTime t) {
       emit speakThis(sayMe);
       break;
     }
-    case(43200)
-        : // 12 * seconds in an hour = 12 hours
-          {
+    case(43200) : // 12 * seconds in an hour = 12 hours
+    {
       QString sayMe;
-      if (title == "NULL" || title.isEmpty())
+      if(title == "NULL" || title.isEmpty())
         sayMe = "A timer will expire in 12 hours";
       else
         sayMe =
@@ -214,9 +230,10 @@ void WaiterWidget::update(QDateTime t) {
       emit speakThis(sayMe);
       break;
     }
-    case(21600) : {
+    case(21600) :
+    {
       QString sayMe;
-      if (title == "NULL" || title.isEmpty())
+      if(title == "NULL" || title.isEmpty())
         sayMe = "A timer will expire in 6 hours";
       else
         sayMe =
@@ -224,9 +241,10 @@ void WaiterWidget::update(QDateTime t) {
       emit speakThis(sayMe);
       break;
     }
-    case(3600) : {
+    case(3600) :
+    {
       QString sayMe;
-      if (title == "NULL" || title.isEmpty())
+      if(title == "NULL" || title.isEmpty())
         sayMe = "A timer will expire in an hour";
       else
         sayMe =
@@ -234,11 +252,10 @@ void WaiterWidget::update(QDateTime t) {
       emit speakThis(sayMe);
       break;
     }
-    case(1800)
-        : // 30 * seconds in one minute = 30 minutes
-          {
+    case(1800) : // 30 * seconds in one minute = 30 minutes
+    {
       QString sayMe;
-      if (title == "NULL" || title.isEmpty())
+      if(title == "NULL" || title.isEmpty())
         sayMe = "A timer will expire in half an hour";
       else
         sayMe = "The timer " + title.replace("_", " ") +
@@ -246,9 +263,10 @@ void WaiterWidget::update(QDateTime t) {
       emit speakThis(sayMe);
       break;
     }
-    case(900) : {
+    case(900) :
+    {
       QString sayMe;
-      if (title == "NULL" || title.isEmpty())
+      if(title == "NULL" || title.isEmpty())
         sayMe = "A timer will expire in 15 minutes";
       else
         sayMe = "The timer " + title.replace("_", " ") +
@@ -256,9 +274,10 @@ void WaiterWidget::update(QDateTime t) {
       emit speakThis(sayMe);
       break;
     }
-    case(600) : {
+    case(600) :
+    {
       QString sayMe;
-      if (title == "NULL" || title.isEmpty())
+      if(title == "NULL" || title.isEmpty())
         sayMe = "A timer will expire in 10 minutes";
       else
         sayMe = "The timer " + title.replace("_", " ") +
@@ -266,9 +285,10 @@ void WaiterWidget::update(QDateTime t) {
       emit speakThis(sayMe);
       break;
     }
-    case(300) : {
+    case(300) :
+    {
       QString sayMe;
-      if (title == "NULL" || title.isEmpty())
+      if(title == "NULL" || title.isEmpty())
         sayMe = "A timer will expire in 5 minutes";
       else
         sayMe = "The timer " + title.replace("_", " ") +
@@ -276,9 +296,10 @@ void WaiterWidget::update(QDateTime t) {
       emit speakThis(sayMe);
       break;
     }
-    case(60) : {
+    case(60) :
+    {
       QString sayMe;
-      if (title == "NULL" || title.isEmpty())
+      if(title == "NULL" || title.isEmpty())
         sayMe = "A timer will expire in 1 minute";
       else
         sayMe =
@@ -287,18 +308,27 @@ void WaiterWidget::update(QDateTime t) {
       break;
     }
     }
-  } else {
+  }
+  else
+  {
     timeLeft->setText("");
     progress->setValue(progress->maximum());
-    if (progress->isTextVisible()) {
+    if(progress->isTextVisible())
+    {
       progress->setTextVisible(false);
       quit = true;
       QString sayMe;
-      if (title == "NULL" || title.isEmpty())
+      if(title == "NULL" || title.isEmpty())
         sayMe = "A timer has expired";
       else
         sayMe = "The timer " + title.replace("_", " ") + " has expired.";
       emit speakThis(sayMe);
+      if(repeat.repeats())
+      {
+        emit repeatAt(this, title,
+                      repeat.nextOccurance(QDateTime::currentDateTime()),
+                      repeat);
+      }
     }
   }
 }
@@ -307,9 +337,10 @@ void WaiterWidget::update(QDateTime t) {
  * \brief Tells the WaiterDialog to remove this Waiter. If shift is held down
  * the dialog is instead told to replace the waiter.
  */
-void WaiterWidget::removeThis() {
-  if (QApplication::keyboardModifiers().testFlag(Qt::ShiftModifier))
-    emit replaceAt(this, this->title, this->datetime);
+void WaiterWidget::removeThis()
+{
+  if(QApplication::keyboardModifiers().testFlag(Qt::ShiftModifier))
+    emit replaceAt(this, this->title, this->datetime, repeat);
   else
     emit removeAt(this);
 }

@@ -12,7 +12,8 @@
  */
 QlipperWidget::QlipperWidget(QString savePath, QWidget *parent)
     : QDialog(parent), ui(new Ui::QlipperWidget), path(savePath),
-      isLogEnabled(false) {
+      isLogEnabled(false)
+{
   ui->setupUi(this);
   clipboard = QApplication::clipboard();
 
@@ -20,15 +21,16 @@ QlipperWidget::QlipperWidget(QString savePath, QWidget *parent)
 
   model = new QStandardItemModel(this);
 
-  if (!load()) {
+  if(!load())
+  {
     model->clear();
-    if (yearNode)
+    if(yearNode)
       delete yearNode;
     yearNode = new QStandardItem(nodeDate.toString("yyyy"));
-    if (monthNode)
+    if(monthNode)
       delete monthNode;
     monthNode = new QStandardItem(nodeDate.toString("MM - MMMM"));
-    if (dayNode)
+    if(dayNode)
       delete dayNode;
     dayNode = new QStandardItem(nodeDate.toString("dd - dddd"));
 
@@ -59,7 +61,8 @@ QlipperWidget::QlipperWidget(QString savePath, QWidget *parent)
 /*!
  * \brief Saves the clipboard history, and deletes the GUI.
  */
-QlipperWidget::~QlipperWidget() {
+QlipperWidget::~QlipperWidget()
+{
   save();
   delete ui;
 }
@@ -68,13 +71,17 @@ QlipperWidget::~QlipperWidget() {
  * \brief Sets if logging should be enabled.
  * \param enabled If logging should be enabled
  */
-void QlipperWidget::setLogEnabled(bool enabled) { isLogEnabled = enabled; }
+void QlipperWidget::setLogEnabled(bool enabled)
+{
+  isLogEnabled = enabled;
+}
 
 /*!
  * \brief Sets where logs should be stored.
  * \param newPath Where logs should be stored.
  */
-void QlipperWidget::setStatePath(QString newPath) {
+void QlipperWidget::setStatePath(QString newPath)
+{
   path = newPath;
   load();
 }
@@ -83,7 +90,8 @@ void QlipperWidget::setStatePath(QString newPath) {
  * \brief Hides the UI, rather than actually closing it.
  * \param[in] event used to tell the program not to close the window.
  */
-void QlipperWidget::closeEvent(QCloseEvent *event) {
+void QlipperWidget::closeEvent(QCloseEvent *event)
+{
   setVisible(false);
   event->ignore();
 }
@@ -95,8 +103,10 @@ void QlipperWidget::closeEvent(QCloseEvent *event) {
  * is used as a delimiter, which should help prevent daily usage from including
  * delimiters. `TIME is used to mark a change in time in the file.
  */
-void QlipperWidget::save() {
-  if (!path.isEmpty()) {
+void QlipperWidget::save()
+{
+  if(!path.isEmpty())
+  {
 
     std::map<QString, bool> usedStrings;
 
@@ -104,18 +114,23 @@ void QlipperWidget::save() {
     QTextStream stream(&compressMe, QIODevice::WriteOnly);
     stream << nodeDate.toString("yyyy-MM-dd") << '\n';
     QStandardItem *root = model->invisibleRootItem();
-    for (int i = 0; i < root->rowCount(); ++i) {
+    for(int i = 0; i < root->rowCount(); ++i)
+    {
       QStandardItem *year = root->child(i);
       stream << "`YEAR:" << year->text() << "/|\\";
-      for (int j = 0; j < year->rowCount(); ++j) {
+      for(int j = 0; j < year->rowCount(); ++j)
+      {
         QStandardItem *month = year->child(j);
         stream << "`MONTH:" << month->text() << "/|\\";
-        for (int k = 0; k < month->rowCount(); ++k) {
+        for(int k = 0; k < month->rowCount(); ++k)
+        {
           QStandardItem *day = month->child(k);
           stream << "`DAY:" << day->text() << "/|\\";
-          for (int l = 0; l < day->rowCount(); ++l) {
+          for(int l = 0; l < day->rowCount(); ++l)
+          {
             QStandardItem *node = day->child(l);
-            if (!usedStrings[node->text()]) {
+            if(!usedStrings[node->text()])
+            {
               stream << node->text() << "/|\\";
               usedStrings[node->text()] = true;
             }
@@ -134,7 +149,8 @@ void QlipperWidget::save() {
  * \brief Sets selected text to the current clipboard.
  * \param index What to set the clipboard too.
  */
-void QlipperWidget::toClipboard(QModelIndex index) {
+void QlipperWidget::toClipboard(QModelIndex index)
+{
   clipboard->setText(index.data().toString());
 }
 
@@ -145,10 +161,13 @@ void QlipperWidget::toClipboard(QModelIndex index) {
  * is used as a delimiter, which should help prevent daily usage from including
  * delimiters. `TIME is used to mark a change in time in the file.
  */
-bool QlipperWidget::load() {
-  if (!path.isEmpty()) {
+bool QlipperWidget::load()
+{
+  if(!path.isEmpty())
+  {
     QFile file(path);
-    if (file.exists()) {
+    if(file.exists())
+    {
       file.open(QIODevice::ReadOnly);
       QByteArray compressed = file.readAll();
 
@@ -161,35 +180,46 @@ bool QlipperWidget::load() {
       QStringList strings = stream.readAll().split("/|\\");
       QStandardItem *year = nullptr, *month = nullptr, *day = nullptr;
       yearNode = monthNode = dayNode = nullptr;
-      for (QString string : strings) {
-        if (string.startsWith("`YEAR:")) {
+      for(QString string : strings)
+      {
+        if(string.startsWith("`YEAR:"))
+        {
           QString yearText = string.mid(6);
           year = new QStandardItem(string.mid(6));
-          if (!yearNode) {
+          if(!yearNode)
+          {
             yearNode = year;
           }
           model->invisibleRootItem()->appendRow(year);
-        } else if (string.startsWith("`MONTH:")) {
+        }
+        else if(string.startsWith("`MONTH:"))
+        {
           QString yearText = string.mid(6);
           month = new QStandardItem(string.mid(7));
-          if (!monthNode) {
+          if(!monthNode)
+          {
             monthNode = month;
           }
-          if (!year)
+          if(!year)
             return false;
           year->appendRow(month);
-        } else if (string.startsWith("`DAY:")) {
+        }
+        else if(string.startsWith("`DAY:"))
+        {
           QString yearText = string.mid(5);
           day = new QStandardItem(string.mid(5));
-          if (!dayNode) {
+          if(!dayNode)
+          {
             dayNode = day;
           }
-          if (!month)
+          if(!month)
             return false;
           month->appendRow(day);
-        } else if (!string.isEmpty()) {
+        }
+        else if(!string.isEmpty())
+        {
           QString yearText = string;
-          if (!day)
+          if(!day)
             return false;
           day->appendRow(new QStandardItem(string));
         }
@@ -205,11 +235,15 @@ bool QlipperWidget::load() {
  * since the last clipboard change, and if it has it creates a new "day",
  * "month", and potentially "year" node, depending on how the date has changed.
  */
-void QlipperWidget::clipboardChanges() {
-  if (isLogEnabled && clipboard->mimeData()->hasText()) {
-    if (nodeDate != QDate::currentDate()) {
+void QlipperWidget::clipboardChanges()
+{
+  if(isLogEnabled && clipboard->mimeData()->hasText())
+  {
+    if(nodeDate != QDate::currentDate())
+    {
       QDate newDate = QDate::currentDate();
-      if (newDate.year() != nodeDate.year()) {
+      if(newDate.year() != nodeDate.year())
+      {
         yearNode = new QStandardItem(newDate.toString("yyyy"));
         monthNode = new QStandardItem(newDate.toString("MM - MMMM"));
         dayNode = new QStandardItem(newDate.toString("dd - dddd"));
@@ -217,13 +251,17 @@ void QlipperWidget::clipboardChanges() {
         monthNode->appendRow(dayNode);
         yearNode->appendRow(monthNode);
         model->invisibleRootItem()->insertRow(0, yearNode);
-      } else if (newDate.month() != nodeDate.month()) {
+      }
+      else if(newDate.month() != nodeDate.month())
+      {
         monthNode = new QStandardItem(newDate.toString("MM - MMMM"));
         dayNode = new QStandardItem(newDate.toString("dd - dddd"));
 
         monthNode->appendRow(dayNode);
         yearNode->insertRow(0, monthNode);
-      } else if (newDate.day() != nodeDate.day()) {
+      }
+      else if(newDate.day() != nodeDate.day())
+      {
         dayNode = new QStandardItem(newDate.toString("dd - dddd"));
 
         monthNode->insertRow(0, dayNode);
@@ -240,10 +278,13 @@ void QlipperWidget::clipboardChanges() {
  * \brief Removes the selected item from the list of items in the clipboard, as
  * well as the history.
  */
-void QlipperWidget::removeButtonClicked() {
+void QlipperWidget::removeButtonClicked()
+{
   QModelIndexList list = ui->clipboardTree->selectionModel()->selectedIndexes();
-  for (QModelIndex i : list) {
-    if (!model->hasChildren(i)) {
+  for(QModelIndex i : list)
+  {
+    if(!model->hasChildren(i))
+    {
       model->removeRow(i.row(), i.parent());
     }
   }

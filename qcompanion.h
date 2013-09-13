@@ -5,7 +5,8 @@
 #include "speaker.h"
 #include "qsnapper.h"
 
-namespace Ui {
+namespace Ui
+{
 class QCompanion;
 }
 
@@ -14,7 +15,8 @@ class QCompanion;
  * \details This class organizes all the components, schedules when speaking,
  * notifying, and screenshot-logging will occur.
  */
-class QCompanion : public QDialog {
+class QCompanion : public QDialog
+{
   Q_OBJECT
 public:
   explicit QCompanion(QWidget *parent = 0);

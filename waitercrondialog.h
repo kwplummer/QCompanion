@@ -3,11 +3,13 @@
 
 #include <QDialog>
 #include "waitercronoccurance.h"
-namespace Ui {
+namespace Ui
+{
 class WaiterCronDialog;
 }
 
-class WaiterCronDialog : public QDialog {
+class WaiterCronDialog : public QDialog
+{
   Q_OBJECT
 
 public:
