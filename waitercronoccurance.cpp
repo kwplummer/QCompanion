@@ -13,9 +13,9 @@ WaiterCronOccurance::WaiterCronOccurance(const WaiterCronOccurance &in)
  * \brief Constructs the WaiterCronOccurance from a list
  * \param list the list used to fill the occurance
  * \details Constructs the WaiterCronOccurance from the first five elements in
- * an std::initializer_list of shorts. If there are less than 5 items the items
- * are initialized to the same values a default WaiterCronDialog would contain.
- * Any items after the first five are ignored.
+ * an std::initializer_list of shorts. If there are less than 5 items then
+ * everything is initialized to the same values a default WaiterCronDialog would
+ * contain. Any items after the first five are ignored.
  */
 WaiterCronOccurance::WaiterCronOccurance(std::initializer_list<short> list)
 {
@@ -51,7 +51,12 @@ bool WaiterCronOccurance::repeats() const
  */
 QDateTime WaiterCronOccurance::nextOccurance(const QDateTime &now) const
 {
-  QDateTime next(now);
+  if(!repeats())
+    return QDateTime::fromTime_t(0);
+  QTime nowTime = now.time();
+  nowTime.setHMS(nowTime.hour(), nowTime.minute(), 0);
+  QDateTime next(now.date(), nowTime);
+
   if(repeatMin != -1)
   {
     const auto nowMin = next.time().minute();
@@ -59,10 +64,13 @@ QDateTime WaiterCronOccurance::nextOccurance(const QDateTime &now) const
     {
       next = next.addSecs((repeatMin - nowMin) * 60);
     }
-    else
+    else if(repeatMin < nowMin)
     {
       next = next.addSecs((60 - nowMin + repeatMin) * 60);
     }
+    else if(repeatHour == -1 && repeatDayOfMonth == -1 && repeatMonth <= 0 &&
+            repeatDayOfWeek == 0)
+      next.addSecs(60 * 60);
   }
   else
   {
@@ -77,10 +85,13 @@ QDateTime WaiterCronOccurance::nextOccurance(const QDateTime &now) const
     {
       next = next.addSecs((repeatHour - nowHour) * 60 * 60);
     }
-    else
+    else if(repeatHour < nowHour)
     {
       next = next.addSecs((24 - nowHour + repeatHour) * 60 * 60);
     }
+    else if(repeatMin == -1 && repeatDayOfMonth == -1 && repeatMonth <= 0 &&
+            repeatDayOfWeek == 0)
+      next = next.addDays(1);
   }
   else if(repeatMin == -1)
   {
@@ -88,31 +99,54 @@ QDateTime WaiterCronOccurance::nextOccurance(const QDateTime &now) const
     nextTime.setHMS(0, nextTime.minute(), 0);
     next.setTime(nextTime);
   }
+
+  if(repeatMonth > 0)
+  {
+    const auto nowMonth = next.date().month();
+    if(repeatMonth > nowMonth)
+    {
+      next = next.addMonths(repeatMonth - nowMonth);
+    }
+    else if(repeatMonth < nowMonth)
+    {
+      next = next.addMonths(12 - nowMonth + repeatMonth);
+    }
+    else if(repeatDayOfMonth <= 0 && repeatDayOfWeek == -1 &&
+            repeatHour == -1 && repeatMin == -1)
+      next = next.addMonths(12);
+    auto nextDate = next.date();
+    nextDate.setYMD(nextDate.year(), nextDate.month(), 1);
+    next.setDate(nextDate);
+  }
+  QString DEBUGDELETETHIS = next.toString();
+
   if(repeatDayOfMonth > 0 && repeatDayOfWeek != 0)
   {
-    int DoMSecs = 0;
-    int DoWSecs = 0;
+    int DoM = 0;
+    int DoW = 0;
     const auto nowDoM = next.date().day();
     if(repeatDayOfMonth > nowDoM)
     {
-      DoMSecs = (repeatDayOfMonth - nowDoM) * 24 * 60 * 60;
+      DoM = (repeatDayOfMonth - nowDoM);
     }
-    else
+    else if(repeatDayOfMonth < nowDoM)
     {
-      DoMSecs = (30 - nowDoM + repeatDayOfMonth) * 24 * 60 * 60;
+      DoM = (next.date().daysInMonth() - nowDoM + repeatDayOfMonth);
     }
-    // TODO: Check this one! Does QDate::dayOfWeek() return a 0-indexed or
-    // 1-indexed value?
+    else if(repeatMonth <= 0 && repeatHour == -1 && repeatMin == -1)
+      DoM = next.date().daysInMonth();
     const auto nowWeekday = next.date().dayOfWeek();
     if(repeatDayOfWeek > nowWeekday)
     {
-      DoWSecs = (repeatDayOfWeek - nowWeekday) * 24 * 60 * 60;
+      DoW = (repeatDayOfWeek - nowWeekday);
     }
-    else
+    else if(repeatDayOfWeek < nowWeekday)
     {
-      DoWSecs = (7 - nowWeekday + repeatDayOfWeek) * 24 * 60 * 60;
+      DoW = (7 - nowWeekday + repeatDayOfWeek);
     }
-    next = next.addSecs(DoMSecs < DoWSecs ? DoWSecs : DoMSecs);
+    else if(repeatMonth <= 0 && repeatHour == -1 && repeatMin == -1)
+      DoW = 7;
+    next = next.addDays(DoM < DoW ? DoM : DoW);
   }
   else
   {
@@ -121,38 +155,33 @@ QDateTime WaiterCronOccurance::nextOccurance(const QDateTime &now) const
       const auto nowDoM = next.date().day();
       if(repeatDayOfMonth > nowDoM)
       {
-        next = next.addSecs((repeatDayOfMonth - nowDoM) * 24 * 60 * 60);
+        next = next.addDays(repeatDayOfMonth - nowDoM);
       }
-      else
+      else if(repeatDayOfMonth < nowDoM)
       {
-        next = next.addSecs((30 - nowDoM + repeatDayOfMonth) * 24 * 60 * 60);
+        next =
+            next.addDays(next.date().daysInMonth() - nowDoM + repeatDayOfMonth);
       }
+      else if(repeatMonth <= 0 && repeatHour == -1 && repeatMin == -1)
+        next = next.addMonths(1);
     }
     else if(repeatDayOfWeek != 0)
     {
       const auto nowWeekday = next.date().dayOfWeek();
       if(repeatDayOfWeek > nowWeekday)
       {
-        next = next.addSecs((repeatDayOfWeek - nowWeekday) * 24 * 60 * 60);
+        next = next.addDays(repeatDayOfWeek - nowWeekday);
       }
-      else
+      else if(repeatDayOfWeek < nowWeekday)
       {
-        next = next.addSecs((7 - nowWeekday + repeatDayOfWeek) * 24 * 60 * 60);
+        next = next.addDays(7 - nowWeekday + repeatDayOfWeek);
       }
+      else if(repeatMonth <= 0 && repeatHour == -1 && repeatMin == -1)
+        next = next.addDays(7);
     }
   }
-  if(repeatMonth > 0)
-  {
-    const auto nowMonth = next.date().month();
-    if(repeatMonth > nowMonth)
-    {
-      next = next.addSecs((repeatMonth - nowMonth) * 30 * 24 * 60 * 60);
-    }
-    else
-    {
-      next = next.addSecs((12 - nowMonth + repeatMonth) * 30 * 24 * 60 * 60);
-    }
-  }
+
+  QString DEBUGDELETETHIS2 = next.toString();
   return next;
 }
 /*!

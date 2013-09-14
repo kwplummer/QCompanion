@@ -24,9 +24,12 @@ struct WaiterCronOccurance
   short repeatDayOfMonth;
   ///\brief The month when every repetition will occur. -1 or 0 for any month
   short repeatMonth;
-  ///\brief The day of the week when repetition will occur. -1 or 0 for any day
-  ///\details If repeatDayOfWeek is also set then the earliest of the two will
-  /// be chosen. 1 is Monday, 2 is Tuesday, 7 is Sunday.
+  /*!
+   *\brief The day of the week when repetition will occur. -1 or 0 for any day
+   *\details If repeatDayOfWeek is also set then the earliest of the two will be
+   *chosen. \n\n
+   *1 is Monday, 2 is Tuesday, 7 is Sunday.
+   */
   short repeatDayOfWeek;
   bool repeats() const;
   QDateTime nextOccurance(const QDateTime &now) const;

@@ -25,11 +25,6 @@ class WaiterWidget : public QWidget
   ///\brief What the waiter is called.
   QString title;
   /*!
-   * \brief Used to represent if the Widget should be updated, or if it has
-   * already reached its end time.
-   */
-  bool quit;
-  /*!
    * \brief The time the waiter is created
    * \details As the seconds since the UNIX epoch is reather large, both the end
    * date and current time have this subtracted by them
@@ -41,6 +36,11 @@ class WaiterWidget : public QWidget
    * the day, so in the end it works out.
    */
   const double initMs;
+  /*!
+   * \brief Used to represent if the Widget should be updated, or if it has
+   * already reached its end time.
+   */
+  bool quit;
   ///\brief When the Waiter should repeat.
   WaiterCronOccurance repeat;
 
@@ -68,7 +68,7 @@ signals:
    */
   void resetTimer();
   ///\brief Tells the dialog to create a waiter with the same title and new
-  ///time, and delete the old one.
+  /// time, and delete the old one.
   void repeatAt(WaiterWidget *, QString, QDateTime, const WaiterCronOccurance);
 public
 slots:
