@@ -49,9 +49,10 @@ QDateTime HourReader::nextCheckTime()
  */
 QString HourReader::getText()
 {
-  QString debug = "The time is now " + QTime::currentTime().toString("HH") +
-                  " hundred hours";
-  return ("The time is now " + QTime::currentTime().toString("HH") +
+  const auto time = QTime::currentTime();
+  if(time.hour() == 0)
+    return ("The time is now zero hundred hours");
+  return ("The time is now " + time.toString("HH") +
           " hundred hours");
 }
 

@@ -10,9 +10,9 @@
 *well as provides the ability to log your screen or clipboard, if instructed to
 *do so.
 */
-// clang-format command:
-/* clang-format -i *.cpp *.h -style="{BreakBeforeBraces: Allman, \
-   SpaceAfterControlStatementKeyword: false}"
+/* clang-format command:
+ clang-format -i *.cpp *.h -style="{BreakBeforeBraces: Allman, \
+ SpaceAfterControlStatementKeyword: false}"
  */
 #ifndef TEST
 #include "qcompanion.h"
