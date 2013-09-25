@@ -52,8 +52,7 @@ QString HourReader::getText()
   const auto time = QTime::currentTime();
   if(time.hour() == 0)
     return ("The time is now zero hundred hours");
-  return ("The time is now " + time.toString("HH") +
-          " hundred hours");
+  return ("The time is now " + time.toString("HH") + " hundred hours");
 }
 
 /*!

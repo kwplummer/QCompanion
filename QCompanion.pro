@@ -15,7 +15,7 @@ TARGET = QCompanion
 TEMPLATE = app
 
 #Enable this to get .clang_complete for vim. It is put next to the executable, so must be moved.
-#QMAKE_CXX = ~/Code/clang_complete/bin/cc_args.py g++
+QMAKE_CXX = ~/Code/clang_complete/bin/cc_args.py g++
 
 LIBS += -ltbb -lnotify -lflite_cmu_us_kal -lflite_usenglish -lflite_cmulex -lflite
 

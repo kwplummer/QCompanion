@@ -15,7 +15,7 @@
  * \param IconPath Where the icon for the GUI is located.
  */
 WaiterDialog::WaiterDialog(QWidget *parent, QString IconPath)
-    : QDialog(parent), ui(new Ui::WaiterDialog), lastUsedRepeat{}
+    : QDialog(parent), ui(new Ui::WaiterDialog)
 {
   ui->setupUi(this);
   ui->EntryDate->setSelectedDate(QDate::currentDate());
@@ -281,17 +281,23 @@ void WaiterDialog::loadState()
       {
         QStringList line = in.readLine().split(' ');
 
-        if(line.size() < 2)
+        if(line.size() < 9)
           return;
 
         QString title = line[0];
         qint64 time = line[1].toLongLong();
         WaiterCronOccurance repeat{};
+        QList<short> days;
+        for(QString s : line.mid(9))
+        {
+          days.append(s.toShort());
+        }
         if(line.size() >= 7)
         {
-          repeat = WaiterCronOccurance{ line[2].toShort(), line[3].toShort(),
-                                        line[4].toShort(), line[5].toShort(),
-                                        line[6].toShort() };
+          repeat = WaiterCronOccurance(line[2].toShort(), line[3].toShort(),
+                                       line[4].toShort(), line[5].toShort(),
+                                       line[6].toLong(), line[7].toLong(),
+                                       line[8].toInt(), days);
         }
 
         if(!title.isEmpty())

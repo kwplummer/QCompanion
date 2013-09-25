@@ -17,8 +17,6 @@
  * toggles speaking.
  * Additionally it defaults to muted, as the user likely doesn't want to hear
  * "snap" every minute.
- * \todo Add signal for "Time changed" which will refresh timer, used for when
- * component wants to speak earlier than normal.
  */
 class QSnapper : public Component
 {

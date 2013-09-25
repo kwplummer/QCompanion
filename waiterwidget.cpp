@@ -72,7 +72,7 @@ void WaiterWidget::init()
   layout->addWidget(remove);
 
   setLayout(layout);
-  update(QDateTime::currentDateTime());
+
 #if QT_VERSION < 0x050000
   connect(remove, SIGNAL(clicked()), this, SLOT(removeThis()));
 #else

@@ -13,9 +13,7 @@
  * It provides a list of menu options, that can be overridden as well as \link
  * nextCheckTime() \endlink which indicates when the component wants to speak
  * next, as well as getText(), which returns the message to speak/show.
- * \todo Add Qlipper component.
  * \todo Add QWikiReader to read random wiki "Did you know"s.
- * \todo Add signal for "Time changed" when muted/unmuted.
  */
 class Component : public QWidget
 {
