@@ -34,8 +34,8 @@ WaiterCronOccurance WaiterCronDialog::getResult()
         ui->repeatMonths->value(), ui->repeatYears->value(), true, days);
   }
   return WaiterCronOccurance(ui->minBox->value(), ui->hourBox->value(),
-                             ui->dayMonthBox->value(), -1,
-                             ui->monthBox->value(), -1, false, days);
+                             ui->dayMonthBox->value(), 0, ui->monthBox->value(),
+                             0, false, days);
 }
 /*!
  * \brief Returns if the UI was closed via the "OK" button.

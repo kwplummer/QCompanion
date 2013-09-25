@@ -24,7 +24,7 @@ WaiterCronOccurance::WaiterCronOccurance(short repeatMinutes, short repeatHour,
 {
   if(!isDelay)
   {
-    this->repeatWeek = this->repeatYear = -1;
+    this->repeatWeek = this->repeatYear = 0;
   }
   else
   {
@@ -33,7 +33,7 @@ WaiterCronOccurance::WaiterCronOccurance(short repeatMinutes, short repeatHour,
 }
 
 WaiterCronOccurance::WaiterCronOccurance()
-    : WaiterCronOccurance(-1, -1, -1, -1, -1, -1, true)
+    : WaiterCronOccurance(0, 0, 0, 0, 0, 0, true)
 {
 }
 
@@ -44,7 +44,7 @@ WaiterCronOccurance::WaiterCronOccurance()
  */
 bool WaiterCronOccurance::repeats() const
 {
-  return repeatMinutes != -1 || repeatHour != -1 || repeatDay > 0 ||
+  return repeatMinutes != 0 || repeatHour != 0 || repeatDay > 0 ||
          repeatWeek > 0 || repeatMonth > 0 || repeatYear > 0 ||
          !repeatDays.empty();
 }
@@ -68,7 +68,7 @@ QDateTime WaiterCronOccurance::nextOccurance(QDateTime now) const
     nowTime.setHMS(nowTime.hour(), nowTime.minute(), 0);
     QDateTime next(now.date(), nowTime);
 
-    if(repeatMinutes != -1)
+    if(repeatMinutes != 0)
     {
       const auto nowMin = next.time().minute();
       if(repeatMinutes > nowMin)
@@ -79,7 +79,7 @@ QDateTime WaiterCronOccurance::nextOccurance(QDateTime now) const
       {
         next = next.addSecs((60 - nowMin + repeatMinutes) * 60);
       }
-      else if(repeatHour == -1 && repeatDay == -1 && repeatMonth <= 0 &&
+      else if(repeatHour == 0 && repeatDay == 0 && repeatMonth <= 0 &&
               repeatDays.empty())
         next = next.addSecs(60 * 60);
     }
@@ -89,7 +89,7 @@ QDateTime WaiterCronOccurance::nextOccurance(QDateTime now) const
       nextTime.setHMS(nextTime.hour(), 0, 0);
       next.setTime(nextTime);
     }
-    if(repeatHour != -1)
+    if(repeatHour != 0)
     {
       const auto nowHour = next.time().hour();
       if(repeatHour > nowHour)
@@ -100,11 +100,11 @@ QDateTime WaiterCronOccurance::nextOccurance(QDateTime now) const
       {
         next = next.addSecs((24 - nowHour + repeatHour) * 60 * 60);
       }
-      else if(repeatMinutes == -1 && repeatDay == -1 && repeatMonth <= 0 &&
+      else if(repeatMinutes == 0 && repeatDay == 0 && repeatMonth <= 0 &&
               repeatDays.empty())
         next = next.addDays(1);
     }
-    else if(repeatMinutes == -1 || repeatMonth > 0 || repeatDay > 0 ||
+    else if(repeatMinutes == 0 || repeatMonth > 0 || repeatDay > 0 ||
             !repeatDays.empty())
     {
       auto nextTime = next.time();
@@ -123,8 +123,8 @@ QDateTime WaiterCronOccurance::nextOccurance(QDateTime now) const
       {
         next = next.addMonths(12 - nowMonth + repeatMonth);
       }
-      else if(repeatDay <= 0 && repeatDays.empty() && repeatHour == -1 &&
-              repeatMinutes == -1)
+      else if(repeatDay <= 0 && repeatDays.empty() && repeatHour == 0 &&
+              repeatMinutes == 0)
         next = next.addMonths(12);
       auto nextDate = next.date();
       nextDate.setYMD(nextDate.year(), nextDate.month(), 1);
@@ -144,7 +144,7 @@ QDateTime WaiterCronOccurance::nextOccurance(QDateTime now) const
       {
         DoM = (next.date().daysInMonth() - nowDoM + repeatDay);
       }
-      else if(repeatMonth <= 0 && repeatHour == -1 && repeatMinutes == -1)
+      else if(repeatMonth <= 0 && repeatHour == 0 && repeatMinutes == 0)
         DoM = next.date().daysInMonth();
       const auto nowWeekday = next.date().dayOfWeek();
       std::pair<short, short> nearestDay = std::make_pair(9000, 9000);
@@ -172,7 +172,7 @@ QDateTime WaiterCronOccurance::nextOccurance(QDateTime now) const
       {
         DoW = (7 - nowWeekday + nearestDay.first);
       }
-      else if(repeatMonth <= 0 && repeatHour == -1 && repeatMinutes == -1)
+      else if(repeatMonth <= 0 && repeatHour == 0 && repeatMinutes == 0)
         DoW = 7;
       next = next.addDays(DoM < DoW ? DoM : DoW);
     }
@@ -189,7 +189,7 @@ QDateTime WaiterCronOccurance::nextOccurance(QDateTime now) const
         {
           next = next.addDays(next.date().daysInMonth() - nowDoM + repeatDay);
         }
-        else if(repeatMonth <= 0 && repeatHour == -1 && repeatMinutes == -1)
+        else if(repeatMonth <= 0 && repeatHour == 0 && repeatMinutes == 0)
           next = next.addMonths(1);
       }
       else if(!repeatDays.empty())
@@ -220,7 +220,7 @@ QDateTime WaiterCronOccurance::nextOccurance(QDateTime now) const
         {
           next = next.addDays(7 - nowWeekday + nearestDay.first);
         }
-        else if(repeatMonth <= 0 && repeatHour == -1 && repeatMinutes == -1)
+        else if(repeatMonth <= 0 && repeatHour == 0 && repeatMinutes == 0)
           next = next.addDays(7);
       }
     }

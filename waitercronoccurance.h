@@ -22,21 +22,20 @@ struct WaiterCronOccurance
   WaiterCronOccurance(short repeatMinutes, short repeatHour, short repeatDay,
                       short repeatWeek, short repeatMonth, short repeatYear,
                       bool isDelay, QList<short> repeatDays = QList<short>());
-  ///\brief The minute when every repetition will occur. -1 for any minute
+  ///\brief The minute when every repetition will occur.
   short repeatMinutes;
-  ///\brief The hour when every repetition will occur. -1 for any hour
+  ///\brief The hour when every repetition will occur.
   short repeatHour;
-  /*! \brief The day of the month when repetition will occur. -1 or 0 for any
-   * day
+  /*! \brief The day of the month when repetition will occur.
    * \details If repeatDayOfWeek is also set then the earliest of the two will
    * be chosen.
   */
   short repeatDay;
-  ///\brief The week when every repetition will occur. -1 or 0 for any week
+  ///\brief The week when every repetition will occur.
   short repeatWeek;
-  ///\brief The month when every repetition will occur. -1 or 0 for any month
+  ///\brief The month when every repetition will occur.
   short repeatMonth;
-  ///\brief The year when every repetition will occur. -1 or 0 for any year
+  ///\brief The year when every repetition will occur.
   short repeatYear;
   /*! \brief A list containing the days that repetition will occur on.
    * \details 1-indexed, starting from Monday. (1 = monday, 7 = sunday)
