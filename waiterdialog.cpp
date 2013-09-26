@@ -241,9 +241,8 @@ void WaiterDialog::commitChanges()
   if(!statePath.isNull())
   {
     std::sort(widgets.begin(), widgets.end(),
-              [](const WaiterWidget * w1, const WaiterWidget * w2) {
-      return w1->getMsecs() < w2->getMsecs();
-    });
+              [](const WaiterWidget * w1, const WaiterWidget * w2)
+    { return w1->getMsecs() < w2->getMsecs(); });
     for(auto w : widgets)
       ui->TimerScrollerWidget->layout()->removeWidget(w);
     for(auto w : widgets)

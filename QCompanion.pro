@@ -15,9 +15,17 @@ TARGET = QCompanion
 TEMPLATE = app
 
 #Enable this to get .clang_complete for vim. It is put next to the executable, so must be moved.
-QMAKE_CXX = ~/Code/clang_complete/bin/cc_args.py g++
+QMAKE_CXX = ~/Code/clang_complete/bin/cc_args.py clang++ -Wno-deprecated-register -stdlib=libc++
 
-LIBS += -ltbb -lnotify -lflite_cmu_us_kal -lflite_usenglish -lflite_cmulex -lflite
+# remove possible other optimization flags
+QMAKE_CXXFLAGS_RELEASE -= -O
+QMAKE_CXXFLAGS_RELEASE -= -O1
+QMAKE_CXXFLAGS_RELEASE -= -O2
+
+# add the desired -O3 if not present
+QMAKE_CXXFLAGS_RELEASE *= -O3
+
+LIBS += -ltbb -lnotify -lflite_cmu_us_kal -lflite_usenglish -lflite_cmulex -lflite -lc++
 
 INCLUDEPATH += /usr/include/glib-2.0/glib
 INCLUDEPATH += /usr/include/glib-2.0/
@@ -63,7 +71,7 @@ RESOURCES += \
 
 CONFIG(DEBUG)
 {
-    QMAKE_CXXFLAGS += -fprofile-arcs -ftest-coverage
-    LIBS += -lgcov
+#    QMAKE_CXXFLAGS += -fprofile-arcs -ftest-coverage
+#    LIBS += -lgcov
     DEFINES += DBG
 }

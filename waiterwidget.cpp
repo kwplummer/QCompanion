@@ -327,9 +327,7 @@ void WaiterWidget::update(QDateTime t)
       emit speakThis(sayMe);
       if(repeat.repeats())
       {
-        emit repeatAt(this, title,
-                      repeat.nextOccurance(QDateTime::currentDateTime()),
-                      repeat);
+        emit repeatAt(this, title, repeat.nextOccurance(t), repeat);
       }
     }
   }

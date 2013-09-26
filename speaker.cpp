@@ -9,7 +9,8 @@
  */
 Speaker::Speaker(QString iconLocation)
     : stopReading(false), canSendNotifications(true), canSpeak(true),
-      iconLocation(iconLocation), flite([&]() { readLoop(); })
+      iconLocation(iconLocation), flite([&]()
+{ readLoop(); })
 {
   notify_init("QCompanion");
   flite_init();

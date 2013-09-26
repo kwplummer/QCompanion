@@ -384,6 +384,21 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>repeatMins</tabstop>
+  <tabstop>repeatHours</tabstop>
+  <tabstop>repeatDays</tabstop>
+  <tabstop>repeatWeeks</tabstop>
+  <tabstop>repeatMonths</tabstop>
+  <tabstop>repeatYears</tabstop>
+  <tabstop>addButton</tabstop>
+  <tabstop>tabs</tabstop>
+  <tabstop>minBox</tabstop>
+  <tabstop>hourBox</tabstop>
+  <tabstop>dayMonthBox</tabstop>
+  <tabstop>monthBox</tabstop>
+  <tabstop>dayList</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

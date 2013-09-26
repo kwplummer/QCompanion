@@ -219,7 +219,8 @@ bool QSnapper::imagesDiffer(const QImage oldImage, const QImage newImage)
     const int width = oldImage.width();
     const int differenceLimit = (height * width) / 100;
     tbb::parallel_for(tbb::blocked_range<int>(0, width),
-                      [&](const tbb::blocked_range<int> & range) {
+                      [&](const tbb::blocked_range<int> & range)
+    {
       for(int i = range.begin(); i != range.end(); ++i)
       {
         for(int j = 0; j < height; ++j)
@@ -266,7 +267,8 @@ bool QSnapper::imagesDiffer(const QImage oldImage, const QImage newImage,
     std::mutex diffMutex;
     diff.fill(QColor(00, 0xF2, 0xFF));
     tbb::parallel_for(tbb::blocked_range<int>(0, width),
-                      [&](const tbb::blocked_range<int> & range) {
+                      [&](const tbb::blocked_range<int> & range)
+    {
       for(int i = range.begin(); i != range.end(); ++i)
       {
         for(int j = 0; j < height; ++j)
@@ -336,8 +338,8 @@ bool QSnapper::snap()
 #if QT_VERSION < 0x050000
     QPixmap desktop = QPixmap::grabWindow(QApplication::desktop()->winId());
 #else
-    QPixmap desktop = QGuiApplication::primaryScreen()
-                          ->grabWindow(QApplication::desktop()->winId());
+    QPixmap desktop = QGuiApplication::primaryScreen()->grabWindow(
+        QApplication::desktop()->winId());
 #endif
     QImage newImage = desktop.toImage();
     nextWakeup = QDateTime::currentDateTime().addSecs(60);
