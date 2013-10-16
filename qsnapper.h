@@ -23,7 +23,7 @@ class QSnapper : public Component
   Q_OBJECT
   ///\brief The path where the images should be saved.
   QString saveDir;
-  QString getNextFileName(bool isDiff);
+  QString getNextFileName();
   bool imagesDiffer(const QImage oldImage, const QImage newImage);
   bool imagesDiffer(const QImage oldImage, const QImage newImage,
                     const QString filename);

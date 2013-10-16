@@ -14,6 +14,9 @@ class QlipperWidget;
 
 /*!
  * \brief The GUI used for showing and storing the clipboard history.
+ * \todo Add ability to search clipboard history, present user with modal
+ * result.
+ * In modal ask "continue" and "Stop", if continue, keep looking. Else return.
  */
 class QlipperWidget : public QDialog
 {

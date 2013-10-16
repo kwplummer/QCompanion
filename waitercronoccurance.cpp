@@ -46,7 +46,48 @@ bool WaiterCronOccurance::repeats() const
 {
   return repeatMinutes != 0 || repeatHour != 0 || repeatDay > 0 ||
          repeatWeek > 0 || repeatMonth > 0 || repeatYear > 0 ||
-         !repeatDays.empty();
+         (!isDelay && !repeatDays.empty());
+}
+/*!
+ * \brief Returns if a date is valid according to the cron-style repetition
+ * rules
+ * \param when The time to test
+ * \return If the date is a valid repetition.
+ */
+bool WaiterCronOccurance::isValidRepetition(QDateTime when) const
+{
+  /*Day/Weekday logic, in if/else, rather than boolean algebra:
+  if(repeatDay)
+  {
+    if(when.date().day() == repeatDay)
+    {
+      true;
+    }
+    if(repeatDays.contains(when.date().dayOfWeek()))
+    {
+      true;
+    }
+  }
+  else if(!repeatDays.empty())
+  {
+    if(repeatDays.contains(when.date().dayOfWeek()))
+    {
+      true;
+    }
+  }
+  else
+  {
+    true;
+  }
+  */
+  return (repeatMinutes ? when.time().minute() == repeatMinutes : true) &&
+         (repeatHour ? when.time().hour() == repeatHour : true) &&
+         (repeatMonth ? when.date().month() == repeatMonth : true) &&
+         ((repeatDay && (when.date().day() == repeatDay ||
+                         repeatDays.contains(when.date().dayOfWeek()))) ||
+          (!repeatDay && ((!repeatDays.empty() &&
+                           repeatDays.contains(when.date().dayOfWeek())) ||
+                          repeatDays.empty())));
 }
 /*!
  * \brief Returns when the next repetition should occur.
@@ -67,165 +108,80 @@ QDateTime WaiterCronOccurance::nextOccurance(QDateTime now) const
     QTime nowTime = now.time();
     nowTime.setHMS(nowTime.hour(), nowTime.minute(), 0);
     QDateTime next(now.date(), nowTime);
-
-    if(repeatMinutes != 0)
+    // Set the next occurance to be at least one minute from now, to prevent
+    // infinite loops.
+    next = next.addSecs(60);
+    // To prevent an "Every friday" repetition from always evaluating to true if
+    // the source event is on a friday, only check if a repetition is valid if
+    // the minute is a factor.
+    const bool minSet = repeatMinutes != 0;
+    while(next.time().minute() != repeatMinutes)
     {
-      const auto nowMin = next.time().minute();
-      if(repeatMinutes > nowMin)
-      {
-        next = next.addSecs((repeatMinutes - nowMin) * 60);
-      }
-      else if(repeatMinutes < nowMin)
-      {
-        next = next.addSecs((60 - nowMin + repeatMinutes) * 60);
-      }
-      else if(repeatHour == 0 && repeatDay == 0 && repeatMonth <= 0 &&
-              repeatDays.empty())
-        next = next.addSecs(60 * 60);
+      next = next.addSecs(60);
+      if(minSet && isValidRepetition(next))
+        return next;
     }
-    else
+    // To prevent an "Every friday" repetition from always evaluating to true if
+    // the source event is on a friday, only check if a repetition is hour if
+    // the minute is a factor.
+    const bool hourSet = repeatHour != 0;
+    while(next.time().hour() != repeatHour)
     {
-      auto nextTime = next.time();
-      nextTime.setHMS(nextTime.hour(), 0, 0);
-      next.setTime(nextTime);
+      next = next.addSecs(60 * 60);
+      if(hourSet && isValidRepetition(next))
+        return next;
     }
-    if(repeatHour != 0)
+    if(repeatMonth != 0)
     {
-      const auto nowHour = next.time().hour();
-      if(repeatHour > nowHour)
+      while(next.date().month() != repeatMonth)
       {
-        next = next.addSecs((repeatHour - nowHour) * 60 * 60);
-      }
-      else if(repeatHour < nowHour)
-      {
-        next = next.addSecs((24 - nowHour + repeatHour) * 60 * 60);
-      }
-      else if(repeatMinutes == 0 && repeatDay == 0 && repeatMonth <= 0 &&
-              repeatDays.empty())
         next = next.addDays(1);
+        if(isValidRepetition(next))
+          return next;
+      }
     }
-    else if(repeatMinutes == 0 || repeatMonth > 0 || repeatDay > 0 ||
-            !repeatDays.empty())
+    if(repeatDays.isEmpty())
     {
-      auto nextTime = next.time();
-      nextTime.setHMS(0, nextTime.minute(), 0);
-      next.setTime(nextTime);
-    }
-
-    if(repeatMonth > 0)
-    {
-      const auto nowMonth = next.date().month();
-      if(repeatMonth > nowMonth)
+      if(repeatDay == 0)
       {
-        next = next.addMonths(repeatMonth - nowMonth);
-      }
-      else if(repeatMonth < nowMonth)
-      {
-        next = next.addMonths(12 - nowMonth + repeatMonth);
-      }
-      else if(repeatDay <= 0 && repeatDays.empty() && repeatHour == 0 &&
-              repeatMinutes == 0)
-        next = next.addMonths(12);
-      auto nextDate = next.date();
-      nextDate.setYMD(nextDate.year(), nextDate.month(), 1);
-      next.setDate(nextDate);
-    }
-
-    if(repeatDay > 0 && !repeatDays.empty())
-    {
-      int DoM = 0;
-      int DoW = 0;
-      const auto nowDoM = next.date().day();
-      if(repeatDay > nowDoM)
-      {
-        DoM = (repeatDay - nowDoM);
-      }
-      else if(repeatDay < nowDoM)
-      {
-        DoM = (next.date().daysInMonth() - nowDoM + repeatDay);
-      }
-      else if(repeatMonth <= 0 && repeatHour == 0 && repeatMinutes == 0)
-        DoM = next.date().daysInMonth();
-      const auto nowWeekday = next.date().dayOfWeek();
-      std::pair<short, short> nearestDay = std::make_pair(9000, 9000);
-      for(short s : repeatDays)
-      {
-        if(s < nowWeekday)
+        for(int i = 0; i < 24 * 60 * 60; ++i)
         {
-          if(7 - nowWeekday + s < nearestDay.second)
-          {
-            nearestDay.second = 7 - nowWeekday + s;
-            nearestDay.first = s;
-          }
-        }
-        else if(nowWeekday - s < nearestDay.second)
-        {
-          nearestDay.second = nowWeekday - s;
-          nearestDay.first = s;
+          next = next.addSecs(1);
+          if(isValidRepetition(next))
+            return next;
         }
       }
-      if(nearestDay.first > nowWeekday)
+      else
       {
-        DoW = (nearestDay.first - nowWeekday);
+        while(next.date().day() != repeatDay)
+        {
+          next = next.addDays(1);
+          if(isValidRepetition(next))
+            return next;
+        }
       }
-      else if(nearestDay.first < nowWeekday)
-      {
-        DoW = (7 - nowWeekday + nearestDay.first);
-      }
-      else if(repeatMonth <= 0 && repeatHour == 0 && repeatMinutes == 0)
-        DoW = 7;
-      next = next.addDays(DoM < DoW ? DoM : DoW);
     }
     else
     {
-      if(repeatDay > 0)
+      if(isValidRepetition(next))
+        return next;
+      for(int i = 0; i < 7; ++i)
       {
-        const auto nowDoM = next.date().day();
-        if(repeatDay > nowDoM)
-        {
-          next = next.addDays(repeatDay - nowDoM);
-        }
-        else if(repeatDay < nowDoM)
-        {
-          next = next.addDays(next.date().daysInMonth() - nowDoM + repeatDay);
-        }
-        else if(repeatMonth <= 0 && repeatHour == 0 && repeatMinutes == 0)
-          next = next.addMonths(1);
+        next = next.addDays(1);
+        if(isValidRepetition(next))
+          return next;
       }
-      else if(!repeatDays.empty())
+      if(repeatDay != 0)
       {
-        const auto nowWeekday = next.date().dayOfWeek();
-        std::pair<short, short> nearestDay = std::make_pair(9000, 9000);
-        for(short s : repeatDays)
+        while(next.date().day() != repeatDay)
         {
-          if(s < nowWeekday)
-          {
-            if(7 - nowWeekday + s < nearestDay.second)
-            {
-              nearestDay.second = 7 - nowWeekday + s;
-              nearestDay.first = s;
-            }
-          }
-          else if(nowWeekday - s < nearestDay.second)
-          {
-            nearestDay.second = nowWeekday - s;
-            nearestDay.first = s;
-          }
+          next = next.addDays(1);
+          if(isValidRepetition(next))
+            return next;
         }
-        if(nearestDay.first > nowWeekday)
-        {
-          next = next.addDays(nearestDay.first - nowWeekday);
-        }
-        else if(nearestDay.first < nowWeekday)
-        {
-          next = next.addDays(7 - nowWeekday + nearestDay.first);
-        }
-        else if(repeatMonth <= 0 && repeatHour == 0 && repeatMinutes == 0)
-          next = next.addDays(7);
       }
     }
-    // QString DEBUGDELETETHIS2 = next.toString();
-    return next;
+    throw "Unable to find valid repetition";
   }
   if(repeatMinutes > 0)
     now = now.addSecs(repeatMinutes * 60);

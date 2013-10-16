@@ -48,6 +48,7 @@ struct WaiterCronOccurance
   bool isDelay;
 
   bool repeats() const;
+  bool isValidRepetition(QDateTime when) const;
   QDateTime nextOccurance(QDateTime now) const;
   QString toString() const;
 };

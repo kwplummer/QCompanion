@@ -277,11 +277,8 @@ bool QSnapper::imagesDiffer(const QImage oldImage, const QImage newImage,
           {
             ++difference;
             QRgb pixel = newImage.pixel(i, j);
-            if(pixel != qRgb(0xFF, 0xFF, 0xFF))
-            {
-              std::lock_guard<std::mutex> l(diffMutex);
-              diff.setPixel(i, j, pixel);
-            }
+            std::lock_guard<std::mutex> l(diffMutex);
+            diff.setPixel(i, j, pixel);
           }
           if(difference > differenceLimit)
           {
@@ -299,7 +296,10 @@ bool QSnapper::imagesDiffer(const QImage oldImage, const QImage newImage,
       std::cout << "Different sizes" << std::endl;
     diff = newImage;
   }
-  diff.save(filename);
+  if(!muted || exceedsDiffenceLimit)
+  {
+    diff.save(filename);
+  }
   return exceedsDiffenceLimit;
 }
 
@@ -327,6 +327,9 @@ bool QSnapper::screensaverIsActive()
  * If the picture is different from the last one, it gets a name from
  * getNextFileName() and saves it.
  * It then sets the next time another screen shot should occur.
+ * If saveDifferenceImage is true, a difference between the current image and
+ * the previous image is stored instead of a whole copy. This reduces size, and
+ * makes changes more noticable.
  * \return If a picture was taken.
  */
 bool QSnapper::snap()
@@ -334,7 +337,7 @@ bool QSnapper::snap()
   if(canSnap && !saveDir.isNull() && QDir(saveDir).exists() &&
      !screensaverIsActive())
   {
-    QString saveFileName = getNextFileName(false);
+    QString saveFileName = getNextFileName();
 #if QT_VERSION < 0x050000
     QPixmap desktop = QPixmap::grabWindow(QApplication::desktop()->winId());
 #else
@@ -343,14 +346,17 @@ bool QSnapper::snap()
 #endif
     QImage newImage = desktop.toImage();
     nextWakeup = QDateTime::currentDateTime().addSecs(60);
-    if((!lenient && oldImage != newImage) ||
-       (lenient && !saveDifferenceImage && imagesDiffer(oldImage, newImage)) ||
-       (lenient && saveDifferenceImage &&
-        imagesDiffer(oldImage, newImage, getNextFileName(true))))
+    if(lenient && saveDifferenceImage &&
+       imagesDiffer(oldImage, newImage, getNextFileName()))
+    {
+      oldImage = newImage;
+    }
+    else if((!lenient && oldImage != newImage) ||
+            (lenient && imagesDiffer(oldImage, newImage)))
     {
       oldImage = newImage;
       oldImage.save(saveFileName);
-      saveFileName = getNextFileName(false);
+      saveFileName = getNextFileName();
       return true;
     }
   }
@@ -359,14 +365,12 @@ bool QSnapper::snap()
 
 /*!
  * \brief Gets where the image should be saved next.
- * \param isDiff determines if the "Diff" should be added to the path or
- * not.
  * \return A QString comprosed of the path, the current time (yyyyMMddhhmmss)
  * and the extension (.jpg, to save space)
  */
-QString QSnapper::getNextFileName(bool isDiff)
+QString QSnapper::getNextFileName()
 {
-  return saveDir + (isDiff ? "/Diff/" : "/") +
+  return saveDir + '/' +
          QDateTime::currentDateTime().toString("yyyyMMddhhmmss") + ".jpg";
 }
 

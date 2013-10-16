@@ -218,10 +218,13 @@ bool QlipperWidget::load()
         }
         else if(!string.isEmpty())
         {
-          QString yearText = string;
-          if(!day)
-            return false;
-          day->appendRow(new QStandardItem(string));
+          QStringList entries = string.split("\n");
+          for(const QString &entry : entries)
+          {
+            if(!day)
+              return false;
+            day->appendRow(new QStandardItem(entry));
+          }
         }
       }
       return true;

@@ -101,6 +101,7 @@ void Speaker::speak(QString speakMe)
  */
 void Speaker::readLoop()
 {
+  std::this_thread::sleep_for(std::chrono::minutes(1));
   QString readMe;
   while(!stopReading)
   {

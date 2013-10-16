@@ -327,7 +327,21 @@ void WaiterWidget::update(QDateTime t)
       emit speakThis(sayMe);
       if(repeat.repeats())
       {
-        emit repeatAt(this, title, repeat.nextOccurance(t), repeat);
+        try
+        {
+          const auto &&nextTime = repeat.nextOccurance(datetime);
+          emit repeatAt(this, title, nextTime, repeat);
+        }
+        catch(const char *e)
+        {
+          QString error = QString(e) + " for event " +
+                          (title.isNull() ? "" : title) + " at: " +
+                          datetime.toString();
+          emit speakThis(error);
+          QMessageBox box;
+          box.setText(error);
+          box.exec();
+        }
       }
     }
   }
