@@ -68,6 +68,7 @@ private
 slots:
   void clipboardChanges();
   void removeButtonClicked();
+  void on_searchButton_clicked();
 };
 
 #endif // QLIPPERWIDGET_H

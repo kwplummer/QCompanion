@@ -5,6 +5,7 @@
 #include <QTextStream>
 #include <QCloseEvent>
 #include <map>
+#include <QMessageBox>
 /*!
  * \brief Creates the Qlipper widget
  * \param savePath Where to store the clipboard log
@@ -293,4 +294,69 @@ void QlipperWidget::removeButtonClicked()
   }
   ui->clipboardTree->clearSelection();
   delayedSave.start(60000);
+}
+
+/*!
+ * \brief Presents every entry in the clipboard history
+ * that matches the query in searchText, and offers the ability to continue,
+ * copy the entry to clipboard, delete the entry, or continue.
+ */
+void QlipperWidget::on_searchButton_clicked()
+{
+  QStandardItem *root = model->invisibleRootItem();
+  bool results = false;
+  for(int i = 0; i < root->rowCount(); ++i)
+  {
+    // years
+    for(int j = 0; j < root->child(i)->rowCount(); ++j)
+    {
+      // months
+      for(int k = 0; k < root->child(i)->child(j)->rowCount(); ++k)
+      {
+        // days
+        for(int l = 0; l < root->child(i)->child(j)->child(k)->rowCount(); ++l)
+        {
+          if(root->child(i)->child(j)->child(k)->child(l)->text().contains(
+                 ui->searchText->text(), Qt::CaseInsensitive))
+          {
+            results = true;
+            QMessageBox box;
+            box.setText(root->child(i)->child(j)->child(k)->child(l)->text());
+            box.setWindowTitle("Result Found");
+            QPushButton *del = new QPushButton("Delete", &box);
+            QPushButton *copy = new QPushButton("Copy", &box);
+            QPushButton *cont = new QPushButton("Continue", &box);
+            QPushButton *stop = new QPushButton("Stop", &box);
+            box.addButton(del, QMessageBox::DestructiveRole);
+            box.addButton(copy, QMessageBox::ApplyRole);
+            box.addButton(cont, QMessageBox::AcceptRole);
+            box.addButton(stop, QMessageBox::RejectRole);
+            box.exec();
+            const auto result = box.clickedButton();
+            if(result == del)
+            {
+              root->child(i)->child(j)->child(k)->removeRow(l);
+            }
+            else if(result == cont)
+            {
+              continue;
+            }
+            else if(result == copy)
+            {
+              clipboard->setText(box.text());
+              return;
+            }
+            else
+            {
+              return;
+            }
+          }
+        }
+      }
+    }
+  }
+  QMessageBox box;
+  box.setText("No " + tr(results ? "more " : "") + "results");
+  box.addButton(QMessageBox::Ok);
+  box.exec();
 }
