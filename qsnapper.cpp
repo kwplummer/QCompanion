@@ -209,11 +209,10 @@ void QSnapper::setDiff(bool enable)
  */
 bool QSnapper::imagesDiffer(const QImage oldImage, const QImage newImage)
 {
-  bool exceedsDiffenceLimit = true;
+  bool exceedsDiffenceLimit = false;
   if(oldImage.width() == newImage.width() &&
      oldImage.height() == newImage.height())
   {
-    exceedsDiffenceLimit = false;
     std::atomic_int difference(0);
     const int height = oldImage.height();
     const int width = oldImage.width();
@@ -236,11 +235,11 @@ bool QSnapper::imagesDiffer(const QImage oldImage, const QImage newImage)
         }
       }
     });
-    if(!muted)
-      std::cout << difference << std::endl;
   }
-  else if(!muted)
-    std::cout << "Different sizes" << std::endl;
+  else
+  {
+    return true;
+  }
   return exceedsDiffenceLimit;
 }
 

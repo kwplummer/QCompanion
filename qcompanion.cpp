@@ -15,12 +15,11 @@
  * \param parent Used for Qt's memory management.
  */
 QCompanion::QCompanion(QWidget *parent)
-    : QDialog(parent), nextFire(nullptr),
+    : QDialog(parent),
       speaker(QCoreApplication::applicationDirPath() + "/murasaki.png"),
       ui(new Ui::QCompanion)
 {
   ui->setupUi(this);
-  updateNextFire = new QTimer(this);
   iconPath = QCoreApplication::applicationDirPath() + "/murasaki.png";
   tray = new QSystemTrayIcon(QIcon(iconPath), this);
   setWindowIcon(tray->icon());
@@ -32,12 +31,6 @@ QCompanion::QCompanion(QWidget *parent)
 
   QAction *speakClipboardAction = new QAction("Speak Clipboard", this);
   mainMenu->addAction(speakClipboardAction);
-  if(!plugins.empty())
-  {
-    nextFire = new QAction(this);
-    updateNextFireText();
-    mainMenu->addAction(nextFire);
-  }
 
   toggleNotificationsAction = new QAction("Disable Notifications", this);
   mainMenu->addAction(toggleNotificationsAction);
@@ -57,7 +50,6 @@ QCompanion::QCompanion(QWidget *parent)
           SLOT(toggleNotifications()));
   connect(speakClipboardAction, SIGNAL(triggered()), this,
           SLOT(speakClipboard()));
-  connect(updateNextFire, SIGNAL(timeout()), this, SLOT(updateNextFireText()));
   connect(mainMenu, SIGNAL(aboutToShow()), this, SLOT(showingMenu()));
   connect(mainMenu, SIGNAL(aboutToHide()), this, SLOT(hidingMenu()));
 #else
@@ -131,12 +123,9 @@ QMenu *QCompanion::loadPlugins()
   plugins.push_back(waiter);
   pluginMenu->addMenu(waiterMenu);
 #if QT_VERSION < 0x050000
-  connect(waiter, SIGNAL(changeTimers()), this, SLOT(calcuateNextSpeakTime()));
   connect(waiter, SIGNAL(wantsToSpeak(QString)), this,
           SLOT(sendToSpeaker(QString)));
 #else
-  connect(waiter, &WaiterComponent::changeTimers, this,
-          &QCompanion::calcuateNextSpeakTime);
   connect(waiter, &WaiterComponent::wantsToSpeak, this,
           &QCompanion::sendToSpeaker);
 #endif
@@ -153,62 +142,7 @@ QMenu *QCompanion::loadPlugins()
   connect(qlipper, &QlipperComponent::wantsToSpeak, this,
           &QCompanion::sendToSpeaker);
 #endif
-  calcuateNextSpeakTime();
   return pluginMenu;
-}
-
-/*!
- * \brief Checks each component for when it will want to speak next, and then
- * updates the menu timer to signify when that is.
- */
-void QCompanion::calcuateNextSpeakTime()
-{
-  const QDateTime zero = QDateTime::fromTime_t(0);
-  const QDateTime now = QDateTime::currentDateTime();
-  nextSpeakTime = zero;
-  for(Component *plugin : plugins)
-  {
-    const QDateTime pluginTime = plugin->nextCheckTime();
-    if(!plugin->isMuted() && (nextSpeakTime == zero ||
-                              (pluginTime < nextSpeakTime && pluginTime > now)))
-    {
-      nextSpeakTime = pluginTime;
-    }
-  }
-  if(nextSpeakTime == zero)
-    nextSpeakTime.setTime_t(time(NULL) + 60);
-  updateNextFireText();
-}
-
-/*!
- * \brief A trigger that starts updating the "Next Speech in X" dialog, as it
- * would waste CPU to constantly update it.
- */
-void QCompanion::showingMenu()
-{
-  updateNextFire->setInterval(1000);
-  updateNextFire->start();
-}
-
-/*!
- * \brief A trigger that stops updating the "Next Speech in X" dialog, as it
- * would waste CPU to constantly update it.
- */
-void QCompanion::hidingMenu()
-{
-  updateNextFire->stop();
-}
-
-/*!
- * \brief Sets the menu item to indicate when the next speech will occur.
- */
-void QCompanion::updateNextFireText()
-{
-  if(nextFire)
-    nextFire->setText(
-        "The next speech is in: " +
-        QString::number(QDateTime::currentDateTime().secsTo(nextSpeakTime)) +
-        " seconds");
 }
 
 /*!
@@ -266,5 +200,4 @@ void QCompanion::sendToSpeaker(QString sayMe)
     for(QString s : sayMe.split("\n"))
       speaker.speak(s);
   }
-  calcuateNextSpeakTime();
 }

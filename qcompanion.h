@@ -24,14 +24,10 @@ public:
 public
 slots:
   void quit();
-  void showingMenu();
-  void hidingMenu();
-  void updateNextFireText();
   void speakClipboard();
   void toggleNotifications();
   void toggleTTS();
   void sendToSpeaker(QString sayMe);
-  void calcuateNextSpeakTime();
 
 private:
   ///\brief The path to where the icon is stored.
@@ -40,21 +36,14 @@ private:
   /// program.
   QSystemTrayIcon *tray;
   QMenu *loadPlugins();
-  ///\brief A menu item stating when the next component wants to be read.
-  QAction *nextFire;
   ///\brief A list of plugins, consisting of the component and when it wants to
   /// be read.
   std::vector<Component *> plugins;
-  ///\brief A timer for when the "Next Speech is in X seconds" dialog should be
-  /// updated
-  QTimer *updateNextFire;
   ///\brief The class that manages interfacing with the text to speech and
   /// notification systems.
   Speaker speaker;
   ///\brief A pointer to a class that holds the UI elements.
   Ui::QCompanion *ui;
-  ///\brief The earliest time for a component that wants to speak.
-  QDateTime nextSpeakTime;
   ///\brief A menu option that toggles notifications for every component.
   QAction *toggleNotificationsAction;
   ///\brief A menu option that toggles speech for every component.
