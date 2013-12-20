@@ -52,7 +52,7 @@ public:
   QString toLoggableString();
   qint64 getMsecs() const;
   static QString intToMonth(int month);
-signals:
+Q_SIGNALS:
   ///\brief Emitted to tell the dialog to remove this widget
   void removeAt(WaiterWidget *);
   /*!
@@ -70,8 +70,7 @@ signals:
   ///\brief Tells the dialog to create a waiter with the same title and new
   /// time, and delete the old one.
   void repeatAt(WaiterWidget *, QString, QDateTime, const WaiterCronOccurance);
-public
-slots:
+public Q_SLOTS:
   void update(QDateTime t);
   void removeThis();
 };

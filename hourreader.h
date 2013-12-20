@@ -8,8 +8,7 @@
 class HourReader : public Component
 {
   Q_OBJECT
-private
-slots:
+private Q_SLOTS:
   void emitSpeak();
 
 public:

@@ -16,14 +16,12 @@ class WaiterComponent : public Component
   Q_OBJECT
   ///\brief The GUI that handles creating, deleting, and updating timers.
   WaiterDialog dialog;
-private
-slots:
+private Q_SLOTS:
   void emitSpeak(QString what);
-public
-slots:
+public Q_SLOTS:
   void selectStatePath();
   void changeTimerSlot();
-signals:
+Q_SIGNALS:
   /*!
    * \brief Tells the rest of the program that the countdown for next speech
    * should be recalculated.

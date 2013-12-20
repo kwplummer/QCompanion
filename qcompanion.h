@@ -21,13 +21,13 @@ class QCompanion : public QDialog
 public:
   explicit QCompanion(QWidget *parent = 0);
   virtual ~QCompanion();
-public
-slots:
+public Q_SLOTS:
   void quit();
   void speakClipboard();
   void toggleNotifications();
   void toggleTTS();
   void sendToSpeaker(QString sayMe);
+  void displayMessage(QString message);
 
 private:
   ///\brief The path to where the icon is stored.

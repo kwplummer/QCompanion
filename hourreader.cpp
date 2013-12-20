@@ -14,20 +14,14 @@ HourReader::HourReader(QWidget *parent) : Component(parent)
   whenToSpeak.setSingleShot(false);
   whenToSpeak.setInterval(
       QDateTime::currentDateTime().msecsTo(nextCheckTime()));
-#if QT_VERSION < 0x050000
   connect(&whenToSpeak, SIGNAL(timeout()), this, SLOT(emitSpeak()));
-#else
-  connect(&whenToSpeak, &QTimer::timeout, this, &HourReader::emitSpeak);
-#endif
   whenToSpeak.start();
 }
 
 /*!
  * \brief Destroys the HourReader, does nothing interesting.
  */
-HourReader::~HourReader()
-{
-}
+HourReader::~HourReader() {}
 
 /*!
  * \brief Gets when the component's text should be shown
@@ -64,5 +58,5 @@ void HourReader::emitSpeak()
       QDateTime::currentDateTime().msecsTo(nextCheckTime()));
   whenToSpeak.start();
   if(!muted)
-    emit wantsToSpeak(getText());
+    Q_EMIT wantsToSpeak(getText());
 }

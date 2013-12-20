@@ -7,14 +7,9 @@
  */
 WaiterCronDialog::WaiterCronDialog(QWidget *parent)
     : QDialog(parent), ui(new Ui::WaiterCronDialog), ok(false)
-{
-  ui->setupUi(this);
-}
+{ ui->setupUi(this); }
 ///\brief Deletes the UI.
-WaiterCronDialog::~WaiterCronDialog()
-{
-  delete ui;
-}
+WaiterCronDialog::~WaiterCronDialog() { delete ui; }
 /*!
  * \brief Gets the data from the GUI.
  * \return A struct containing when to repeat.
@@ -41,10 +36,7 @@ WaiterCronOccurance WaiterCronDialog::getResult()
  * \brief Returns if the UI was closed via the "OK" button.
  * \return A bool showing if the OK button was pressed.
  */
-bool WaiterCronDialog::okWasPressed()
-{
-  return ok;
-}
+bool WaiterCronDialog::okWasPressed() { return ok; }
 /*!
  * \brief Sets the boxes to a previously created WaiterCronOccurance
  * \param when What to set the boxes to.
@@ -81,9 +73,7 @@ void WaiterCronDialog::setResult(const WaiterCronOccurance &when)
  * \param which Which tab to change to.
  */
 void WaiterCronDialog::changeTab(int which)
-{
-  ui->tabs->setCurrentIndex(which);
-}
+{ ui->tabs->setCurrentIndex(which); }
 /*!
  * \brief Closes the window, and sets a bool stating the the UI was closed via
  * the OK button.

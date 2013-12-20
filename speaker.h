@@ -3,12 +3,19 @@
 #include <tbb/concurrent_queue.h>
 #include <thread>
 #include <QString>
+#include <QObject>
+#ifndef Q_OS_WIN
 #include <flite/flite.h>
-
 extern "C" cst_voice *register_cmu_us_kal(const char *voxdir);
-///\brief Offers a queue and an interface to flite and libnotify.
-class Speaker
+typedef cst_voice Voice;
+#else
+#include <sapi.h>
+typedef ISpVoice Voice;
+#endif
+///\brief Offers a queue and an interface to text to speech and notifications.
+class Speaker : public QObject
 {
+  Q_OBJECT
   /*!
    * \brief The concurrent queue that is used to store strings to be
    * read/notified.
@@ -34,11 +41,11 @@ class Speaker
    */
   std::thread flite;
   ///\brief A handle to the voice used for text to speech.
-  cst_voice *voice;
+  Voice *voice;
 
 public:
-  Speaker(QString iconLocation);
-  ~Speaker();
+  Speaker(QObject *parent, QString iconLocation);
+  virtual ~Speaker();
   void speak(QString speakMe);
   // Returns true if no error occured in speaking.
   // For unit tests.
@@ -47,6 +54,10 @@ public:
   void setTTSEnabled(bool enable);
   bool isNotificationsEnabled();
   bool isTTSEnabled();
+  /*!
+   * \brief Tells the UI thread to show a message
+   * \param message What to display
+   */
+  Q_SIGNAL void showMessage(QString message);
 };
-
 #endif // SPEAKER_H

@@ -25,13 +25,12 @@ class QlipperWidget : public QDialog
 public:
   explicit QlipperWidget(QString savePath, QWidget *parent = 0);
   ~QlipperWidget();
-public
-slots:
+public Q_SLOTS:
   void setLogEnabled(bool enabled);
   void setStatePath(QString newPath);
   void save();
   void toClipboard(QModelIndex index);
-signals:
+Q_SIGNALS:
   ///\brief Send the text up to the speaker.
   void speakThis(QString text);
 
@@ -64,8 +63,7 @@ private:
 
 protected:
   void closeEvent(QCloseEvent *event) override;
-private
-slots:
+private Q_SLOTS:
   void clipboardChanges();
   void removeButtonClicked();
   void on_searchButton_clicked();

@@ -18,9 +18,7 @@ WaiterWidget::WaiterWidget(QWidget *parent, QDate endDate, QTime endTime,
       title(title.replace("_", " ")),
       initMs(QDateTime::currentDateTime().toMSecsSinceEpoch()), quit(false),
       repeat(repeat)
-{
-  init();
-}
+{ init(); }
 
 /*!
  * \brief Constructs the Waiter Widget and calls init()
@@ -34,9 +32,7 @@ WaiterWidget::WaiterWidget(QWidget *parent, qint64 msec, QString title,
     : QWidget(parent), datetime(QDateTime::fromMSecsSinceEpoch(msec)),
       title(title), initMs(QDateTime::currentDateTime().toMSecsSinceEpoch()),
       quit(false), repeat(repeat)
-{
-  init();
-}
+{ init(); }
 
 /*!
  * \brief Creates all the UI elements and wires them up.
@@ -59,7 +55,7 @@ void WaiterWidget::init()
   progress->setAlignment(Qt::AlignHCenter);
   if(initMs < datetime.toMSecsSinceEpoch())
     progress->setMaximum(datetime.toMSecsSinceEpoch() - initMs);
-#ifdef _WIN32
+#ifdef Q_OS_WIN
   progress->setStyleSheet("QProgressBar::chunk { background-color: #591067;}\
                                 QProgressBar {color: #999999;}");
 #endif
@@ -72,12 +68,7 @@ void WaiterWidget::init()
   layout->addWidget(remove);
 
   setLayout(layout);
-
-#if QT_VERSION < 0x050000
   connect(remove, SIGNAL(clicked()), this, SLOT(removeThis()));
-#else
-  connect(remove, &QPushButton::clicked, this, &WaiterWidget::removeThis);
-#endif
 }
 
 /*!
@@ -98,10 +89,7 @@ QString WaiterWidget::toLoggableString()
  * \brief Gets the number of milliseconds since the UNIX epoch.
  * \return The number of milliseconds since the UNIX epoch.
  */
-qint64 WaiterWidget::getMsecs() const
-{
-  return datetime.toMSecsSinceEpoch();
-}
+qint64 WaiterWidget::getMsecs() const { return datetime.toMSecsSinceEpoch(); }
 
 /*!
  * \brief Converts from an integer to a string of the month
@@ -185,7 +173,7 @@ void WaiterWidget::update(QDateTime t)
       else
         sayMe =
             "The timer " + title.replace("_", " ") + " will expire in one year";
-      emit speakThis(sayMe);
+      Q_EMIT speakThis(sayMe);
       break;
     }
     case(2592000) :
@@ -196,7 +184,7 @@ void WaiterWidget::update(QDateTime t)
       else
         sayMe = "The timer " + title.replace("_", " ") +
                 " will expire in one month";
-      emit speakThis(sayMe);
+      Q_EMIT speakThis(sayMe);
       break;
     }
     case(604800) :
@@ -207,7 +195,7 @@ void WaiterWidget::update(QDateTime t)
       else
         sayMe =
             "The timer " + title.replace("_", " ") + " will expire in one week";
-      emit speakThis(sayMe);
+      Q_EMIT speakThis(sayMe);
       break;
     }
     case(86400) :
@@ -218,7 +206,7 @@ void WaiterWidget::update(QDateTime t)
       else
         sayMe =
             "The timer " + title.replace("_", " ") + " will expire in one day";
-      emit speakThis(sayMe);
+      Q_EMIT speakThis(sayMe);
       break;
     }
     case(43200) : // 12 * seconds in an hour = 12 hours
@@ -229,7 +217,7 @@ void WaiterWidget::update(QDateTime t)
       else
         sayMe =
             "The timer " + title.replace("_", " ") + " will expire in 12 hours";
-      emit speakThis(sayMe);
+      Q_EMIT speakThis(sayMe);
       break;
     }
     case(21600) :
@@ -240,7 +228,7 @@ void WaiterWidget::update(QDateTime t)
       else
         sayMe =
             "The timer " + title.replace("_", " ") + " will expire in 6 hours";
-      emit speakThis(sayMe);
+      Q_EMIT speakThis(sayMe);
       break;
     }
     case(3600) :
@@ -251,7 +239,7 @@ void WaiterWidget::update(QDateTime t)
       else
         sayMe =
             "The timer " + title.replace("_", " ") + " will expire in an hour";
-      emit speakThis(sayMe);
+      Q_EMIT speakThis(sayMe);
       break;
     }
     case(1800) : // 30 * seconds in one minute = 30 minutes
@@ -262,7 +250,7 @@ void WaiterWidget::update(QDateTime t)
       else
         sayMe = "The timer " + title.replace("_", " ") +
                 " will expire in half an hour";
-      emit speakThis(sayMe);
+      Q_EMIT speakThis(sayMe);
       break;
     }
     case(900) :
@@ -273,7 +261,7 @@ void WaiterWidget::update(QDateTime t)
       else
         sayMe = "The timer " + title.replace("_", " ") +
                 " will expire in 15 minutes";
-      emit speakThis(sayMe);
+      Q_EMIT speakThis(sayMe);
       break;
     }
     case(600) :
@@ -284,7 +272,7 @@ void WaiterWidget::update(QDateTime t)
       else
         sayMe = "The timer " + title.replace("_", " ") +
                 " will expire in 10 minutes";
-      emit speakThis(sayMe);
+      Q_EMIT speakThis(sayMe);
       break;
     }
     case(300) :
@@ -295,7 +283,7 @@ void WaiterWidget::update(QDateTime t)
       else
         sayMe = "The timer " + title.replace("_", " ") +
                 " will expire in 5 minutes";
-      emit speakThis(sayMe);
+      Q_EMIT speakThis(sayMe);
       break;
     }
     case(60) :
@@ -306,7 +294,7 @@ void WaiterWidget::update(QDateTime t)
       else
         sayMe =
             "The timer " + title.replace("_", " ") + " will expire in 1 minute";
-      emit speakThis(sayMe);
+      Q_EMIT speakThis(sayMe);
       break;
     }
     }
@@ -324,20 +312,20 @@ void WaiterWidget::update(QDateTime t)
         sayMe = "A timer has expired";
       else
         sayMe = "The timer " + title.replace("_", " ") + " has expired.";
-      emit speakThis(sayMe);
+      Q_EMIT speakThis(sayMe);
       if(repeat.repeats())
       {
         try
         {
           const auto &&nextTime = repeat.nextOccurance(datetime);
-          emit repeatAt(this, title, nextTime, repeat);
+          Q_EMIT repeatAt(this, title, nextTime, repeat);
         }
         catch(const char *e)
         {
           QString error = QString(e) + " for event " +
                           (title.isNull() ? "" : title) + " at: " +
                           datetime.toString();
-          emit speakThis(error);
+          Q_EMIT speakThis(error);
           QMessageBox box;
           box.setText(error);
           box.exec();
@@ -354,7 +342,7 @@ void WaiterWidget::update(QDateTime t)
 void WaiterWidget::removeThis()
 {
   if(QApplication::keyboardModifiers().testFlag(Qt::ShiftModifier))
-    emit replaceAt(this, this->title, this->datetime, repeat);
+    Q_EMIT replaceAt(this, this->title, this->datetime, repeat);
   else
-    emit removeAt(this);
+    Q_EMIT removeAt(this);
 }

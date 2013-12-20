@@ -33,9 +33,7 @@ WaiterCronOccurance::WaiterCronOccurance(short repeatMinutes, short repeatHour,
 }
 
 WaiterCronOccurance::WaiterCronOccurance()
-    : WaiterCronOccurance(0, 0, 0, 0, 0, 0, true)
-{
-}
+    : WaiterCronOccurance(0, 0, 0, 0, 0, 0, true) {}
 
 /*!
  * \brief Determines if the occurance has any values that would cause it to

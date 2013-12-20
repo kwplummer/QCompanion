@@ -11,26 +11,17 @@ Component::Component(QWidget *parent) : QWidget(parent), muted(false)
 {
   muteAction = new QAction("Mute", this);
   muteAction->setCheckable(true);
-#if QT_VERSION < 0x050000
   connect(muteAction, SIGNAL(triggered(bool)), this, SLOT(setMute(bool)));
-#else
-  connect(muteAction, &QAction::triggered, this, &Component::setMute);
-#endif
 }
 
-Component::~Component()
-{
-}
+Component::~Component() {}
 
 /*!
  * \brief Sets if the component should be in the list of components to speak and
  * wait for.
  * \param mute If the component should be muted.
  */
-void Component::setMute(bool mute)
-{
-  muted = mute;
-}
+void Component::setMute(bool mute) { muted = mute; }
 
 /*!
  * \brief Gets a list of menu items used for interacting with the component's
@@ -49,7 +40,4 @@ QList<QAction *> Component::getMenuContents()
  * notification/speech
  * \return If the component is muted.
  */
-bool Component::isMuted()
-{
-  return muted;
-}
+bool Component::isMuted() { return muted; }

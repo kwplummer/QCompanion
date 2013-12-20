@@ -14,8 +14,7 @@ class QlipperComponent : public Component
   QSettings settings;
   ///\brief the GUI.
   QlipperWidget *dialog;
-public
-slots:
+public Q_SLOTS:
   void showDialog();
   void setLogEnabled(bool enabled);
   void setFileLocation();

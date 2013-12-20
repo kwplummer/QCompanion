@@ -10,6 +10,10 @@
 #if QT_VERSION >= 0x050000
 #include <QScreen>
 #endif
+#ifdef Q_OS_WIN
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+#endif
 
 /*!
  * \brief Constructs the snapper, sets image save location.
@@ -22,7 +26,7 @@
  */
 QSnapper::QSnapper(QWidget *parent)
     : Component(parent), nextWakeup(QDateTime::currentDateTime().addSecs(60))
-#ifdef Q_OS_LINUX
+#ifndef Q_OS_WIN
       ,
       screensaver("org.freedesktop.ScreenSaver", "/ScreenSaver")
 #endif
@@ -52,16 +56,10 @@ QSnapper::QSnapper(QWidget *parent)
 
   whenToSpeak.setSingleShot(false);
   whenToSpeak.setInterval(60000);
-#if QT_VERSION < 0x050000
   connect(&whenToSpeak, SIGNAL(timeout()), this, SLOT(emitSpeak()));
   connect(muteAction, SIGNAL(triggered(bool)), this,
           SLOT(setMuteSettings(bool)));
   connect(toggleDiffAction, SIGNAL(triggered(bool)), this, SLOT(setDiff(bool)));
-#else
-  connect(&whenToSpeak, &QTimer::timeout, this, &QSnapper::emitSpeak);
-  connect(muteAction, &QAction::triggered, this, &QSnapper::setMuteSettings);
-  connect(toggleDiffAction, &QAction::triggered, this, &QSnapper::setDiff);
-#endif
   emitSpeak();
   whenToSpeak.start();
 }
@@ -69,9 +67,7 @@ QSnapper::QSnapper(QWidget *parent)
 /*!
  * \brief Destroys the QSnapper, does nothing interesting.
  */
-QSnapper::~QSnapper()
-{
-}
+QSnapper::~QSnapper() {}
 
 /*!
  * \brief Gets when the next picture will be taken.
@@ -80,18 +76,13 @@ QSnapper::~QSnapper()
  * \return A QDateTime representing when the component should be read.
  */
 QDateTime QSnapper::nextCheckTime()
-{
-  return canSnap ? nextWakeup : QDateTime::fromTime_t(0);
-}
+{ return canSnap ? nextWakeup : QDateTime::fromTime_t(0); }
 
 /*!
  * \brief Gets what to say aloud and notify
  * \return The word "Snap"
  */
-QString QSnapper::getText()
-{
-  return "Snap";
-}
+QString QSnapper::getText() { return "Snap"; }
 
 /*!
  * \brief Gets the items the user will use to interact with the component.
@@ -115,18 +106,11 @@ QList<QAction *> QSnapper::getMenuContents()
   actions.append(lenientOption);
   actions.append(toggleDiffAction);
 
-#if QT_VERSION < 0x050000
   connect(changeFolderAction, SIGNAL(triggered()), this,
           SLOT(changeSaveFolder()));
   connect(enableLogging, SIGNAL(triggered(bool)), this,
           SLOT(enableSnapping(bool)));
   connect(lenientOption, SIGNAL(triggered(bool)), this, SLOT(setLenient(bool)));
-#else
-  connect(changeFolderAction, &QAction::triggered, this,
-          &QSnapper::changeSaveFolder);
-  connect(enableLogging, &QAction::triggered, this, &QSnapper::enableSnapping);
-  connect(lenientOption, &QAction::triggered, this, &QSnapper::setLenient);
-#endif
   return actions;
 }
 
@@ -134,10 +118,7 @@ QList<QAction *> QSnapper::getMenuContents()
  * \brief Returns if the logger can take pictures or not
  * \return If the logger is allowed to take pictures.
  */
-bool QSnapper::isEnabled()
-{
-  return canSnap;
-}
+bool QSnapper::isEnabled() { return canSnap; }
 
 /*!
  * \brief Prompts the user to pick which folder the screenshots should be logged
@@ -183,9 +164,7 @@ void QSnapper::setLenient(bool isLenient)
  * \param shouldMute if it should be muted.
  */
 void QSnapper::setMuteSettings(bool shouldMute)
-{
-  settings.setValue("QSnapper_Muted", shouldMute);
-}
+{ settings.setValue("QSnapper_Muted", shouldMute); }
 
 /*!
  * \brief Sets if "Difference" images should be generated, and stores it into
@@ -218,8 +197,8 @@ bool QSnapper::imagesDiffer(const QImage oldImage, const QImage newImage)
     const int width = oldImage.width();
     const int differenceLimit = (height * width) / 100;
     tbb::parallel_for(tbb::blocked_range<int>(0, width),
-                      [&](const tbb::blocked_range<int> & range)
-    {
+                      [&](const tbb::blocked_range<int> &range)
+                      {
       for(int i = range.begin(); i != range.end(); ++i)
       {
         for(int j = 0; j < height; ++j)
@@ -266,8 +245,8 @@ bool QSnapper::imagesDiffer(const QImage oldImage, const QImage newImage,
     std::mutex diffMutex;
     diff.fill(QColor(00, 0xF2, 0xFF));
     tbb::parallel_for(tbb::blocked_range<int>(0, width),
-                      [&](const tbb::blocked_range<int> & range)
-    {
+                      [&](const tbb::blocked_range<int> &range)
+                      {
       for(int i = range.begin(); i != range.end(); ++i)
       {
         for(int j = 0; j < height; ++j)
@@ -308,14 +287,13 @@ bool QSnapper::imagesDiffer(const QImage oldImage, const QImage newImage,
  */
 bool QSnapper::screensaverIsActive()
 {
-#ifdef Q_OS_LINUX
+#ifdef Q_OS_WIN
+  bool isActive = false;
+  SystemParametersInfo(SPI_GETSCREENSAVEACTIVE, 0, &isActive, 0);
+  return isActive;
+#else
   QDBusReply<bool> reply = screensaver.call("GetActive");
   return reply.isValid() && reply.value();
-#elif Q_OS_WIN
-  // Untested!
-  bool isActive = false;
-    SystemParametersInfo(SPI_GETSCREENSAVERACTIVE, 0, &isActive, 0));
-    return isActive;
 #endif
 }
 
@@ -379,7 +357,7 @@ QString QSnapper::getNextFileName()
 void QSnapper::emitSpeak()
 {
   if(snap() && !muted)
-    emit wantsToSpeak(getText());
+    Q_EMIT wantsToSpeak(getText());
   else
-    emit wantsToSpeak("");
+    Q_EMIT wantsToSpeak("");
 }

@@ -18,8 +18,7 @@
 class Component : public QWidget
 {
   Q_OBJECT
-private
-slots:
+private Q_SLOTS:
   void setMute(bool mute);
 
 protected:
@@ -32,7 +31,7 @@ protected:
   bool muted;
   /// The action used to toggle muted.
   QAction *muteAction;
-signals:
+Q_SIGNALS:
   /// Emitted when the component wants to send text to the Speaker
   void wantsToSpeak(QString);
 

@@ -16,12 +16,10 @@ QlipperWidget::QlipperWidget(QString savePath, QWidget *parent)
       isLogEnabled(false)
 {
   ui->setupUi(this);
+  yearNode = monthNode = dayNode = nullptr;
   clipboard = QApplication::clipboard();
-
   nodeDate = QDate::currentDate();
-
   model = new QStandardItemModel(this);
-
   if(!load())
   {
     model->clear();
@@ -43,20 +41,12 @@ QlipperWidget::QlipperWidget(QString savePath, QWidget *parent)
   ui->clipboardTree->setHeaderHidden(true);
   ui->clipboardTree->expandAll();
   delayedSave.setSingleShot(true);
-#if QT_VERSION < 0x050000
   connect(clipboard, SIGNAL(dataChanged()), this, SLOT(clipboardChanges()));
   connect(ui->removeButton, SIGNAL(clicked()), this,
           SLOT(removeButtonClicked()));
   connect(&delayedSave, SIGNAL(timeout()), this, SLOT(save()));
   connect(ui->clipboardTree, SIGNAL(activated(QModelIndex)), this,
           SLOT(toClipboard(QModelIndex)));
-#else
-  connect(clipboard, &QClipboard::dataChanged, this,
-          &QlipperWidget::clipboardChanges);
-  connect(ui->removeButton, &QPushButton::clicked, this,
-          &QlipperWidget::removeButtonClicked);
-  connect(&delayedSave, QTimer::timeout, this, QlipperWidget::save);
-#endif
 }
 
 /*!
@@ -72,10 +62,7 @@ QlipperWidget::~QlipperWidget()
  * \brief Sets if logging should be enabled.
  * \param enabled If logging should be enabled
  */
-void QlipperWidget::setLogEnabled(bool enabled)
-{
-  isLogEnabled = enabled;
-}
+void QlipperWidget::setLogEnabled(bool enabled) { isLogEnabled = enabled; }
 
 /*!
  * \brief Sets where logs should be stored.
@@ -108,9 +95,7 @@ void QlipperWidget::save()
 {
   if(!path.isEmpty())
   {
-
     std::map<QString, bool> usedStrings;
-
     QByteArray compressMe;
     QTextStream stream(&compressMe, QIODevice::WriteOnly);
     stream << nodeDate.toString("yyyy-MM-dd") << '\n';
@@ -151,9 +136,7 @@ void QlipperWidget::save()
  * \param index What to set the clipboard too.
  */
 void QlipperWidget::toClipboard(QModelIndex index)
-{
-  clipboard->setText(index.data().toString());
-}
+{ clipboard->setText(index.data().toString()); }
 
 /*!
  * \brief Loads the clipboard history from file.
@@ -171,13 +154,10 @@ bool QlipperWidget::load()
     {
       file.open(QIODevice::ReadOnly);
       QByteArray compressed = file.readAll();
-
       QByteArray uncompressed = qUncompress(compressed);
       QTextStream stream(&uncompressed, QIODevice::ReadOnly);
-
       QString dateString = stream.readLine();
       nodeDate = QDate::fromString(dateString, "yyyy-MM-dd");
-
       QStringList strings = stream.readAll().split("/|\\");
       QStandardItem *year = nullptr, *month = nullptr, *day = nullptr;
       yearNode = monthNode = dayNode = nullptr;
@@ -251,7 +231,6 @@ void QlipperWidget::clipboardChanges()
         yearNode = new QStandardItem(newDate.toString("yyyy"));
         monthNode = new QStandardItem(newDate.toString("MM - MMMM"));
         dayNode = new QStandardItem(newDate.toString("dd - dddd"));
-
         monthNode->appendRow(dayNode);
         yearNode->appendRow(monthNode);
         model->invisibleRootItem()->insertRow(0, yearNode);
@@ -260,20 +239,18 @@ void QlipperWidget::clipboardChanges()
       {
         monthNode = new QStandardItem(newDate.toString("MM - MMMM"));
         dayNode = new QStandardItem(newDate.toString("dd - dddd"));
-
         monthNode->appendRow(dayNode);
         yearNode->insertRow(0, monthNode);
       }
       else if(newDate.day() != nodeDate.day())
       {
         dayNode = new QStandardItem(newDate.toString("dd - dddd"));
-
         monthNode->insertRow(0, dayNode);
       }
       nodeDate = newDate;
     }
     dayNode->insertRow(0, new QStandardItem(clipboard->text()));
-    emit speakThis(clipboard->text());
+    Q_EMIT speakThis(clipboard->text());
     delayedSave.start(60000);
   }
 }

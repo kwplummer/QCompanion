@@ -29,11 +29,7 @@ WaiterDialog::WaiterDialog(QWidget *parent, QString IconPath)
   }
   loadState();
   timer = new QTimer(this);
-#if QT_VERSION < 0x050000
   connect(timer, SIGNAL(timeout()), this, SLOT(notifyAll()));
-#else
-  connect(timer, &QTimer::timeout, this, &WaiterDialog::notifyAll);
-#endif
   timer->setInterval(1000);
   timer->start();
   setWindowIcon(QIcon(IconPath));
@@ -43,18 +39,12 @@ WaiterDialog::WaiterDialog(QWidget *parent, QString IconPath)
  * \brief Gets the next time there should be text.
  * \return A QDateTime of when the next speech should occur.
  */
-QDateTime WaiterDialog::getNextTime()
-{
-  return nextTime;
-}
+QDateTime WaiterDialog::getNextTime() { return nextTime; }
 
 /*!
  * \brief Deletes the UI.
  */
-WaiterDialog::~WaiterDialog()
-{
-  delete ui;
-}
+WaiterDialog::~WaiterDialog() { delete ui; }
 
 /*!
  * \brief Hides the UI, rather than actually closing it.
@@ -86,7 +76,7 @@ void WaiterDialog::setStatePath(QString path)
  */
 void WaiterDialog::emitTextSlot(QString what)
 {
-  emit emitText(what);
+  Q_EMIT emitText(what);
   updateNextTime();
 }
 
@@ -124,7 +114,6 @@ void WaiterDialog::addWaiter(const WaiterCronOccurance &repeat)
                        ui->EntryTime->time(), ui->EventTitle->text(), repeat);
   widgets.push_back(w);
   ui->TimerScrollerWidget->layout()->addWidget(w);
-#if QT_VERSION < 0x050000
   connect(w, SIGNAL(removeAt(WaiterWidget *)), this,
           SLOT(removeWaiter(WaiterWidget *)));
   connect(w, SIGNAL(replaceAt(WaiterWidget *, QString, QDateTime,
@@ -136,12 +125,6 @@ void WaiterDialog::addWaiter(const WaiterCronOccurance &repeat)
                              WaiterCronOccurance)),
           this, SLOT(repeatWaiter(WaiterWidget *, QString, QDateTime,
                                   WaiterCronOccurance)));
-#else
-  connect(w, &WaiterWidget::removeAt, this, &WaiterDialog::removeWaiter);
-  connect(w, &WaiterWidget::replaceAt, this, &WaiterDialog::replaceWaiter);
-  connect(w, &WaiterWidget::speakThis, this, &WaiterDialog::emitTextSlot);
-  connect(w, &WaiterWidget::repeatAt, this, &WaiterDialog::repeatWaiter);
-#endif
   ui->EventTitle->clear();
   commitChanges();
 }
@@ -241,8 +224,8 @@ void WaiterDialog::commitChanges()
   if(!statePath.isNull())
   {
     std::sort(widgets.begin(), widgets.end(),
-              [](const WaiterWidget * w1, const WaiterWidget * w2)
-    { return w1->getMsecs() < w2->getMsecs(); });
+              [](const WaiterWidget *w1, const WaiterWidget *w2)
+              { return w1->getMsecs() < w2->getMsecs(); });
     for(auto w : widgets)
       ui->TimerScrollerWidget->layout()->removeWidget(w);
     for(auto w : widgets)
@@ -255,7 +238,7 @@ void WaiterDialog::commitChanges()
       out << w->toLoggableString() << '\n';
     }
     updateNextTime();
-    emit changeTimers();
+    Q_EMIT changeTimers();
   }
 }
 
@@ -305,7 +288,6 @@ void WaiterDialog::loadState()
               this, time, title.replace("_", " ", Qt::CaseInsensitive), repeat);
           widgets.push_back(w);
           ui->TimerScrollerWidget->layout()->addWidget(w);
-#if QT_VERSION < 0x050000
           connect(w, SIGNAL(removeAt(WaiterWidget *)), this,
                   SLOT(removeWaiter(WaiterWidget *)));
           connect(w, SIGNAL(replaceAt(WaiterWidget *, QString, QDateTime,
@@ -318,21 +300,11 @@ void WaiterDialog::loadState()
                                      WaiterCronOccurance)),
                   this, SLOT(repeatWaiter(WaiterWidget *, QString, QDateTime,
                                           WaiterCronOccurance)));
-#else
-          connect(w, &WaiterWidget::removeAt, this,
-                  &WaiterDialog::removeWaiter);
-          connect(w, &WaiterWidget::replaceAt, this,
-                  &WaiterDialog::replaceWaiter);
-          connect(w, &WaiterWidget::speakThis, this,
-                  &WaiterDialog::emitTextSlot);
-          connect(w, &WaiterWidget::repeatAt, this,
-                  &WaiterDialog::repeatWaiter);
-#endif
         }
       }
     }
     updateNextTime();
-    emit changeTimers();
+    Q_EMIT changeTimers();
   }
 }
 

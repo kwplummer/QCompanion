@@ -4,18 +4,26 @@
 #
 #-------------------------------------------------
 
-QT = core gui dbus
-UNIX {
+QT = core gui
+unix {
     QT += dbus
+    INCLUDEPATH += /usr/include/glib-2.0/glib
+    INCLUDEPATH += /usr/include/glib-2.0/
+    INCLUDEPATH += /usr/include/glib-2.0/gobject
+    LIBS += -ltbb -lnotify -lflite_cmu_us_kal -lflite_usenglish -lflite_cmulex -lflite -lc++
 }
+
+win32 {
+    LIBS += -L$$PWD/lib -ltbb -lole32
+    INCLUDEPATH += ./include
+}
+
+DEFINES += QT_NO_KEYWORDS
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = QCompanion
 TEMPLATE = app
-
-#Enable this to get .clang_complete for vim. It is put next to the executable, so must be moved.
-QMAKE_CXX = ~/Code/clang_complete/bin/cc_args.py clang++ -Wno-deprecated-register -stdlib=libc++
 
 # remove possible other optimization flags
 QMAKE_CXXFLAGS_RELEASE -= -O
@@ -23,13 +31,7 @@ QMAKE_CXXFLAGS_RELEASE -= -O1
 QMAKE_CXXFLAGS_RELEASE -= -O2
 
 # add the desired -O3 if not present
-QMAKE_CXXFLAGS_RELEASE *= -O3
-
-LIBS += -ltbb -lnotify -lflite_cmu_us_kal -lflite_usenglish -lflite_cmulex -lflite -lc++
-
-INCLUDEPATH += /usr/include/glib-2.0/glib
-INCLUDEPATH += /usr/include/glib-2.0/
-INCLUDEPATH += /usr/include/glib-2.0/gobject
+QMAKE_CXXFLAGS_RELEASE *= -O3 -g
 
 SOURCES += main.cpp\
         qcompanion.cpp \
@@ -66,8 +68,7 @@ FORMS    += qcompanion.ui \
 
 QMAKE_CXXFLAGS += -std=c++11
 
-RESOURCES += \
-    icons.qrc
+RESOURCES += icons.qrc
 
 CONFIG(DEBUG)
 {

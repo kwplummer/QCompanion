@@ -5,7 +5,8 @@
 
 /*!
  * \brief Constructs the component and its dialog.
- * \details Constructs the component and its dialog, also connects signals used
+ * \details Constructs the component and its dialog, also connects Q_SIGNALS
+ * used
  * to notify when timers have changed.
  * \param parent
  */
@@ -14,31 +15,20 @@ WaiterComponent::WaiterComponent(QWidget *parent)
       dialog(parent, QCoreApplication::applicationDirPath() + "/murasaki.png")
 {
   dialog.setWindowFlags(Qt::Window);
-#if QT_VERSION < 0x050000
   connect(&dialog, SIGNAL(changeTimers()), this, SLOT(changeTimerSlot()));
-  connect(&dialog, SIGNAL(emitText(QString)), this, SLOT(emitSpeak(QString)));
-#else
-  connect(&dialog, &WaiterDialog::changeTimers, this,
-          &WaiterComponent::changeTimerSlot);
-  connect(&dialog, &WaiterDialog::emitText, this, &WaiterComponent::emitSpeak);
-#endif
+  connect(&dialog, SIGNAL(Q_EMITText(QString)), this, SLOT(emitSpeak(QString)));
 }
 
 /*!
  * \brief Destroys the component and dialog.
  */
-WaiterComponent::~WaiterComponent()
-{
-}
+WaiterComponent::~WaiterComponent() {}
 
 /*!
  * \brief Asks the dialog when it will speak next.
  * \return The QDateTime when it will speak next.
  */
-QDateTime WaiterComponent::nextCheckTime()
-{
-  return dialog.getNextTime();
-}
+QDateTime WaiterComponent::nextCheckTime() { return dialog.getNextTime(); }
 
 /*!
  * \brief Creates a specialized menu for the component.
@@ -50,20 +40,11 @@ QList<QAction *> WaiterComponent::getMenuContents()
 {
   QList<QAction *> returnMe;
   QAction *showAction = new QAction("Show", this);
-#if QT_VERSION < 0x050000
   connect(showAction, SIGNAL(triggered()), &dialog, SLOT(show()));
-#else
-  connect(showAction, &QAction::triggered, &dialog, &WaiterComponent::show);
-#endif
   returnMe.append(showAction);
 
   QAction *changeStatePath = new QAction("Change State Location", this);
-#if QT_VERSION < 0x050000
   connect(changeStatePath, SIGNAL(triggered()), this, SLOT(selectStatePath()));
-#else
-  connect(changeStatePath, &QAction::triggered, this,
-          &WaiterComponent::selectStatePath);
-#endif
   returnMe.append(changeStatePath);
 
   returnMe += Component::getMenuContents();
@@ -89,10 +70,7 @@ void WaiterComponent::selectStatePath()
  * \details When the user changes a timer this is used to notify the rest of the
  * program that the timers have changed.
  */
-void WaiterComponent::changeTimerSlot()
-{
-  emit changeTimers();
-}
+void WaiterComponent::changeTimerSlot() { Q_EMIT changeTimers(); }
 
 /*!
  * \brief Checks if it's muted, and if not sends the text up to the QCompanion.
@@ -101,6 +79,6 @@ void WaiterComponent::changeTimerSlot()
 void WaiterComponent::emitSpeak(QString what)
 {
   if(!muted)
-    emit wantsToSpeak(what);
-  emit changeTimers();
+    Q_EMIT wantsToSpeak(what);
+  Q_EMIT changeTimers();
 }

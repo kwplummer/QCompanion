@@ -16,38 +16,24 @@ QlipperComponent::QlipperComponent(QWidget *widget) : Component(widget)
   muteAction->setChecked(muteSetting.toBool());
   muted = muteSetting.toBool();
   dialog->setWindowFlags(Qt::Window);
-#if QT_VERSION < 0x050000
   connect(dialog, SIGNAL(speakThis(QString)), this,
           SLOT(speakClipboard(QString)));
   connect(muteAction, SIGNAL(triggered(bool)), this,
           SLOT(setMuteSettings(bool)));
-#else
-  connect(dialog, &QlipperWidget::speakThis, this,
-          &QlipperComponent::speakClipboard);
-  connect(muteAction, &QAction::triggered, this,
-          &QlipperComponent::setMuteSettings);
-#endif
 }
 
 ///\brief Destroys the GUI
-QlipperComponent::~QlipperComponent()
-{
-  delete dialog;
-}
+QlipperComponent::~QlipperComponent() { delete dialog; }
 
 QDateTime QlipperComponent::nextCheckTime()
-{
-  return QDateTime::fromTime_t(0);
-}
+{ return QDateTime::fromTime_t(0); }
 
 /*!
  * \brief Stores the value of the muted checkbox to settings
  * \param shouldMute if it should be muted.
  */
 void QlipperComponent::setMuteSettings(bool shouldMute)
-{
-  settings.setValue("Qlipper_Muted", shouldMute);
-}
+{ settings.setValue("Qlipper_Muted", shouldMute); }
 
 /*!
  * \brief Creates a specialized menu for the component.
@@ -87,10 +73,7 @@ QList<QAction *> QlipperComponent::getMenuContents()
 /*!
  * \brief Displays the GUI.
  */
-void QlipperComponent::showDialog()
-{
-  dialog->setVisible(true);
-}
+void QlipperComponent::showDialog() { dialog->setVisible(true); }
 
 /*!
  * \brief Sets if the clipboard should be logged, by default is off.
@@ -123,5 +106,5 @@ void QlipperComponent::setFileLocation()
 void QlipperComponent::speakClipboard(QString text)
 {
   if(!muted)
-    emit wantsToSpeak(text);
+    Q_EMIT wantsToSpeak(text);
 }

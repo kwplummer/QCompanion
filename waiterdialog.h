@@ -35,8 +35,7 @@ class WaiterDialog : public QDialog
   QSettings settings;
   ///\brief A struct holding the last repetition the user set.
   WaiterCronOccurance lastUsedRepeat;
-private
-slots:
+private Q_SLOTS:
   void onAddButtonClicked();
   void notifyAll();
   void onCurrentTimeClicked();
@@ -50,7 +49,7 @@ slots:
 
 protected:
   void closeEvent(QCloseEvent *event) override;
-signals:
+Q_SIGNALS:
   ///\brief Emitted to send text to the Component.
   void emitText(QString);
   /*!

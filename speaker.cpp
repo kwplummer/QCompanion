@@ -1,20 +1,26 @@
-#include <libnotify/notify.h>
 #include <QStringList>
 #include "speaker.h"
+#ifndef Q_OS_WIN
+#include <libnotify/notify.h>
+#endif
 
 /*!
  * \brief The constructor for Speaker. Starts flite's \link Speaker::readLoop
  * readLoop\endlink
+ * \param parent The parent widget, used for Qt's parent/child memory
+ * management.
  * \param iconLocation Where the icon used for notifications is located.
  */
-Speaker::Speaker(QString iconLocation)
-    : stopReading(false), canSendNotifications(true), canSpeak(true),
-      iconLocation(iconLocation), flite([&]()
-{ readLoop(); })
+Speaker::Speaker(QObject *parent, QString iconLocation)
+    : QObject(parent), stopReading(false), canSendNotifications(true),
+      canSpeak(true), iconLocation(iconLocation), flite([&]()
+                                                        { readLoop(); })
 {
+#ifndef Q_OS_WIN
   notify_init("QCompanion");
   flite_init();
   voice = register_cmu_us_kal(NULL);
+#endif
 }
 
 /*!
@@ -42,18 +48,13 @@ void Speaker::finishSpeaking()
  * \param enable If Notifications should be enabled.
  */
 void Speaker::setNotificationsEnabled(bool enable)
-{
-  canSendNotifications = enable;
-}
+{ canSendNotifications = enable; }
 
 /*!
  * \brief Sets whether strings should be read aloud
  * \param enable If TTS should be enabled.
  */
-void Speaker::setTTSEnabled(bool enable)
-{
-  canSpeak = enable;
-}
+void Speaker::setTTSEnabled(bool enable) { canSpeak = enable; }
 
 /*!
  * \brief Returns if notifications are enabled. If they are, then the program
@@ -61,10 +62,7 @@ void Speaker::setTTSEnabled(bool enable)
  * \return A boolean indicating if future \link Speaker::speak speak() \endlink
  * calls will send a notification.
  */
-bool Speaker::isNotificationsEnabled()
-{
-  return canSendNotifications;
-}
+bool Speaker::isNotificationsEnabled() { return canSendNotifications; }
 
 /*!
  * \brief Returns if "TTS" is enabled. If it is, then the program will invoke
@@ -72,10 +70,7 @@ bool Speaker::isNotificationsEnabled()
  * \return A boolean indicating if future \link Speaker::speak speak() \endlink
  * calls will be read aloud.
  */
-bool Speaker::isTTSEnabled()
-{
-  return canSpeak;
-}
+bool Speaker::isTTSEnabled() { return canSpeak; }
 
 /*!
  * \brief Enqueues a const char * to be spoken on the next run of
@@ -102,14 +97,31 @@ void Speaker::speak(QString speakMe)
 void Speaker::readLoop()
 {
 #ifndef TEST
-  std::this_thread::sleep_for(std::chrono::minutes(1));
-#endif
+#ifdef Q_OS_WIN
+  GUID clsid_spvoice = { 0x96749377, 0x3391, 0x11D2, 0x9E, 0xE3, 0x00,
+                         0xC0,       0x4F,   0x79,   0x73, 0x96 };
+  GUID iid_ispvoice = { 0x6C44DF74, 0x72B9, 0x4992, 0xA1, 0xEC, 0xEF,
+                        0x99,       0x6E,   0x04,   0x22, 0xD4 };
+  if(FAILED(::CoInitialize(NULL)))
+  {
+    finishSpeaking();
+  }
+  HRESULT hr = CoCreateInstance(clsid_spvoice, NULL, CLSCTX_ALL, iid_ispvoice,
+                                (void **)&voice);
+  if(FAILED(hr))
+  {
+    finishSpeaking();
+  }
+#endif // COM init
+// std::this_thread::sleep_for(std::chrono::minutes(1));
+#endif // Test's no-sleep
   QString readMe;
   while(!stopReading)
   {
     // Pops from queue, or waits until it can.
     queue.pop(readMe);
 #ifndef TEST
+#ifndef Q_OS_WIN
     NotifyNotification *message = nullptr;
     if(canSendNotifications && !readMe.isEmpty())
     {
@@ -130,6 +142,25 @@ void Speaker::readLoop()
           std::chrono::seconds(readMe.split(' ').size()));
     }
     message = nullptr;
-#endif
+#else
+    if(canSendNotifications && !readMe.isEmpty())
+    {
+      Q_EMIT showMessage(readMe);
+    }
+    if(canSpeak)
+    {
+      voice->Speak(readMe.toStdWString().c_str(), SPF_DEFAULT, 0);
+    }
+    else
+    {
+      std::this_thread::sleep_for(
+          std::chrono::seconds(readMe.split(' ').size()));
+    }
+#endif // Read Message
+#endif // Test's skip message
   }
+#ifdef Q_OS_WIN
+  voice->Release();
+  ::CoUninitialize();
+#endif // COM uninitialize
 }

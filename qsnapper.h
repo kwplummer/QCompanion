@@ -4,7 +4,7 @@
 #include <QSettings>
 #include <QImage>
 #include <QAction>
-#ifdef Q_OS_LINUX
+#ifndef Q_OS_WIN
 #include <QtDBus/QDBusInterface>
 #include <QtDBus/QDBusReply>
 #endif
@@ -55,16 +55,14 @@ class QSnapper : public Component
    * should be saved.
    */
   QAction *toggleDiffAction;
-#ifdef Q_OS_LINUX
+#ifndef Q_OS_WIN
   ///\brief The interface with the screensaver.
   QDBusInterface screensaver;
 #endif
-private
-slots:
+private Q_SLOTS:
   void emitSpeak();
   void changeSaveFolder();
-public
-slots:
+public Q_SLOTS:
   bool snap();
   void enableSnapping(bool enable);
   void setLenient(bool isLenient);

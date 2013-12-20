@@ -16,7 +16,7 @@
  */
 QCompanion::QCompanion(QWidget *parent)
     : QDialog(parent),
-      speaker(QCoreApplication::applicationDirPath() + "/murasaki.png"),
+      speaker(this, QCoreApplication::applicationDirPath() + "/murasaki.png"),
       ui(new Ui::QCompanion)
 {
   ui->setupUi(this);
@@ -43,45 +43,28 @@ QCompanion::QCompanion(QWidget *parent)
 
   tray->setContextMenu(mainMenu);
 
-#if QT_VERSION < 0x050000
   connect(quitAction, SIGNAL(triggered()), this, SLOT(quit()));
   connect(toggleTTSAction, SIGNAL(triggered()), this, SLOT(toggleTTS()));
   connect(toggleNotificationsAction, SIGNAL(triggered()), this,
           SLOT(toggleNotifications()));
   connect(speakClipboardAction, SIGNAL(triggered()), this,
           SLOT(speakClipboard()));
-  connect(mainMenu, SIGNAL(aboutToShow()), this, SLOT(showingMenu()));
-  connect(mainMenu, SIGNAL(aboutToHide()), this, SLOT(hidingMenu()));
-#else
-  connect(quitAction, &QAction::triggered, this, &QCompanion::quit);
-  connect(toggleTTSAction, &QAction::triggered, this, &QCompanion::toggleTTS);
-  connect(toggleNotificationsAction, &QAction::triggered, this,
-          &QCompanion::toggleNotifications);
-  connect(speakClipboardAction, &QAction::triggered, this,
-          &QCompanion::speakClipboard);
-  connect(updateNextFire, &QTimer::timeout, this,
-          &QCompanion::updateNextFireText);
-  connect(mainMenu, &QMenu::aboutToShow, this, &QCompanion::showingMenu);
-  connect(mainMenu, &QMenu::aboutToHide, this, &QCompanion::hidingMenu);
+#ifdef Q_OS_WIN
+  connect(&speaker, SIGNAL(showMessage(QString)), this,
+          SLOT(displayMessage(QString)));
 #endif
 }
 
 /*!
  * \brief Destroys the QCompanion and all its members.
  */
-QCompanion::~QCompanion()
-{
-  delete ui;
-}
+QCompanion::~QCompanion() { delete ui; }
 
 /*!
  * \brief Exits the application, Must be implemented as hiding the application
  * could cause it to quit.
  */
-void QCompanion::quit()
-{
-  QApplication::exit(0);
-}
+void QCompanion::quit() { QApplication::exit(0); }
 
 /*!
  * \brief Loads all the components.
@@ -98,50 +81,32 @@ QMenu *QCompanion::loadPlugins()
   snapperMenu->addActions(snapper->getMenuContents());
   plugins.push_back(snapper);
   pluginMenu->addMenu(snapperMenu);
-#if QT_VERSION < 0x050000
   connect(snapper, SIGNAL(wantsToSpeak(QString)), this,
           SLOT(sendToSpeaker(QString)));
-#else
-  connect(snapper, &QSnapper::wantsToSpeak, this, &QCompanion::sendToSpeaker);
-#endif
 
   HourReader *hr = new HourReader(this);
   QMenu *hourMenu = new QMenu("HourReader", this);
   hourMenu->addActions(hr->getMenuContents());
   plugins.push_back(hr);
   pluginMenu->addMenu(hourMenu);
-#if QT_VERSION < 0x050000
   connect(hr, SIGNAL(wantsToSpeak(QString)), this,
           SLOT(sendToSpeaker(QString)));
-#else
-  connect(hr, &HourReader::wantsToSpeak, this, &QCompanion::sendToSpeaker);
-#endif
 
   WaiterComponent *waiter = new WaiterComponent(this);
   QMenu *waiterMenu = new QMenu("QWaiter", this);
   waiterMenu->addActions(waiter->getMenuContents());
   plugins.push_back(waiter);
   pluginMenu->addMenu(waiterMenu);
-#if QT_VERSION < 0x050000
   connect(waiter, SIGNAL(wantsToSpeak(QString)), this,
           SLOT(sendToSpeaker(QString)));
-#else
-  connect(waiter, &WaiterComponent::wantsToSpeak, this,
-          &QCompanion::sendToSpeaker);
-#endif
 
   QlipperComponent *qlipper = new QlipperComponent(this);
   QMenu *qlipperMenu = new QMenu("Qlipper", this);
   qlipperMenu->addActions(qlipper->getMenuContents());
   plugins.push_back(qlipper);
   pluginMenu->addMenu(qlipperMenu);
-#if QT_VERSION < 0x050000
   connect(qlipper, SIGNAL(wantsToSpeak(QString)), this,
           SLOT(sendToSpeaker(QString)));
-#else
-  connect(qlipper, &QlipperComponent::wantsToSpeak, this,
-          &QCompanion::sendToSpeaker);
-#endif
   return pluginMenu;
 }
 
@@ -201,3 +166,11 @@ void QCompanion::sendToSpeaker(QString sayMe)
       speaker.speak(s);
   }
 }
+
+/*!
+ * \brief Displays text as a popout from the System Tray. Used on OSes that
+ * don't have built-in notifications
+ * \param message What to display.
+ */
+void QCompanion::displayMessage(QString message)
+{ tray->showMessage("QCompanion", message); }

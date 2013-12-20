@@ -104,33 +104,33 @@ TEST(QSnapperTests, QSnapperHasChangeSaveLocationMenuAction)
 
 TEST(SpeakerTests, SpeakerStartsUnmuted)
 {
-  Speaker s("");
+  Speaker s(nullptr, "");
   ASSERT_TRUE(s.isTTSEnabled());
 }
 
 TEST(SpeakerTests, SpeakerStartsWithNotificationsOn)
 {
-  Speaker s("");
+  Speaker s(nullptr, "");
   ASSERT_TRUE(s.isNotificationsEnabled());
 }
 
 TEST(SpeakerTests, SpeakerCanBeMuted)
 {
-  Speaker s("");
+  Speaker s(nullptr, "");
   s.setTTSEnabled(false);
   ASSERT_FALSE(s.isTTSEnabled());
 }
 
 TEST(SpeakerTests, SpeakerCanDisableNotifications)
 {
-  Speaker s("");
+  Speaker s(nullptr, "");
   s.setNotificationsEnabled(false);
   ASSERT_FALSE(s.isNotificationsEnabled());
 }
 
 TEST(SpeakerTests, SpeakerCanSpeak)
 {
-  Speaker s("");
+  Speaker s(nullptr, "");
   s.speak("");
 }
 

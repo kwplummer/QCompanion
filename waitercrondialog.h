@@ -31,11 +31,9 @@ public:
   WaiterCronOccurance getResult();
   bool okWasPressed();
   void setResult(const WaiterCronOccurance &when);
-public
-slots:
+public Q_SLOTS:
   void changeTab(int which);
-private
-slots:
+private Q_SLOTS:
   void on_addButton_clicked();
 
 private:
