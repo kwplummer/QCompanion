@@ -16,7 +16,7 @@ WaiterComponent::WaiterComponent(QWidget *parent)
 {
   dialog.setWindowFlags(Qt::Window);
   connect(&dialog, SIGNAL(changeTimers()), this, SLOT(changeTimerSlot()));
-  connect(&dialog, SIGNAL(Q_EMITText(QString)), this, SLOT(emitSpeak(QString)));
+  connect(&dialog, SIGNAL(emitText(QString)), this, SLOT(emitSpeak(QString)));
 }
 
 /*!
