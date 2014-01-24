@@ -8,14 +8,15 @@
 class HourReader : public Component
 {
   Q_OBJECT
+  Q_CLASSINFO("D-Bus Interface", "com.coderfrog.qcompanion.hourreader")
 private Q_SLOTS:
   void emitSpeak();
+  QDateTime nextCheckTime();
 
 public:
   HourReader(QWidget *parent);
   virtual ~HourReader();
-  virtual QDateTime nextCheckTime() override;
-  QString getText();
+  Q_SCRIPTABLE Q_SLOT QString getText();
 };
 
 #endif // HOURREADER_H

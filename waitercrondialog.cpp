@@ -7,7 +7,9 @@
  */
 WaiterCronDialog::WaiterCronDialog(QWidget *parent)
     : QDialog(parent), ui(new Ui::WaiterCronDialog), ok(false)
-{ ui->setupUi(this); }
+{
+  ui->setupUi(this);
+}
 ///\brief Deletes the UI.
 WaiterCronDialog::~WaiterCronDialog() { delete ui; }
 /*!
@@ -73,7 +75,9 @@ void WaiterCronDialog::setResult(const WaiterCronOccurance &when)
  * \param which Which tab to change to.
  */
 void WaiterCronDialog::changeTab(int which)
-{ ui->tabs->setCurrentIndex(which); }
+{
+  ui->tabs->setCurrentIndex(which);
+}
 /*!
  * \brief Closes the window, and sets a bool stating the the UI was closed via
  * the OK button.

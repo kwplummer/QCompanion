@@ -11,6 +11,8 @@ unix {
     INCLUDEPATH += /usr/include/glib-2.0/
     INCLUDEPATH += /usr/include/glib-2.0/gobject
     LIBS += -ltbb -lnotify -lflite_cmu_us_kal -lflite_usenglish -lflite_cmulex -lflite -lc++
+    SOURCES += dbusadaptor.cpp
+    HEADERS += dbusadaptor.h
 }
 
 win32 {

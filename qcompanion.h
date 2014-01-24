@@ -18,16 +18,17 @@ class QCompanion;
 class QCompanion : public QDialog
 {
   Q_OBJECT
+  Q_CLASSINFO("D-Bus Interface", "com.coderfrog.qcompanion")
 public:
   explicit QCompanion(QWidget *parent = 0);
   virtual ~QCompanion();
 public Q_SLOTS:
-  void quit();
-  void speakClipboard();
-  void toggleNotifications();
-  void toggleTTS();
-  void sendToSpeaker(QString sayMe);
-  void displayMessage(QString message);
+  Q_SCRIPTABLE void quit();
+  Q_SCRIPTABLE void speakClipboard();
+  Q_SCRIPTABLE void toggleNotifications();
+  Q_SCRIPTABLE void toggleTTS();
+  Q_SCRIPTABLE void sendToSpeaker(QString sayMe);
+  Q_SCRIPTABLE void displayMessage(QString message);
 
 private:
   ///\brief The path to where the icon is stored.

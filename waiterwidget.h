@@ -43,6 +43,8 @@ class WaiterWidget : public QWidget
   bool quit;
   ///\brief When the Waiter should repeat.
   WaiterCronOccurance repeat;
+private Q_SLOTS:
+  void removeThis();
 
 public:
   explicit WaiterWidget(QWidget *parent, QDate date, QTime time, QString title,
@@ -72,7 +74,6 @@ Q_SIGNALS:
   void repeatAt(WaiterWidget *, QString, QDateTime, const WaiterCronOccurance);
 public Q_SLOTS:
   void update(QDateTime t);
-  void removeThis();
 };
 
 #endif // WAITERWIDGET_H

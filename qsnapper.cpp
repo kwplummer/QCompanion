@@ -13,6 +13,8 @@
 #ifdef Q_OS_WIN
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
+#else
+#include "dbusadaptor.h"
 #endif
 
 /*!
@@ -61,6 +63,12 @@ QSnapper::QSnapper(QWidget *parent)
           SLOT(setMuteSettings(bool)));
   connect(toggleDiffAction, SIGNAL(triggered(bool)), this, SLOT(setDiff(bool)));
   emitSpeak();
+#ifndef Q_OS_WIN
+  new QsnapperAdaptor(this);
+  QDBusConnection dbus = QDBusConnection::sessionBus();
+  dbus.registerObject("/Snapper", this);
+//  dbus.registerService("com.coderfrog.qcompanion.speaker");
+#endif
   whenToSpeak.start();
 }
 
@@ -68,15 +76,6 @@ QSnapper::QSnapper(QWidget *parent)
  * \brief Destroys the QSnapper, does nothing interesting.
  */
 QSnapper::~QSnapper() {}
-
-/*!
- * \brief Gets when the next picture will be taken.
- * \details Returns when the next picture will be taken.
- * If taking pictures is disabled, time 0 is returned.
- * \return A QDateTime representing when the component should be read.
- */
-QDateTime QSnapper::nextCheckTime()
-{ return canSnap ? nextWakeup : QDateTime::fromTime_t(0); }
 
 /*!
  * \brief Gets what to say aloud and notify
@@ -164,7 +163,10 @@ void QSnapper::setLenient(bool isLenient)
  * \param shouldMute if it should be muted.
  */
 void QSnapper::setMuteSettings(bool shouldMute)
-{ settings.setValue("QSnapper_Muted", shouldMute); }
+{
+  settings.setValue("QSnapper_Muted", shouldMute);
+  muted = shouldMute;
+}
 
 /*!
  * \brief Sets if "Difference" images should be generated, and stores it into

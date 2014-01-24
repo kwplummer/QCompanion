@@ -136,7 +136,9 @@ void QlipperWidget::save()
  * \param index What to set the clipboard too.
  */
 void QlipperWidget::toClipboard(QModelIndex index)
-{ clipboard->setText(index.data().toString()); }
+{
+  clipboard->setText(index.data().toString());
+}
 
 /*!
  * \brief Loads the clipboard history from file.

@@ -1,6 +1,9 @@
 #include "qlippercomponent.h"
 #include <QAction>
 #include <QFileDialog>
+#ifndef Q_OS_WIN
+#include "dbusadaptor.h"
+#endif
 
 /*!
  * \brief Creates the GUI. Loads if logging is enabled, and where to store it.
@@ -20,20 +23,26 @@ QlipperComponent::QlipperComponent(QWidget *widget) : Component(widget)
           SLOT(speakClipboard(QString)));
   connect(muteAction, SIGNAL(triggered(bool)), this,
           SLOT(setMuteSettings(bool)));
+#ifndef Q_OS_WIN
+  new QlipperAdaptor(this);
+  QDBusConnection dbus = QDBusConnection::sessionBus();
+  dbus.registerObject("/Qlipper", this);
+//  dbus.registerService("com.coderfrog.qcompanion.qlipper");
+#endif
 }
 
 ///\brief Destroys the GUI
 QlipperComponent::~QlipperComponent() { delete dialog; }
-
-QDateTime QlipperComponent::nextCheckTime()
-{ return QDateTime::fromTime_t(0); }
 
 /*!
  * \brief Stores the value of the muted checkbox to settings
  * \param shouldMute if it should be muted.
  */
 void QlipperComponent::setMuteSettings(bool shouldMute)
-{ settings.setValue("Qlipper_Muted", shouldMute); }
+{
+  settings.setValue("Qlipper_Muted", shouldMute);
+  muted = shouldMute;
+}
 
 /*!
  * \brief Creates a specialized menu for the component.

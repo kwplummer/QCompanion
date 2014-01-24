@@ -21,6 +21,7 @@
 class QSnapper : public Component
 {
   Q_OBJECT
+  Q_CLASSINFO("D-Bus Interface", "com.coderfrog.qcompanion.qsnapper")
   ///\brief The path where the images should be saved.
   QString saveDir;
   QString getNextFileName();
@@ -63,16 +64,16 @@ private Q_SLOTS:
   void emitSpeak();
   void changeSaveFolder();
 public Q_SLOTS:
-  bool snap();
-  void enableSnapping(bool enable);
-  void setLenient(bool isLenient);
-  void setMuteSettings(bool shouldMute);
-  void setDiff(bool enable);
+  Q_SCRIPTABLE bool snap();
+  Q_SCRIPTABLE void enableSnapping(bool enable);
+  Q_SCRIPTABLE void setLenient(bool isLenient);
+  Q_SCRIPTABLE void setMuteSettings(bool shouldMute);
+  Q_SCRIPTABLE void setDiff(bool enable);
 
 public:
   QSnapper(QWidget *parent);
   virtual ~QSnapper();
-  virtual QDateTime nextCheckTime() override;
+
   QString getText();
   virtual QList<QAction *> getMenuContents() override;
   bool isEnabled();

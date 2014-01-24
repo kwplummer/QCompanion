@@ -7,6 +7,9 @@
 #include "waitercomponent.h"
 #include "hourreader.h"
 #include "qlippercomponent.h"
+#ifndef Q_OS_WIN
+#include "dbusadaptor.h"
+#endif
 
 /*!
  * \brief Constructs the UI and sets up timers
@@ -20,6 +23,15 @@ QCompanion::QCompanion(QWidget *parent)
       ui(new Ui::QCompanion)
 {
   ui->setupUi(this);
+#ifdef Q_OS_WIN
+  connect(&speaker, SIGNAL(showMessage(QString)), this,
+          SLOT(displayMessage(QString)));
+#else
+  new QcompanionAdaptor(this);
+  QDBusConnection dbus = QDBusConnection::sessionBus();
+  dbus.registerObject("/", this);
+  dbus.registerService("com.coderfrog.qcompanion");
+#endif
   iconPath = QCoreApplication::applicationDirPath() + "/murasaki.png";
   tray = new QSystemTrayIcon(QIcon(iconPath), this);
   setWindowIcon(tray->icon());
@@ -49,10 +61,6 @@ QCompanion::QCompanion(QWidget *parent)
           SLOT(toggleNotifications()));
   connect(speakClipboardAction, SIGNAL(triggered()), this,
           SLOT(speakClipboard()));
-#ifdef Q_OS_WIN
-  connect(&speaker, SIGNAL(showMessage(QString)), this,
-          SLOT(displayMessage(QString)));
-#endif
 }
 
 /*!
@@ -173,4 +181,6 @@ void QCompanion::sendToSpeaker(QString sayMe)
  * \param message What to display.
  */
 void QCompanion::displayMessage(QString message)
-{ tray->showMessage("QCompanion", message); }
+{
+  tray->showMessage("QCompanion", message);
+}

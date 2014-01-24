@@ -7,6 +7,7 @@
 class QlipperComponent : public Component
 {
   Q_OBJECT
+  Q_CLASSINFO("D-Bus Interface", "com.coderfrog.qcompanion.qlipper")
   /*!
    *\brief The system settings, used for storing if logging should be enabled,
    *and where it should be done.
@@ -15,16 +16,15 @@ class QlipperComponent : public Component
   ///\brief the GUI.
   QlipperWidget *dialog;
 public Q_SLOTS:
-  void showDialog();
-  void setLogEnabled(bool enabled);
-  void setFileLocation();
+  Q_SCRIPTABLE void showDialog();
+  Q_SCRIPTABLE void setLogEnabled(bool enabled);
+  Q_SCRIPTABLE void setFileLocation();
   void speakClipboard(QString text);
-  void setMuteSettings(bool shouldMute);
+  Q_SCRIPTABLE void setMuteSettings(bool shouldMute);
 
 public:
   QlipperComponent(QWidget *widget);
   virtual ~QlipperComponent();
-  virtual QDateTime nextCheckTime() override;
   virtual QList<QAction *> getMenuContents() override;
 };
 

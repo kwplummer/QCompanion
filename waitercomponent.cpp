@@ -2,6 +2,9 @@
 #include <QAction>
 #include <QFileDialog>
 #include "waitercomponent.h"
+#ifndef Q_OS_WIN
+#include "dbusadaptor.h"
+#endif
 
 /*!
  * \brief Constructs the component and its dialog.
@@ -17,18 +20,18 @@ WaiterComponent::WaiterComponent(QWidget *parent)
   dialog.setWindowFlags(Qt::Window);
   connect(&dialog, SIGNAL(changeTimers()), this, SLOT(changeTimerSlot()));
   connect(&dialog, SIGNAL(emitText(QString)), this, SLOT(emitSpeak(QString)));
+#ifndef Q_OS_WIN
+  new WaiterAdaptor(this);
+  QDBusConnection dbus = QDBusConnection::sessionBus();
+  dbus.registerObject("/Waiter", this);
+// dbus.registerService("com.coderfrog.qcompanion.waiter");
+#endif
 }
 
 /*!
  * \brief Destroys the component and dialog.
  */
 WaiterComponent::~WaiterComponent() {}
-
-/*!
- * \brief Asks the dialog when it will speak next.
- * \return The QDateTime when it will speak next.
- */
-QDateTime WaiterComponent::nextCheckTime() { return dialog.getNextTime(); }
 
 /*!
  * \brief Creates a specialized menu for the component.

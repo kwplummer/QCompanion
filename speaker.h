@@ -16,6 +16,7 @@ typedef ISpVoice Voice;
 class Speaker : public QObject
 {
   Q_OBJECT
+  Q_CLASSINFO("D-Bus Interface", "com.coderfrog.qcompanion.speaker")
   /*!
    * \brief The concurrent queue that is used to store strings to be
    * read/notified.
@@ -46,18 +47,17 @@ class Speaker : public QObject
 public:
   Speaker(QObject *parent, QString iconLocation);
   virtual ~Speaker();
-  void speak(QString speakMe);
-  // Returns true if no error occured in speaking.
-  // For unit tests.
   void finishSpeaking();
-  void setNotificationsEnabled(bool enable);
-  void setTTSEnabled(bool enable);
-  bool isNotificationsEnabled();
-  bool isTTSEnabled();
   /*!
    * \brief Tells the UI thread to show a message
    * \param message What to display
    */
   Q_SIGNAL void showMessage(QString message);
+public Q_SLOTS:
+  Q_SCRIPTABLE void speak(QString speakMe);
+  Q_SCRIPTABLE void setNotificationsEnabled(bool enable);
+  Q_SCRIPTABLE void setTTSEnabled(bool enable);
+  Q_SCRIPTABLE bool isNotificationsEnabled();
+  Q_SCRIPTABLE bool isTTSEnabled();
 };
 #endif // SPEAKER_H

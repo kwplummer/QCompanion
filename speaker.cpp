@@ -2,6 +2,7 @@
 #include "speaker.h"
 #ifndef Q_OS_WIN
 #include <libnotify/notify.h>
+#include "dbusadaptor.h"
 #endif
 
 /*!
@@ -20,6 +21,10 @@ Speaker::Speaker(QObject *parent, QString iconLocation)
   notify_init("QCompanion");
   flite_init();
   voice = register_cmu_us_kal(NULL);
+  new SpeakerAdaptor(this);
+  QDBusConnection dbus = QDBusConnection::sessionBus();
+  dbus.registerObject("/Speaker", this);
+//  dbus.registerService("com.coderfrog.qcompanion.speaker");
 #endif
 }
 
@@ -34,7 +39,6 @@ Speaker::~Speaker()
 
 /*!
  * \brief Waits for everything to be read, and stops reading.
- * \return true if no error occured when speaking.
  */
 void Speaker::finishSpeaking()
 {
@@ -48,7 +52,9 @@ void Speaker::finishSpeaking()
  * \param enable If Notifications should be enabled.
  */
 void Speaker::setNotificationsEnabled(bool enable)
-{ canSendNotifications = enable; }
+{
+  canSendNotifications = enable;
+}
 
 /*!
  * \brief Sets whether strings should be read aloud

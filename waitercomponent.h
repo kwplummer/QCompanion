@@ -14,13 +14,14 @@
 class WaiterComponent : public Component
 {
   Q_OBJECT
+  Q_CLASSINFO("D-Bus Interface", "com.coderfrog.qcompanion.waiter")
   ///\brief The GUI that handles creating, deleting, and updating timers.
   WaiterDialog dialog;
 private Q_SLOTS:
   void emitSpeak(QString what);
-public Q_SLOTS:
-  void selectStatePath();
   void changeTimerSlot();
+public Q_SLOTS:
+  Q_SCRIPTABLE void selectStatePath();
 Q_SIGNALS:
   /*!
    * \brief Tells the rest of the program that the countdown for next speech
@@ -31,7 +32,7 @@ Q_SIGNALS:
 public:
   explicit WaiterComponent(QWidget *parent = 0);
   virtual ~WaiterComponent();
-  virtual QDateTime nextCheckTime() override;
+
   virtual QList<QAction *> getMenuContents() override;
 };
 

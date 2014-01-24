@@ -2,6 +2,9 @@
 #include <QDateTime>
 #include <QString>
 #include <QTimer>
+#ifndef Q_OS_WIN
+#include "dbusadaptor.h"
+#endif
 
 /*!
  * \brief Constructs the HourReader and its superclass. Does nothing
@@ -16,6 +19,12 @@ HourReader::HourReader(QWidget *parent) : Component(parent)
       QDateTime::currentDateTime().msecsTo(nextCheckTime()));
   connect(&whenToSpeak, SIGNAL(timeout()), this, SLOT(emitSpeak()));
   whenToSpeak.start();
+#ifndef Q_OS_WIN
+  new HourreaderAdaptor(this);
+  QDBusConnection dbus = QDBusConnection::sessionBus();
+  dbus.registerObject("/HourReader", this);
+// dbus.registerService("com.coderfrog.qcompanion.hourreader");
+#endif
 }
 
 /*!

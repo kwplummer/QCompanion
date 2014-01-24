@@ -18,7 +18,9 @@ WaiterWidget::WaiterWidget(QWidget *parent, QDate endDate, QTime endTime,
       title(title.replace("_", " ")),
       initMs(QDateTime::currentDateTime().toMSecsSinceEpoch()), quit(false),
       repeat(repeat)
-{ init(); }
+{
+  init();
+}
 
 /*!
  * \brief Constructs the Waiter Widget and calls init()
@@ -32,7 +34,9 @@ WaiterWidget::WaiterWidget(QWidget *parent, qint64 msec, QString title,
     : QWidget(parent), datetime(QDateTime::fromMSecsSinceEpoch(msec)),
       title(title), initMs(QDateTime::currentDateTime().toMSecsSinceEpoch()),
       quit(false), repeat(repeat)
-{ init(); }
+{
+  init();
+}
 
 /*!
  * \brief Creates all the UI elements and wires them up.
