@@ -153,12 +153,12 @@ void QCompanion::toggleTTS()
   if(speaker.isTTSEnabled())
   {
     speaker.setTTSEnabled(false);
-    toggleTTSAction->setText("Disable Text To Speech");
+    toggleTTSAction->setText("Enable Text To Speech");
   }
   else
   {
     speaker.setTTSEnabled(true);
-    toggleTTSAction->setText("Enable Text To Speech");
+    toggleTTSAction->setText("Disable Text To Speech");
   }
 }
 

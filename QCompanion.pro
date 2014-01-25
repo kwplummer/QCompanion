@@ -7,10 +7,7 @@
 QT = core gui
 unix {
     QT += dbus
-    INCLUDEPATH += /usr/include/glib-2.0/glib
-    INCLUDEPATH += /usr/include/glib-2.0/
-    INCLUDEPATH += /usr/include/glib-2.0/gobject
-    LIBS += -ltbb -lnotify -lflite_cmu_us_kal -lflite_usenglish -lflite_cmulex -lflite -lc++
+    LIBS += -ltbb -lflite_cmu_us_kal -lflite_usenglish -lflite_cmulex -lflite
     SOURCES += dbusadaptor.cpp
     HEADERS += dbusadaptor.h
 }

@@ -1,7 +1,6 @@
 #include <QStringList>
 #include "speaker.h"
 #ifndef Q_OS_WIN
-#include <libnotify/notify.h>
 #include "dbusadaptor.h"
 #endif
 
@@ -18,7 +17,6 @@ Speaker::Speaker(QObject *parent, QString iconLocation)
                                                         { readLoop(); })
 {
 #ifndef Q_OS_WIN
-  notify_init("QCompanion");
   flite_init();
   voice = register_cmu_us_kal(NULL);
   new SpeakerAdaptor(this);
@@ -103,7 +101,7 @@ void Speaker::speak(QString speakMe)
 void Speaker::readLoop()
 {
 #ifndef TEST
-#ifdef Q_OS_WIN
+#ifdef Q_OS_WIN // COM init
   GUID clsid_spvoice = { 0x96749377, 0x3391, 0x11D2, 0x9E, 0xE3, 0x00,
                          0xC0,       0x4F,   0x79,   0x73, 0x96 };
   GUID iid_ispvoice = { 0x6C44DF74, 0x72B9, 0x4992, 0xA1, 0xEC, 0xEF,
@@ -118,7 +116,22 @@ void Speaker::readLoop()
   {
     finishSpeaking();
   }
-#endif // COM init
+#else // D-Bus init
+  QDBusInterface notifier("org.freedesktop.Notifications",
+                          "/org/freedesktop/Notifications",
+                          "org.freedesktop.Notifications");
+  QVariantMap hints;
+  QList<QVariant> notifierArgs;
+  notifierArgs << "QCompanion";  // app_name
+  notifierArgs << (uint)0;       // replace_id
+  notifierArgs << iconLocation;  // app_icon
+  notifierArgs << "QCompanion";  // summary
+  notifierArgs << "";            // body (Changes with each call)
+  notifierArgs << QStringList(); // actions
+  notifierArgs << hints;         // hints
+  notifierArgs << (int)0;        // timeout in ms
+
+#endif
 // std::this_thread::sleep_for(std::chrono::minutes(1));
 #endif // Test's no-sleep
   QString readMe;
@@ -128,26 +141,20 @@ void Speaker::readLoop()
     queue.pop(readMe);
 #ifndef TEST
 #ifndef Q_OS_WIN
-    NotifyNotification *message = nullptr;
     if(canSendNotifications && !readMe.isEmpty())
     {
-      message = notify_notification_new("QCompanion", readMe.toUtf8(),
-                                        iconLocation.toUtf8());
-      notify_notification_show(message, NULL);
+      notifierArgs[4] = readMe;
+      notifier.callWithArgumentList(QDBus::AutoDetect, "Notify", notifierArgs);
     }
     if(canSpeak)
     {
       flite_text_to_speech(readMe.toUtf8(), voice, "play");
-      if(message)
-        notify_notification_close(message, nullptr);
-      message = nullptr;
     }
     else
     {
       std::this_thread::sleep_for(
           std::chrono::seconds(readMe.split(' ').size()));
     }
-    message = nullptr;
 #else
     if(canSendNotifications && !readMe.isEmpty())
     {
