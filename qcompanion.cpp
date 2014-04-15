@@ -36,10 +36,7 @@ QCompanion::QCompanion(QWidget *parent)
   tray = new QSystemTrayIcon(QIcon(iconPath), this);
   setWindowIcon(tray->icon());
   tray->show();
-  QMenu *mainMenu = new QMenu(this);
-
-  QMenu *pluginsMenu = loadPlugins();
-  mainMenu->addMenu(pluginsMenu);
+  QMenu *mainMenu = loadPlugins();
 
   QAction *speakClipboardAction = new QAction("Speak Clipboard", this);
   mainMenu->addAction(speakClipboardAction);
@@ -78,17 +75,18 @@ void QCompanion::quit() { QApplication::exit(0); }
  * \brief Loads all the components.
  * \details Loads all the plugins and adds them to the main menu.
  * Additionally it creates the timers for the screenshot logger and components.
- * \return The main menu to be added to the tray.
+ * \return a menu with the component's options in it, to be added to the system
+ * tray.
  */
 QMenu *QCompanion::loadPlugins()
 {
-  QMenu *pluginMenu = new QMenu("Plugins", this);
+  QMenu *mainMenu = new QMenu(this);
 
   snapper = new QSnapper(this);
   QMenu *snapperMenu = new QMenu("QSnapper", this);
   snapperMenu->addActions(snapper->getMenuContents());
   plugins.push_back(snapper);
-  pluginMenu->addMenu(snapperMenu);
+  mainMenu->addMenu(snapperMenu);
   connect(snapper, SIGNAL(wantsToSpeak(QString)), this,
           SLOT(sendToSpeaker(QString)));
 
@@ -96,7 +94,7 @@ QMenu *QCompanion::loadPlugins()
   QMenu *hourMenu = new QMenu("HourReader", this);
   hourMenu->addActions(hr->getMenuContents());
   plugins.push_back(hr);
-  pluginMenu->addMenu(hourMenu);
+  mainMenu->addMenu(hourMenu);
   connect(hr, SIGNAL(wantsToSpeak(QString)), this,
           SLOT(sendToSpeaker(QString)));
 
@@ -104,7 +102,7 @@ QMenu *QCompanion::loadPlugins()
   QMenu *waiterMenu = new QMenu("QWaiter", this);
   waiterMenu->addActions(waiter->getMenuContents());
   plugins.push_back(waiter);
-  pluginMenu->addMenu(waiterMenu);
+  mainMenu->addMenu(waiterMenu);
   connect(waiter, SIGNAL(wantsToSpeak(QString)), this,
           SLOT(sendToSpeaker(QString)));
 
@@ -112,10 +110,10 @@ QMenu *QCompanion::loadPlugins()
   QMenu *qlipperMenu = new QMenu("Qlipper", this);
   qlipperMenu->addActions(qlipper->getMenuContents());
   plugins.push_back(qlipper);
-  pluginMenu->addMenu(qlipperMenu);
+  mainMenu->addMenu(qlipperMenu);
   connect(qlipper, SIGNAL(wantsToSpeak(QString)), this,
           SLOT(sendToSpeaker(QString)));
-  return pluginMenu;
+  return mainMenu;
 }
 
 /*!

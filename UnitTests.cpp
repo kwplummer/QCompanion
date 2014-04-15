@@ -160,7 +160,7 @@ TEST(WaiterCronOccuranceTests, CanConstructWithNeededValues)
 
 TEST(WaiterCronOccuranceTests, CanConstructWithAFilledQList)
 {
-  WaiterCronOccurance repeat(1, 2, 3, 4, 5, 6, true, { 2, 3, 4 });
+  WaiterCronOccurance repeat(1, 2, 3, 4, 5, 6, true, {2, 3, 4});
   ASSERT_EQ(1, repeat.repeatMinutes);
   ASSERT_EQ(2, repeat.repeatHour);
   ASSERT_EQ(3, repeat.repeatDay);
@@ -185,7 +185,7 @@ TEST(WaiterCronOccuranceTests, CopyConstructionFromDefaultOccuranceWorks)
 
 TEST(WaiterCronOccuranceTests, CopyConstructionFromCustomOccuranceWorks)
 {
-  WaiterCronOccurance repeat(1, 2, 3, 4, 5, 6, true, { 2, 3, 4 });
+  WaiterCronOccurance repeat(1, 2, 3, 4, 5, 6, true, {2, 3, 4});
   WaiterCronOccurance clone(repeat);
   ASSERT_EQ(1, clone.repeatMinutes);
   ASSERT_EQ(2, clone.repeatHour);
@@ -204,7 +204,7 @@ TEST(WaiterCronOccuranceTests, DefaultOccurancesDoNotRepeat)
 
 TEST(WaiterCronOccuranceTests, CustomOccurancesDoRepeat)
 {
-  WaiterCronOccurance repeat(1, 2, 3, 4, 5, 6, true, { 2, 3, 4 });
+  WaiterCronOccurance repeat(1, 2, 3, 4, 5, 6, true, {2, 3, 4});
   ASSERT_TRUE(repeat.repeats());
 }
 
@@ -318,7 +318,7 @@ TEST(WaiterCronOccuranceTests, NextOccuranceWithJustMonthBeforeNowWorks)
 
 TEST(WaiterCronOccuranceTests, NextOccuranceWithJustMondayWorks)
 {
-  WaiterCronOccurance repeat(0, 0, 0, 0, 0, 0, false, { 1 });
+  WaiterCronOccurance repeat(0, 0, 0, 0, 0, 0, false, {1});
   QDateTime now = QDateTime::fromTime_t(1234567890);
   QTime testTime = now.time();
   testTime.setHMS(0, 0, 0);
@@ -331,7 +331,7 @@ TEST(WaiterCronOccuranceTests, NextOccuranceWithJustMondayWorks)
 
 TEST(WaiterCronOccuranceTests, NextOccuranceWithJustTuesdayWorks)
 {
-  WaiterCronOccurance repeat(0, 0, 0, 0, 0, 0, false, { 2 });
+  WaiterCronOccurance repeat(0, 0, 0, 0, 0, 0, false, {2});
   QDateTime now = QDateTime::fromTime_t(1234567890);
   QTime testTime = now.time();
   testTime.setHMS(0, 0, 0);
@@ -344,7 +344,7 @@ TEST(WaiterCronOccuranceTests, NextOccuranceWithJustTuesdayWorks)
 
 TEST(WaiterCronOccuranceTests, NextOccuranceWithJustWednesdayWorks)
 {
-  WaiterCronOccurance repeat(0, 0, 0, 0, 0, 0, false, { 3 });
+  WaiterCronOccurance repeat(0, 0, 0, 0, 0, 0, false, {3});
   QDateTime now = QDateTime::fromTime_t(1234567890);
   QTime testTime = now.time();
   testTime.setHMS(0, 0, 0);
@@ -357,7 +357,7 @@ TEST(WaiterCronOccuranceTests, NextOccuranceWithJustWednesdayWorks)
 
 TEST(WaiterCronOccuranceTests, NextOccuranceWithJustThursdayWorks)
 {
-  WaiterCronOccurance repeat(0, 0, 0, 0, 0, 0, false, { 4 });
+  WaiterCronOccurance repeat(0, 0, 0, 0, 0, 0, false, {4});
   QDateTime now = QDateTime::fromTime_t(1234567890);
   QTime testTime = now.time();
   testTime.setHMS(0, 0, 0);
@@ -370,7 +370,7 @@ TEST(WaiterCronOccuranceTests, NextOccuranceWithJustThursdayWorks)
 
 TEST(WaiterCronOccuranceTests, NextOccuranceWithJustFridayWorks)
 {
-  WaiterCronOccurance repeat(0, 0, 0, 0, 0, 0, false, { 5 });
+  WaiterCronOccurance repeat(0, 0, 0, 0, 0, 0, false, {5});
   QDateTime now = QDateTime::fromTime_t(1234567890);
   QTime testTime = now.time();
   testTime.setHMS(0, 0, 0);
@@ -383,7 +383,7 @@ TEST(WaiterCronOccuranceTests, NextOccuranceWithJustFridayWorks)
 
 TEST(WaiterCronOccuranceTests, NextOccuranceWithJustSaturdayWorks)
 {
-  WaiterCronOccurance repeat(0, 0, 0, 0, 0, 0, false, { 6 });
+  WaiterCronOccurance repeat(0, 0, 0, 0, 0, 0, false, {6});
   QDateTime now = QDateTime::fromTime_t(1234567890);
   QTime testTime = now.time();
   testTime.setHMS(0, 0, 0);
@@ -396,7 +396,7 @@ TEST(WaiterCronOccuranceTests, NextOccuranceWithJustSaturdayWorks)
 
 TEST(WaiterCronOccuranceTests, NextOccuranceWithJustSundayWorks)
 {
-  WaiterCronOccurance repeat(0, 0, 0, 0, 0, 0, false, { 7 });
+  WaiterCronOccurance repeat(0, 0, 0, 0, 0, 0, false, {7});
   QDateTime now = QDateTime::fromTime_t(1234567890);
   QTime testTime = now.time();
   testTime.setHMS(0, 0, 0);
@@ -409,7 +409,7 @@ TEST(WaiterCronOccuranceTests, NextOccuranceWithJustSundayWorks)
 
 TEST(WaiterCronOccuranceTests, NearestDayOfTheWeekIsChosen)
 {
-  WaiterCronOccurance repeat(0, 0, 0, 0, 0, 0, false, { 6, 1 });
+  WaiterCronOccurance repeat(0, 0, 0, 0, 0, 0, false, {6, 1});
   QDateTime now = QDateTime::fromTime_t(1234567890);
   QTime testTime = now.time();
   testTime.setHMS(0, 0, 0);
@@ -477,7 +477,7 @@ TEST(WaiterCronOccuranceTests, NextOccuranceWithMonthAndDayOfMonthAfterWorks)
 
 TEST(WaiterCronOccuranceTests, NextOccuranceWithMonthAndDayOfWeekBeforeWorks)
 {
-  WaiterCronOccurance repeat(0, 0, 0, 0, 1, 0, false, { 6 });
+  WaiterCronOccurance repeat(0, 0, 0, 0, 1, 0, false, {6});
   QDateTime now = QDateTime::fromTime_t(1234567890);
   QTime testTime = now.time();
   testTime.setHMS(0, 0, 0);
@@ -490,7 +490,7 @@ TEST(WaiterCronOccuranceTests, NextOccuranceWithMonthAndDayOfWeekBeforeWorks)
 
 TEST(WaiterCronOccuranceTests, NextOccuranceWithMonthAndDayOfWeekAfterWorks)
 {
-  WaiterCronOccurance repeat(0, 0, 0, 0, 5, 0, false, { 7 });
+  WaiterCronOccurance repeat(0, 0, 0, 0, 5, 0, false, {7});
   QDateTime now = QDateTime::fromTime_t(1234567890);
   QTime testTime = now.time();
   testTime.setHMS(0, 0, 0);
@@ -503,7 +503,7 @@ TEST(WaiterCronOccuranceTests, NextOccuranceWithMonthAndDayOfWeekAfterWorks)
 
 TEST(WaiterCronOccuranceTests, NextOccuranceWithDayOfWeekBeforeDayOfMonthWorks)
 {
-  WaiterCronOccurance repeat(0, 0, 10, 0, 0, 0, false, { 5 });
+  WaiterCronOccurance repeat(0, 0, 10, 0, 0, 0, false, {5});
   QDateTime now = QDateTime::fromTime_t(256);
   QTime testTime = now.time();
   testTime.setHMS(0, 0, 0);
@@ -516,7 +516,7 @@ TEST(WaiterCronOccuranceTests, NextOccuranceWithDayOfWeekBeforeDayOfMonthWorks)
 
 TEST(WaiterCronOccuranceTests, NextOccuranceWithDayOfWeekAfterDayOfMonthWorks)
 {
-  WaiterCronOccurance repeat(0, 0, 14, 0, 0, 0, false, { 7 });
+  WaiterCronOccurance repeat(0, 0, 14, 0, 0, 0, false, {7});
   QDateTime now = QDateTime::fromTime_t(1234567890);
   QTime testTime = now.time();
   testTime.setHMS(0, 0, 0);
@@ -530,7 +530,7 @@ TEST(WaiterCronOccuranceTests, NextOccuranceWithDayOfWeekAfterDayOfMonthWorks)
 TEST(WaiterCronOccuranceTests,
      NextOccuranceWithDayOfWeekBeforeDayOfMonthAndMonthBeforeNowWorks)
 {
-  WaiterCronOccurance repeat(0, 0, 20, 0, 1, 0, false, { 2 });
+  WaiterCronOccurance repeat(0, 0, 20, 0, 1, 0, false, {2});
   QDateTime now = QDateTime::fromTime_t(1234567890);
   QTime testTime = now.time();
   testTime.setHMS(0, 0, 0);
@@ -544,7 +544,7 @@ TEST(WaiterCronOccuranceTests,
 TEST(WaiterCronOccuranceTests,
      NextOccuranceWithDayOfWeekBeforeDayOfMonthAndMonthAfterNowWorks)
 {
-  WaiterCronOccurance repeat(0, 0, 20, 0, 4, 0, false, { 6 });
+  WaiterCronOccurance repeat(0, 0, 20, 0, 4, 0, false, {6});
   QDateTime now = QDateTime::fromTime_t(1234567890);
   QTime testTime = now.time();
   testTime.setHMS(0, 0, 0);
@@ -558,7 +558,7 @@ TEST(WaiterCronOccuranceTests,
 TEST(WaiterCronOccuranceTests,
      NextOccuranceWithDayOfWeekAfterDayOfMonthAndMonthBeforeNowWorks)
 {
-  WaiterCronOccurance repeat(0, 0, 3, 0, 1, 0, false, { 3 });
+  WaiterCronOccurance repeat(0, 0, 3, 0, 1, 0, false, {3});
   QDateTime now = QDateTime::fromTime_t(1234567890);
   QTime testTime = now.time();
   testTime.setHMS(0, 0, 0);
@@ -572,7 +572,7 @@ TEST(WaiterCronOccuranceTests,
 TEST(WaiterCronOccuranceTests,
      NextOccuranceWithDayOfWeekAfterDayOfMonthAndMonthAfterNowWorks)
 {
-  WaiterCronOccurance repeat(0, 0, 4, 0, 4, 0, false, { 1 });
+  WaiterCronOccurance repeat(0, 0, 4, 0, 4, 0, false, {1});
   QDateTime now = QDateTime::fromTime_t(1234567890);
   QTime testTime = now.time();
   testTime.setHMS(0, 0, 0);
@@ -822,14 +822,14 @@ TEST_F(WaiterWidgetTests, ToStringWithTitleWithSpacesAndRepetitionWorks)
 TEST_F(WaiterWidgetTests, ToStringWithNoTitleAndRepetitionAndWeekdaysWorks)
 {
   WaiterWidget w(nullptr, test.date(), test.time(), "",
-                 WaiterCronOccurance(1, 2, 3, 4, 5, 6, true, { 1, 2, 3 }));
+                 WaiterCronOccurance(1, 2, 3, 4, 5, 6, true, {1, 2, 3}));
   ASSERT_EQ("NULL 1234567890000 1 2 3 4 5 6 1 1 2 3", w.toLoggableString());
 }
 
 TEST_F(WaiterWidgetTests, ToStringWithTitleAndRepetitionAndWeekdaysWorks)
 {
   WaiterWidget w(nullptr, test.date(), test.time(), "Title",
-                 WaiterCronOccurance(1, 2, 3, 4, 5, 6, true, { 1, 2, 3 }));
+                 WaiterCronOccurance(1, 2, 3, 4, 5, 6, true, {1, 2, 3}));
   ASSERT_EQ("Title 1234567890000 1 2 3 4 5 6 1 1 2 3", w.toLoggableString());
 }
 
@@ -837,7 +837,7 @@ TEST_F(WaiterWidgetTests,
        ToStringWithTitleWithSpacesAndRepetitionAndWeekdaysWorks)
 {
   WaiterWidget w(nullptr, test.date(), test.time(), "Title With Spaces",
-                 WaiterCronOccurance(1, 2, 3, 4, 5, 6, true, { 1, 2, 3 }));
+                 WaiterCronOccurance(1, 2, 3, 4, 5, 6, true, {1, 2, 3}));
   ASSERT_EQ("Title_With_Spaces 1234567890000 1 2 3 4 5 6 1 1 2 3",
             w.toLoggableString());
 }

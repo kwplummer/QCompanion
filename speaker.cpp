@@ -22,7 +22,6 @@ Speaker::Speaker(QObject *parent, QString iconLocation)
   new SpeakerAdaptor(this);
   QDBusConnection dbus = QDBusConnection::sessionBus();
   dbus.registerObject("/Speaker", this);
-//  dbus.registerService("com.coderfrog.qcompanion.speaker");
 #endif
 }
 
@@ -102,10 +101,10 @@ void Speaker::readLoop()
 {
 #ifndef TEST
 #ifdef Q_OS_WIN // COM init
-  GUID clsid_spvoice = { 0x96749377, 0x3391, 0x11D2, 0x9E, 0xE3, 0x00,
-                         0xC0,       0x4F,   0x79,   0x73, 0x96 };
-  GUID iid_ispvoice = { 0x6C44DF74, 0x72B9, 0x4992, 0xA1, 0xEC, 0xEF,
-                        0x99,       0x6E,   0x04,   0x22, 0xD4 };
+  GUID clsid_spvoice = {0x96749377, 0x3391, 0x11D2, 0x9E, 0xE3, 0x00,
+                        0xC0,       0x4F,   0x79,   0x73, 0x96};
+  GUID iid_ispvoice = {0x6C44DF74, 0x72B9, 0x4992, 0xA1, 0xEC, 0xEF,
+                       0x99,       0x6E,   0x04,   0x22, 0xD4};
   if(FAILED(::CoInitialize(NULL)))
   {
     finishSpeaking();
@@ -132,7 +131,7 @@ void Speaker::readLoop()
   notifierArgs << (int)0;        // timeout in ms
 
 #endif
-// std::this_thread::sleep_for(std::chrono::minutes(1));
+  std::this_thread::sleep_for(std::chrono::minutes(1));
 #endif // Test's no-sleep
   QString readMe;
   while(!stopReading)

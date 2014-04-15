@@ -135,10 +135,12 @@ void WaiterDialog::addWaiter(const WaiterCronOccurance &repeat)
  */
 void WaiterDialog::notifyAll()
 {
+  setUpdatesEnabled(false);
   const QDateTime current = QDateTime::currentDateTime();
   currentTimeLabel->setText(current.toString("yy/MM/dd hh:mm:ss"));
   for(WaiterWidget *w : widgets)
     w->update(current);
+  setUpdatesEnabled(true);
 }
 
 /*!
@@ -316,10 +318,10 @@ void WaiterDialog::updateNextTime()
 {
   const time_t now = QDateTime::currentDateTime().toMSecsSinceEpoch();
   time_t earliest = 0;
-  const std::vector<time_t> times{ 31536000000, 2592000000, 604800000, 86400000,
-                                   43200000,    21600000,   21600000,  3600000,
-                                   1800000,     900000,     600000,    300000,
-                                   60000,       0 };
+  const std::vector<time_t> times{31536000000, 2592000000, 604800000, 86400000,
+                                  43200000,    21600000,   21600000,  3600000,
+                                  1800000,     900000,     600000,    300000,
+                                  60000,       0};
   for(const WaiterWidget *w : widgets)
   {
     const time_t diff = w->getMsecs() - now;
