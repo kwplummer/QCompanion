@@ -6,6 +6,8 @@
 #include <algorithm>
 #include "waiterdialog.h"
 #include "ui_waiterdialog.h"
+// TODO: Remove this include
+#include <QDebug>
 
 /*!
  * \brief Constructs the WaiterDialog.
@@ -139,7 +141,16 @@ void WaiterDialog::notifyAll()
   const QDateTime current = QDateTime::currentDateTime();
   currentTimeLabel->setText(current.toString("yy/MM/dd hh:mm:ss"));
   for(WaiterWidget *w : widgets)
-    w->update(current);
+  {
+    if(w)
+    {
+      w->update(current);
+    }
+    else
+    {
+      qDebug() << w << " is null, and should never be.";
+    }
+  }
   setUpdatesEnabled(true);
 }
 

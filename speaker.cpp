@@ -143,6 +143,7 @@ void Speaker::readLoop()
     if(canSendNotifications && !readMe.isEmpty())
     {
       notifierArgs[4] = readMe;
+      notifierArgs[7].setValue(readMe.size() * 1000);
       notifier.callWithArgumentList(QDBus::AutoDetect, "Notify", notifierArgs);
     }
     if(canSpeak)

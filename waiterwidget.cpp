@@ -169,7 +169,7 @@ void WaiterWidget::update(QDateTime t)
 
     switch(seconds)
     {
-    case(31536000) : // 365 * seconds in a day = 1 year
+    case(31536000): // 365 * seconds in a day = 1 year
     {
       QString sayMe;
       if(title == "NULL" || title.isEmpty())
@@ -180,7 +180,7 @@ void WaiterWidget::update(QDateTime t)
       Q_EMIT speakThis(sayMe);
       break;
     }
-    case(2592000) :
+    case(2592000):
     {
       QString sayMe;
       if(title == "NULL" || title.isEmpty())
@@ -191,7 +191,7 @@ void WaiterWidget::update(QDateTime t)
       Q_EMIT speakThis(sayMe);
       break;
     }
-    case(604800) :
+    case(604800):
     {
       QString sayMe;
       if(title == "NULL" || title.isEmpty())
@@ -202,7 +202,7 @@ void WaiterWidget::update(QDateTime t)
       Q_EMIT speakThis(sayMe);
       break;
     }
-    case(86400) :
+    case(86400):
     {
       QString sayMe;
       if(title == "NULL" || title.isEmpty())
@@ -213,7 +213,7 @@ void WaiterWidget::update(QDateTime t)
       Q_EMIT speakThis(sayMe);
       break;
     }
-    case(43200) : // 12 * seconds in an hour = 12 hours
+    case(43200): // 12 * seconds in an hour = 12 hours
     {
       QString sayMe;
       if(title == "NULL" || title.isEmpty())
@@ -224,7 +224,7 @@ void WaiterWidget::update(QDateTime t)
       Q_EMIT speakThis(sayMe);
       break;
     }
-    case(21600) :
+    case(21600):
     {
       QString sayMe;
       if(title == "NULL" || title.isEmpty())
@@ -235,7 +235,7 @@ void WaiterWidget::update(QDateTime t)
       Q_EMIT speakThis(sayMe);
       break;
     }
-    case(3600) :
+    case(3600):
     {
       QString sayMe;
       if(title == "NULL" || title.isEmpty())
@@ -246,7 +246,7 @@ void WaiterWidget::update(QDateTime t)
       Q_EMIT speakThis(sayMe);
       break;
     }
-    case(1800) : // 30 * seconds in one minute = 30 minutes
+    case(1800): // 30 * seconds in one minute = 30 minutes
     {
       QString sayMe;
       if(title == "NULL" || title.isEmpty())
@@ -257,7 +257,7 @@ void WaiterWidget::update(QDateTime t)
       Q_EMIT speakThis(sayMe);
       break;
     }
-    case(900) :
+    case(900):
     {
       QString sayMe;
       if(title == "NULL" || title.isEmpty())
@@ -268,7 +268,7 @@ void WaiterWidget::update(QDateTime t)
       Q_EMIT speakThis(sayMe);
       break;
     }
-    case(600) :
+    case(600):
     {
       QString sayMe;
       if(title == "NULL" || title.isEmpty())
@@ -279,7 +279,7 @@ void WaiterWidget::update(QDateTime t)
       Q_EMIT speakThis(sayMe);
       break;
     }
-    case(300) :
+    case(300):
     {
       QString sayMe;
       if(title == "NULL" || title.isEmpty())
@@ -290,7 +290,7 @@ void WaiterWidget::update(QDateTime t)
       Q_EMIT speakThis(sayMe);
       break;
     }
-    case(60) :
+    case(60):
     {
       QString sayMe;
       if(title == "NULL" || title.isEmpty())
